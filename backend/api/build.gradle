@@ -1,0 +1,99 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.1.2'
+    id 'io.spring.dependency-management' version '1.1.2'
+    id 'org.hibernate.orm' version '6.2.6.Final'
+    id 'org.graalvm.buildtools.native' version '0.9.23'
+}
+
+group = 'mutsa'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //spring boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //webSocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    //oauth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+    //jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    //swagger
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
+    //email 인증
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    //lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    //db connect
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    //jwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'com.auth0:java-jwt:3.19.2'
+
+    //module 참조
+    implementation project(':common')
+
+    //actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    //micrometer-prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    //security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    //test dependency
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    //test-embedded-redis
+    testImplementation 'it.ozimov:embedded-redis:0.7.1'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// plain.jar를 빌드하지않도록함.
+jar {
+    enabled = false
+}
+
+hibernate {
+    enhancement {
+        enableAssociationManagement = true
+    }
+}
+
