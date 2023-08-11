@@ -20,5 +20,5 @@ public abstract class BaseTimeEntity implements Serializable {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime updatedAt;
+    private LocalDateTime modifiedAt;
 }
