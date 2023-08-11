@@ -1,4 +1,4 @@
-package mutsa.api.config.jwt;
+package mutsa.api.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
