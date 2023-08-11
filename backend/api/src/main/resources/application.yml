@@ -37,7 +37,7 @@ spring:
       naming:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
@@ -76,8 +76,8 @@ spring:
 
 jwt:
   secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-  accessToken: 8165431
-  refreshToken: 564657
+  accessTokenExpire: 8165431
+  refreshTokenExpire: 564657
 
 # log level
 logging.level:

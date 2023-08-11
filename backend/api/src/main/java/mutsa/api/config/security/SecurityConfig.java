@@ -40,11 +40,11 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(registry -> registry.anyRequest().permitAll());
 
         httpSecurity.formLogin(login ->
-                login.successHandler(authenticationSuccessHandler)
+                login.loginProcessingUrl("/api/auth/login")
+                        .successHandler(authenticationSuccessHandler)
                         .failureHandler(authenticationFailureHandler)
                         .usernameParameter("username")
                         .passwordParameter("password")
-                        .loginProcessingUrl("/api/auth/login")
         );
 
         return httpSecurity.build();

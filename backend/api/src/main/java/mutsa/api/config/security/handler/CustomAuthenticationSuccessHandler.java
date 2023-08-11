@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.config.jwt.JwtConfig;
-import mutsa.api.config.jwt.JwtUtil;
+import mutsa.api.util.JwtUtil;
 import mutsa.api.config.security.CustomUserDetails;
 import mutsa.api.dto.LoginResponseDto;
 import org.springframework.http.HttpHeaders;
