@@ -1,1 +1,86 @@
-
+#
+#server:
+#  compression:
+#    enabled: true
+#  port: 8080
+#  tomcat:
+#    use-relative-redirects: true
+#
+##Spring Settings
+#spring:
+#  profiles:
+#    default: local
+#
+#  mvc:
+#    pathmatch:
+#      matching-strategy: ant_path_matcher
+#
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/team1_project
+#    username: root
+#    password: qwer1234
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#
+#  servlet:
+#    multipart:
+#      enabled: true
+#      max-file-size: 10MB
+#      max-request-size: 10MB
+#
+#  jpa:
+#    database: mysql
+#    show-sql: true
+#    generate-ddl: true
+#    database-platform: org.hibernate.dialect.MySQL8Dialect
+#    open-in-view: true
+#    hibernate:
+#      naming:
+#        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+#        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+#      ddl-auto: create
+#    properties:
+#      hibernate:
+#        show_sql: true
+#        format_sql: true
+#        use_sql_comments: true
+#        dialect: org.hibernate.dialect.MySQL8Dialect
+#
+#  thymeleaf:
+#    prefix: classpath:templates/
+#    suffix: .html
+#    check-template-location: false
+#    cache: false
+#    encoding: UTF-8
+#    mode: HTML
+#
+#  devtools:
+#    livereload:
+#      enabled: true
+#
+#  data:
+#    web:
+#      pageable:
+#        default-page-size: 25
+#        max-page-size: 1000
+#        one-indexed-parameters: false
+#        page-parameter: page
+#        size-parameter: limit
+#    redis:
+#      host: localhost
+#      port: 6379
+#
+#  web:
+#    resources:
+#      static-locations: classpath:/static
+#      add-mappings: true
+#
+#jwt:
+#  secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+#  accessToken: 8165431
+#  refreshToken: 564657
+#
+## log level
+#logging.level:
+#  org.hibernate.SQL: info
+#  org.hibernate.type: info
+#  org.hibernate.type.descriptor.sql: debug
