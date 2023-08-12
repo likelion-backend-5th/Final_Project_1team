@@ -1,4 +1,4 @@
-package mutsa.common.domain.models.base;
+package mutsa.common.domain.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
