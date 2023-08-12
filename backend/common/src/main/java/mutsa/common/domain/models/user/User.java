@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static jakarta.persistence.FetchType.*;
+
 @Entity
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
@@ -38,6 +40,9 @@ public class User extends BaseTimeEntity implements Serializable {
 
     @Embedded
     private Address address;
+
+//    @OneToOne(mappedBy = "user", fetch = LAZY)
+//    private Member member;
 
     @Singular
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)

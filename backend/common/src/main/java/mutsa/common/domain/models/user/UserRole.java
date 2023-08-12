@@ -40,6 +40,4 @@ public class UserRole extends BaseTimeEntity implements Serializable {
                 .role(role)
                 .build();
     }
-
-
 }
