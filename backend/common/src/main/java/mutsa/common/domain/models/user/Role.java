@@ -2,7 +2,7 @@ package mutsa.common.domain.models.user;
 
 import jakarta.persistence.*;
 import lombok.*;
-import mutsa.common.domain.models.base.BaseTimeEntity;
+import mutsa.common.domain.models.BaseTimeEntity;
 
 import java.io.Serializable;
 import java.util.Arrays;

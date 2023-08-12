@@ -2,7 +2,7 @@ package mutsa.common.domain.models.user;
 
 import jakarta.persistence.*;
 import lombok.*;
-import mutsa.common.domain.models.base.BaseTimeEntity;
+import mutsa.common.domain.models.BaseTimeEntity;
 import mutsa.common.domain.models.user.embedded.Address;
 
 import java.io.Serializable;
@@ -10,8 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Getter

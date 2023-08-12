@@ -5,8 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import mutsa.common.domain.models.base.BaseEntity;
-import mutsa.common.domain.models.user.User;
+import mutsa.common.domain.models.BaseEntity;
 
 import java.io.Serializable;
 import java.util.UUID;
