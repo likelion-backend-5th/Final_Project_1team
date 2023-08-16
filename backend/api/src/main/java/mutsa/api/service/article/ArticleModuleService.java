@@ -12,10 +12,11 @@ import mutsa.api.dto.article.ArticleRequestDto;
 import mutsa.api.dto.article.ArticleResponseDto;
 import mutsa.api.dto.article.ArticleUpdateDto;
 import mutsa.common.domain.models.article.Article;
-import mutsa.common.domain.models.user.User;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.user.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
 @RequiredArgsConstructor
@@ -50,5 +51,16 @@ public class ArticleModuleService {
 
     public Article updateToEntity(ArticleUpdateDto updateDto) {
         return articleRepository.getByApiId(updateDto.getApiId());
+    }
+
+
+    public Article getByApiId(String apiId) {
+        return articleRepository.findByApiId(apiId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "없는 order ApiId"));
+    }
+
+    public Article getById(Long id) {
+        return articleRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "없는 order ID"));
     }
 }

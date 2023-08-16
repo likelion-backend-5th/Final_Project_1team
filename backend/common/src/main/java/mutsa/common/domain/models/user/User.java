@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(schema = "user")
+@Table(name = "user")
 public class User extends BaseTimeEntity implements Serializable {
 
     @Id
