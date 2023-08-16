@@ -43,6 +43,7 @@ public class Article extends BaseEntity implements Serializable {
     private List<Order> orders = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     public void validUser(User user) {

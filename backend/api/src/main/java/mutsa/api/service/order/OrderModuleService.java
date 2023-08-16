@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,18 +61,12 @@ public class OrderModuleService {
     }
 
     public Order getByApiId(String apiId) {
-        Optional<Order> byApiId = orderRepository.findByApiId(apiId);
-        if (byApiId.isPresent()) {
-            return byApiId.get();
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "없는 order ApiId");
+        return orderRepository.findByApiId(apiId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "없는 order ApiId"));
     }
 
     public Order getById(Long id) {
-        Optional<Order> byId = orderRepository.findById(id);
-        if (byId.isPresent()) {
-            return byId.get();
-        }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "없는 order ID");
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "없는 order ID"));
     }
 }
