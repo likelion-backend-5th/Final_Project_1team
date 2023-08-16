@@ -84,3 +84,8 @@ logging.level:
   org.hibernate.SQL: info
   org.hibernate.type: info
   org.hibernate.type.descriptor.sql: debug
+
+springdoc:
+  version: openapi_3_0
+  swagger-ui:
+    path: /swagger-ui.html
