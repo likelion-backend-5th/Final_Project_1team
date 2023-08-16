@@ -4,7 +4,7 @@
  * @since 2023-08-16 PM 1:19
  */
 
-package mutsa.api.service.auth.article;
+package mutsa.api.service.article;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -39,9 +39,6 @@ public class ArticleModuleService {
     }
 
     public Article dtoToEntity(ArticleRequestDto requestDto) {
-        User user = userRepository.findByUsername(requestDto.getUsername()).orElse(null);
-        Article.of(requestDto.getTitle(), requestDto.getDescription(), user, null);
-
         return Article.builder()
                 .title(requestDto.getTitle())
                 .description(requestDto.getDescription())
