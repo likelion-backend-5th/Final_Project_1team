@@ -1,4 +1,4 @@
-package mutsa.common.domain.models.base;
+package mutsa.common.domain.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -20,5 +20,5 @@ public abstract class BaseTimeEntity implements Serializable {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime updatedAt;
+    private LocalDateTime modifiedAt;
 }

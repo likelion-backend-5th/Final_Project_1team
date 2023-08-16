@@ -2,7 +2,7 @@ package mutsa.common.domain.models.user;
 
 import jakarta.persistence.*;
 import lombok.*;
-import mutsa.common.domain.models.base.BaseTimeEntity;
+import mutsa.common.domain.models.BaseTimeEntity;
 
 import java.io.Serializable;
 
@@ -40,6 +40,4 @@ public class UserRole extends BaseTimeEntity implements Serializable {
                 .role(role)
                 .build();
     }
-
-
 }
