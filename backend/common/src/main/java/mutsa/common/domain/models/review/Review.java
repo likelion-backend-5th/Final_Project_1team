@@ -34,7 +34,7 @@ public class Review extends BaseEntity implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ReviewStatus reviewStatus;
+    private ReviewStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
