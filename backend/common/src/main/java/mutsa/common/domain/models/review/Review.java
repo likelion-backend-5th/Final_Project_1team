@@ -6,14 +6,16 @@ import mutsa.common.domain.models.BaseEntity;
 
 import java.io.Serializable;
 import java.util.UUID;
+import mutsa.common.domain.models.user.User;
 
 @Entity
 @Table(name = "review")
 @Getter
-@Builder(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Review extends BaseEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
@@ -23,7 +25,18 @@ public class Review extends BaseEntity implements Serializable {
     private final String apiId = UUID.randomUUID().toString();
 
     @Column(nullable = false,
-            columnDefinition = "text",
-            length = 200)
-    private String description;
+        columnDefinition = "text",
+        length = 200)
+    private String content;
+
+    @Column(nullable = false)
+    private Integer point;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReviewStatus reviewStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
