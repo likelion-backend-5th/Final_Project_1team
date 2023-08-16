@@ -10,7 +10,7 @@ import jakarta.transaction.Transactional;
 import mutsa.api.dto.article.ArticleRequestDto;
 import mutsa.api.dto.article.ArticleResponseDto;
 import mutsa.api.dto.article.ArticleUpdateDto;
-import mutsa.api.service.auth.article.ArticleService;
+import mutsa.api.service.article.ArticleService;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.repository.article.ArticleRepository;
@@ -18,7 +18,6 @@ import mutsa.common.repository.user.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.event.annotation.BeforeTestExecution;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -26,13 +25,13 @@ import org.springframework.test.context.event.annotation.BeforeTestExecution;
 @Transactional
 public class ArticleServiceTest {
     @Autowired
-    ArticleService articleService;
+    private ArticleService articleService;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    ArticleRepository articleRepository;
-    User user;
-    Article preArticle;
+    private ArticleRepository articleRepository;
+    private User user;
+    private Article preArticle;
 
     @BeforeEach
     public void init() {

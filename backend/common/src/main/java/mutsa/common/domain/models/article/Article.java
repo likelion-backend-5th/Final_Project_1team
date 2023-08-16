@@ -1,10 +1,7 @@
 package mutsa.common.domain.models.article;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
 import mutsa.common.domain.models.user.User;
 
@@ -12,9 +9,11 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
-@Builder(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Table(name = "article")
 public class Article extends BaseEntity implements Serializable {
     @Id
@@ -37,8 +36,4 @@ public class Article extends BaseEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user;
 }

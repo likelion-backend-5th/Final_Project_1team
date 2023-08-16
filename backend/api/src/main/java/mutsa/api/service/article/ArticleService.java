@@ -4,7 +4,7 @@
  * @since 2023-08-16 PM 1:18
  */
 
-package mutsa.api.service.auth.article;
+package mutsa.api.service.article;
 
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.article.ArticleRequestDto;
