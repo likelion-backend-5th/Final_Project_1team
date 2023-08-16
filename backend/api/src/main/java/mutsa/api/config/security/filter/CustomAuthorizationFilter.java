@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import mutsa.api.config.jwt.JwtConfig;
 import mutsa.api.util.JwtUtil;
 import mutsa.api.util.JwtUtil.JWTInfo;
-import mutsa.api.config.security.CustomUserDetails;
+import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.ErrorCode;
 import mutsa.common.exception.ErrorResponse;
@@ -77,7 +77,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private UsernamePasswordAuthenticationToken getAuthenticationToken(JWTInfo jwtInfo) {
         return new UsernamePasswordAuthenticationToken(
-                CustomUserDetails.of(
+                CustomPrincipalDetails.of(
                         User.of(
                                 jwtInfo.getUsername(),
                                 null,
