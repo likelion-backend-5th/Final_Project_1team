@@ -23,6 +23,7 @@ public class Report extends BaseEntity implements Serializable {
     private Long id;
 
     @Column(unique = true, nullable = false)
+    @Builder.Default
     private final String apiId = UUID.randomUUID().toString();
 
     @Column(nullable = false, columnDefinition = "text", length = 500)

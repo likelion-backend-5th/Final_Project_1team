@@ -19,6 +19,7 @@ public class Review extends BaseEntity implements Serializable {
     @Column(name = "review_id")
     private Long id;
 
+    @Builder.Default
     private final String apiId = UUID.randomUUID().toString();
 
     @Column(nullable = false,

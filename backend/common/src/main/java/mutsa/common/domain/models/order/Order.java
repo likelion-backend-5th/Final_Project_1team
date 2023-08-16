@@ -22,6 +22,7 @@ public class Order extends BaseEntity implements Serializable {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @Builder.Default
     private final String apiId = UUID.randomUUID().toString();
 
     @Enumerated(EnumType.STRING)

@@ -3,10 +3,12 @@ package mutsa.common.domain.models.user;
 import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseTimeEntity;
+import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.embedded.Address;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,6 +27,7 @@ public class User extends BaseTimeEntity implements Serializable {
     private Long id;
 
     @Column(unique = true, nullable = false)
+    @Builder.Default
     private final String apiId = UUID.randomUUID().toString();
 
     @Column(nullable = false, unique = true)
@@ -45,6 +48,9 @@ public class User extends BaseTimeEntity implements Serializable {
     @Singular
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private final Set<UserRole> userRoles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Article> articles;
 
     public void updatePassword(String encodePassword) {
         this.password = encodePassword;
