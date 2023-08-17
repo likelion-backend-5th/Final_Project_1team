@@ -33,6 +33,8 @@ public enum ErrorCode {
     // review,
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "REVIEW_NOT_FOUND", "해당 리뷰를 찾을 수 없습니다."),
 
+    REVIEW_NOT_ALLOW(HttpStatus.BAD_REQUEST.value(), "REVIEW_NOT_ALLOW", "아직 리뷰를 작성할 수 없습니다.")
+
     ;
 
     private final int status;
