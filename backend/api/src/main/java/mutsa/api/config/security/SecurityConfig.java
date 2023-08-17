@@ -50,7 +50,7 @@ public class SecurityConfig {
                     authorizationEndpointConfig ->
                         authorizationEndpointConfig.authorizationRequestRepository(
                                 authorizationRequestRepository)
-                            .baseUri("/oauth2/authorize"))
+                            .baseUri("/oauth2/authorization"))
                 .redirectionEndpoint(redirectionEndpointConfig ->
                     redirectionEndpointConfig.baseUri("/login/oauth2/callback/**"))
                 .userInfoEndpoint(userInfoEndpointConfig ->

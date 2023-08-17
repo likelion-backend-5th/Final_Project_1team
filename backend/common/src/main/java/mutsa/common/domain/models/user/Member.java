@@ -24,7 +24,17 @@ public class Member {
     @Column(nullable = false)
     private String nickName;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public void addUser(User user) {
+        this.user = user;
+    }
+
+    public static Member of(String name) {
+        return Member.builder()
+            .nickName(name)
+            .build();
+    }
 }

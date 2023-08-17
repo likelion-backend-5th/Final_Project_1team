@@ -83,7 +83,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                                 null,
                                 null,
                                 null,
-                                null
+                                null,
+                            null
                         ),
                         null
                 ),
