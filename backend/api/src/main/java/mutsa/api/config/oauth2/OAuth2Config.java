@@ -21,8 +21,8 @@ public class OAuth2Config {
     }
 
     @Bean
-    @Qualifier("authorizationRequestRepository")
-    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
+    @Qualifier("httOAuth2AuthorizationRequestAuthorizationRequestRepository")
+    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> httOAuth2AuthorizationRequestAuthorizationRequestRepository() {
         return new HttpSessionOAuth2AuthorizationRequestRepository();
     }
 }

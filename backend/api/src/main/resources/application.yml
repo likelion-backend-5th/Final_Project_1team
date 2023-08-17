@@ -21,12 +21,6 @@ spring:
     livereload:
       enabled: true
 
-# jwt token
-jwt:
-  secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
-  accessTokenExpire: 8165431
-  refreshTokenExpire: 564657
-
 # log level
 logging.level:
   org.hibernate.SQL: info

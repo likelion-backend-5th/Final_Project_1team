@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/team1_project
     username: root
-    password: 1234
+    password: qwer1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -27,18 +27,6 @@ spring:
         format_sql: true
         use_sql_comments: true
         dialect: org.hibernate.dialect.MySQL8Dialect
-
-  data:
-    web:
-      pageable:
-        default-page-size: 25
-        max-page-size: 1000
-        one-indexed-parameters: false
-        page-parameter: page
-        size-parameter: limit
-    redis:
-      host: localhost
-      port: 6379
   security:
     oauth2:
       client:
@@ -50,3 +38,19 @@ spring:
             scope:
               - email
               - profile
+# jwt token
+jwt:
+  secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+  accessTokenExpire: 8165431
+  refreshTokenExpire: 564657
+  data:
+    web:
+      pageable:
+        default-page-size: 25
+        max-page-size: 1000
+        one-indexed-parameters: false
+        page-parameter: page
+        size-parameter: limit
+    redis:
+      host: localhost
+      port: 6379

@@ -29,7 +29,7 @@ public class SecurityConfig {
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> defaultOAuth2UserService;
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
     private final AuthenticationFailureHandler authenticationFailureHandler;
-    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository;
+    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> httOAuth2AuthorizationRequestAuthorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .authorizationEndpoint(
                     authorizationEndpointConfig ->
                         authorizationEndpointConfig.authorizationRequestRepository(
-                                authorizationRequestRepository)
+                                httOAuth2AuthorizationRequestAuthorizationRequestRepository)
                             .baseUri("/oauth2/authorization"))
                 .redirectionEndpoint(redirectionEndpointConfig ->
                     redirectionEndpointConfig.baseUri("/login/oauth2/callback/**"))
