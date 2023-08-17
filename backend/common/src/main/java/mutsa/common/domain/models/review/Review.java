@@ -6,11 +6,13 @@ import mutsa.common.domain.models.BaseEntity;
 
 import java.io.Serializable;
 import java.util.UUID;
+import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
 
 @Entity
 @Table(name = "review")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,4 +41,8 @@ public class Review extends BaseEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "article_id")
+    private Article article;
 }
