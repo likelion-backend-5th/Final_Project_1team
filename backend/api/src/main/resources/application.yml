@@ -9,34 +9,19 @@ server:
 spring:
   profiles:
     default: local
-
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
   servlet:
     multipart:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
-
-  thymeleaf:
-    prefix: classpath:templates/
-    suffix: .html
-    check-template-location: false
-    cache: false
-    encoding: UTF-8
-    mode: HTML
-
   devtools:
     livereload:
       enabled: true
 
-  web:
-    resources:
-      static-locations: classpath:/static
-      add-mappings: true
-
+# jwt token
 jwt:
   secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
   accessTokenExpire: 8165431
