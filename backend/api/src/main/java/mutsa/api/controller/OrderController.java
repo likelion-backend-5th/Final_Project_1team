@@ -27,7 +27,7 @@ public class OrderController {
     public ResponseEntity<OrderDetailResponseDto> getDetailOrder(
             @PathVariable("articleApiId") String articleApiId,
             @PathVariable("orderApiId") String orderApiId) {
-        OrderDetailResponseDto dto = orderService.findDetailOrder(articleApiId, orderApiId, SecurityUtil.getCurrentUserApiId());
+        OrderDetailResponseDto dto = orderService.findDetailOrder(articleApiId, orderApiId, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dto);
     }
 
@@ -38,7 +38,7 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<List<OrderResponseDto>> getAllOrder(
             @PathVariable("articleApiId") String articleApiId) {
-        List<OrderResponseDto> dtos = orderService.findAllOrder(articleApiId, SecurityUtil.getCurrentUserApiId());
+        List<OrderResponseDto> dtos = orderService.findAllOrder(articleApiId, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dtos);
     }
 
@@ -49,7 +49,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderDetailResponseDto> getDetailOrder(
             @PathVariable("articleApiId") String articleApiId) {
-        OrderDetailResponseDto dto = orderService.saveOrder(articleApiId, SecurityUtil.getCurrentUserApiId());
+        OrderDetailResponseDto dto = orderService.saveOrder(articleApiId, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dto);
     }
 
@@ -57,7 +57,7 @@ public class OrderController {
     public ResponseEntity<String> deleteOrder(
             @PathVariable("articleApiId") String articleApiId,
             @PathVariable("orderApiId") String orderApiId) {
-        orderService.deleteOrder(articleApiId, orderApiId, SecurityUtil.getCurrentUserApiId());
+        orderService.deleteOrder(articleApiId, orderApiId, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok("삭제 완료");
     }
 }

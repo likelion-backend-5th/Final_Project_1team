@@ -1,5 +1,6 @@
 package mutsa.api.service.order;
 
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.order.OrderDetailResponseDto;
@@ -25,15 +26,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @Transactional
 @Slf4j
-class OrderServiceTest {
+class OrderModuleServiceTest {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
-    private OrderService orderService;
+    private OrderModuleService orderModuleService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private ArticleRepository articleRepository;
+    @Autowired
+    private EntityManager em;
 
     private User user;
     private Article article;
@@ -59,7 +62,7 @@ class OrderServiceTest {
         Order savedOrder = orderRepository.save(order);
 
         //when
-        OrderDetailResponseDto detailOrder = orderService.findDetailOrder(article.getApiId(), savedOrder.getApiId(), user.getUsername());
+        OrderDetailResponseDto detailOrder = orderModuleService.findDetailOrder(article, user, savedOrder.getApiId());
 
         //then
         assertThat(detailOrder.getArticleApiId()).isEqualTo(savedOrder.getArticle().getApiId());
@@ -73,7 +76,7 @@ class OrderServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, user));
 
         //when
-        List<OrderResponseDto> allOrder = orderService.findAllOrder(article.getApiId(), user.getUsername());
+        List<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, user);
 
         //then
         log.info(allOrder.toString());
@@ -86,7 +89,7 @@ class OrderServiceTest {
         //given
 
         //when
-        OrderDetailResponseDto orderDetailResponseDto = orderService.saveOrder(article.getApiId(), user.getUsername());
+        OrderDetailResponseDto orderDetailResponseDto = orderModuleService.saveOrder(article, user);
 
         //then
         assertThat(orderDetailResponseDto.getUsername()).isEqualTo(user.getUsername());
@@ -99,10 +102,36 @@ class OrderServiceTest {
         Order savedOrder = orderRepository.save(order);
 
         //when
-        orderService.deleteOrder(article.getApiId(), savedOrder.getApiId(), user.getUsername());
+        orderModuleService.deleteOrder(article, user, savedOrder.getApiId());
 
         //then
         Optional<Order> byApiId = orderRepository.findByApiId(article.getApiId());
         assertThat(byApiId.isPresent()).isFalse();
+    }
+
+    @Test
+    void getByApiId() {
+        //given
+        Order order = Order.of(article, user);
+        order = orderRepository.save(order);
+
+        //when
+        Order byApiId = orderModuleService.getByApiId(order.getApiId());
+
+        //then
+        assertThat(byApiId.getId()).isEqualTo(order.getId());
+    }
+
+    @Test
+    void getById() {
+        //given
+        Order order = Order.of(article, user);
+        order = orderRepository.save(order);
+
+        //when
+        Order byId = orderModuleService.getById(order.getId());
+
+        //then
+        assertThat(byId.getId()).isEqualTo(order.getId());
     }
 }

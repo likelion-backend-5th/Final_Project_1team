@@ -4,14 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseTimeEntity;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.review.Review;
 import mutsa.common.domain.models.user.embedded.Address;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -55,6 +53,10 @@ public class User extends BaseTimeEntity implements Serializable {
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Order> orders = new ArrayList<>();
 
     public void updatePassword(String encodePassword) {
         this.password = encodePassword;
