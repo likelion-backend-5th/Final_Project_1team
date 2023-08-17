@@ -49,7 +49,7 @@ public class CustomPrincipalDetails implements UserDetails, OAuth2User, Serializ
 
     @Override
     public String getName() {
-        return null;
+        return this.username;
     }
 
     @Override
