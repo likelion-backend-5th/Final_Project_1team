@@ -11,13 +11,13 @@ import mutsa.common.domain.models.review.Review;
 public class ReviewResponseDto {
     private String content;
     private Integer point;
-    private String apiId;
+    private String username;
 
     public static ReviewResponseDto fromEntity(Review review) {
         return ReviewResponseDto.builder()
             .content(review.getContent())
             .point(review.getPoint())
-            .apiId(review.getApiId())
+            .username(review.getUser().getUsername())
             .build();
     }
 }

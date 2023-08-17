@@ -8,5 +8,5 @@ import lombok.Setter;
 public class ReviewRequestDto {
     private String username;
     private String content;
-    private String point;
+    private Integer point;
 }
