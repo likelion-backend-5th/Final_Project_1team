@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Table(schema = "report")
+@Table(name = "report")
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -33,7 +33,7 @@ public class Report extends BaseEntity implements Serializable {
     @JoinColumn(name = "reported_id")
     private User reportedUser; // 신고당한 사람
 
-    @Column(nullable = false, columnDefinition = "text", length = 500)
+    @Column(nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
