@@ -29,12 +29,4 @@ public class ArticleService {
     public Article requestDtoToEntity(ArticleRequestDto requestDto) {
         return articleModuleService.dtoToEntity(requestDto);
     }
-
-    public Article getByApiId(String apiId) {
-        return articleModuleService.getByApiId(apiId);
-    }
-
-    public Article getById(Long id) {
-        return articleModuleService.getById(id);
-    }
 }
