@@ -40,13 +40,13 @@ public class ReportServiceTest {
     public void init() {
         reporter = userRepository.findByEmail("reporterEmail")
                 .orElseGet(() -> {
-                    User newUser = User.of("reporter", "password", "reporterEmail", null, null);
+                    User newUser = User.of("reporter", "password", "reporterEmail", null, null, null);
                     return userRepository.save(newUser);
                 });
 
         reported = userRepository.findByEmail("reportedEmail")
                 .orElseGet(() -> {
-                    User newUser = User.of("reported", "password", "reportedEmail", null, null);
+                    User newUser = User.of("reported", "password", "reportedEmail", null, null, null);
                     return userRepository.save(newUser);
                 });
     }
