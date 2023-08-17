@@ -5,6 +5,8 @@ import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.user.User;
+import mutsa.common.exception.BusinessException;
+import mutsa.common.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -33,7 +35,7 @@ public class Article extends BaseEntity implements Serializable {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(nullable = false)
     private String description;
 
     private String thumbnail;
@@ -47,8 +49,6 @@ public class Article extends BaseEntity implements Serializable {
     private User user;
 
     public void validUser(User user) {
-        if (this.user == user) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 부족한 유저가 확인하려 합니다.");
-        }
+        throw new BusinessException(ErrorCode.ARTICLE_PERMISSION_DENIED);
     }
 }

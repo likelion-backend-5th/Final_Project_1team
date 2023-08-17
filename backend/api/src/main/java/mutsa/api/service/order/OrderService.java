@@ -1,5 +1,6 @@
 package mutsa.api.service.order;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;

@@ -35,13 +35,14 @@ public class OrderModuleService {
         return article.getOrders().stream().map(OrderResponseDto::fromEntity).collect(Collectors.toList());
     }
 
+    @Transactional
     public OrderDetailResponseDto saveOrder(Article article, User user) {
         return OrderDetailResponseDto.fromEntity(orderRepository.save(Order.of(article, user)));
     }
 
+    @Transactional
     public void deleteOrder(Article article, User user, String orderApiId) {
         Order order = getByApiId(orderApiId);
-
         order.validArticle(article);
         order.validUser(user); //판매자와 구매자만
         orderRepository.delete(getByApiId(orderApiId));

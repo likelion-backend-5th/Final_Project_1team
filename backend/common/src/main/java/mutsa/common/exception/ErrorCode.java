@@ -30,6 +30,9 @@ public enum ErrorCode {
     // review,
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "REVIEW_NOT_FOUND", "해당 리뷰를 찾을 수 없습니다.")
 
+    INVALID_ARTICLE_ORDER(HttpStatus.BAD_REQUEST.value(),"" ,"url path가 부정확합니다." ),
+    ORDER_PERMISSION_DENIED(HttpStatus.FORBIDDEN.value(), "","판매자의 권한이 아닙니다."),
+    ARTICLE_PERMISSION_DENIED(HttpStatus.FORBIDDEN.value(), "","판매자의 권한이 아닙니다.")
     ;
 
     private final int status;
