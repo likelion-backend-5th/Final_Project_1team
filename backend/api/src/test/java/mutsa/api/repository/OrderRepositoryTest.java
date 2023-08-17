@@ -39,7 +39,7 @@ public class OrderRepositoryTest {
 
     @BeforeEach
     public void init() {
-        user = User.of("user", "password", "email", "oauthName", null, null);
+        user = User.of("user", "password", "email", "oauthName", null);
         when(userService.getByApiId(any())).thenReturn(user);
 
         article = Article.builder()

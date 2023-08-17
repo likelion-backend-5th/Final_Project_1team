@@ -40,7 +40,7 @@ class OrderServiceTest {
 
     @BeforeEach
     public void init() {
-        user = User.of("user", "password", "email", "oauthName", null, null);
+        user = User.of("user", "password", "email", "oauthName", null);
         user = userRepository.save(user);
 
         article = Article.builder()
