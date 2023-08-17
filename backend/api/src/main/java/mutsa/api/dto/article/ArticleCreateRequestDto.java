@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ArticleRequestDto {
+public class ArticleCreateRequestDto {
     private String title;
     private String description;
     private String username;
