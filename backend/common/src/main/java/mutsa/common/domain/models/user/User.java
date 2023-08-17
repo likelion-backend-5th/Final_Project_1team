@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseTimeEntity;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.review.Review;
 import mutsa.common.domain.models.user.embedded.Address;
 
 import java.io.Serializable;
@@ -51,6 +52,9 @@ public class User extends BaseTimeEntity implements Serializable {
 
     @OneToMany(mappedBy = "user")
     private List<Article> articles;
+
+    @OneToMany(mappedBy = "user")
+    private List<Review> reviews;
 
     public void updatePassword(String encodePassword) {
         this.password = encodePassword;
