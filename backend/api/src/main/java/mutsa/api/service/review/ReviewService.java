@@ -1,58 +1,62 @@
 package mutsa.api.service.review;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
-import mutsa.common.domain.models.review.Review;
-import mutsa.common.domain.models.review.ReviewStatus;
+import mutsa.api.dto.review.ReviewUpdateDto;
+import mutsa.api.service.article.ArticleModuleService;
+import mutsa.api.service.order.OrderModuleService;
+import mutsa.api.service.user.UserModuleService;
+import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.user.User;
-import mutsa.common.exception.BusinessException;
-import mutsa.common.exception.ErrorCode;
-import mutsa.common.repository.review.ReviewRepository;
-import mutsa.common.repository.user.UserRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ReviewService {
 
-    private final UserRepository userRepository;
-    private final ReviewRepository reviewRepository;
+    private final ReviewModuleService reviewModuleService;
+    private final UserModuleService userModuleService;
+    private final ArticleModuleService articleModuleService;
+    private final OrderModuleService orderModuleService;
 
     // 리뷰 생성
-    @Transactional
-    public ReviewResponseDto createReview(ReviewRequestDto requestDto) {
-        User user = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(()
-            -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        Review review = Review.builder()
-            .content(requestDto.getContent())
-            .point(Integer.parseInt(requestDto.getPoint()))
-            .user(user)
-            .status(ReviewStatus.UPDATE)
-            .build();
+    public ReviewResponseDto createReview(
+        String articleApiId, String orderApiId, String username, ReviewRequestDto requestDto
+        ) {
+        User user = userModuleService.getByUsername(username);
+        Article article = articleModuleService.getByApiId(articleApiId);
+        Order order = orderModuleService.getByApiId(orderApiId);
 
-        return ReviewResponseDto.fromEntity(reviewRepository.save(review));
+        return reviewModuleService.createReview(article, order, user, requestDto);
     }
 
-    // 리뷰 단일 조회
-    public ReviewResponseDto getReview(String reviewApiId) {
-        Review review = reviewRepository.findByApiId(reviewApiId).orElseThrow(()->
-            new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
+    // 리뷰 단일 조회 (모든 유저 접근 가능)
+    public ReviewResponseDto findReview(String reviewApiId) {
 
-        return ReviewResponseDto.fromEntity(review);
+        return reviewModuleService.getReview(reviewApiId);
     }
 
-    // TODO 전체 리뷰 조회
+    // 전체 리뷰 조회 (모든 유저 접근 가능)
+    public List<ReviewResponseDto> findAllReview(String articleApiId) {
+        Article article = articleModuleService.getByApiId(articleApiId);
 
-    // TODO 리뷰 수정
+        return reviewModuleService.findAllReview(article);
+    }
+
+    // 리뷰 수정
+    public ReviewResponseDto updateReview(String reviewApiId, String username, ReviewUpdateDto reviewUpdateDto) {
+        User user = userModuleService.getByUsername(username);
+
+        return reviewModuleService.updateReview(user, reviewApiId, reviewUpdateDto);
+    }
 
     // 리뷰 삭제
-    public void deleteReview(String reviewApiId) {
-        Review review = reviewRepository.findByApiId(reviewApiId).orElseThrow(()
-            -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
+    public void deleteReview(String reviewApiId, String username) {
+        User user = userModuleService.getByUsername(username);
 
-        reviewRepository.delete(review);
+        reviewModuleService.deleteReview(user, reviewApiId);
     }
 }

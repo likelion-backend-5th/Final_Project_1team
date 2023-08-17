@@ -5,8 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ReviewRequestDto {
-    private String username;
+public class ReviewUpdateDto {
+
     private String content;
     private Integer point;
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
 import mutsa.common.domain.models.order.Order;
+import mutsa.common.domain.models.review.Review;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
@@ -41,6 +42,9 @@ public class Article extends BaseEntity implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "article")
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "article")
+    private List<Review> reviews;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
