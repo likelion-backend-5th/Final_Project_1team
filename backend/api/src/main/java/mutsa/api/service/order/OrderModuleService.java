@@ -8,14 +8,15 @@ import mutsa.api.service.user.UserService;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.user.User;
+import mutsa.common.exception.BusinessException;
 import mutsa.common.repository.order.OrderRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static mutsa.common.exception.ErrorCode.ORDER_NOT_FOUND;
 
 @Service
 @Transactional(readOnly = true)
@@ -62,11 +63,11 @@ public class OrderModuleService {
 
     public Order getByApiId(String apiId) {
         return orderRepository.findByApiId(apiId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "없는 order ApiId"));
+                .orElseThrow(() -> new BusinessException(ORDER_NOT_FOUND));
     }
 
     public Order getById(Long id) {
         return orderRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "없는 order ID"));
+                .orElseThrow(() -> new BusinessException(ORDER_NOT_FOUND));
     }
 }

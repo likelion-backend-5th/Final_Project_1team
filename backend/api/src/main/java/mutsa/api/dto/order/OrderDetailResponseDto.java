@@ -12,15 +12,15 @@ import mutsa.common.domain.models.order.OrderStatus;
 public class OrderDetailResponseDto {
     private String apiId;
     private OrderStatus orderStatus;
-    private Long articleId;// UUID로 수정
-    private Long userId; //유저 이름이나 UUID로 수정
+    private String articleId;
+    private String username;
 
     public static OrderDetailResponseDto fromEntity(Order order) {
         OrderDetailResponseDto orderDetailResponseDto = new OrderDetailResponseDto();
         orderDetailResponseDto.apiId = order.getApiId();
         orderDetailResponseDto.orderStatus = order.getOrderStatus();
-        orderDetailResponseDto.userId = orderDetailResponseDto.getUserId();
-        orderDetailResponseDto.articleId = orderDetailResponseDto.getArticleId();
+        orderDetailResponseDto.articleId = orderDetailResponseDto.getApiId();
+        orderDetailResponseDto.username = order.getUser().getUsername();
 
         return orderDetailResponseDto;
     }
