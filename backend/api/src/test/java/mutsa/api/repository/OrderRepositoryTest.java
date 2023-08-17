@@ -1,8 +1,8 @@
 package mutsa.api.repository;
 
 import jakarta.transaction.Transactional;
-import mutsa.api.service.article.ArticleService;
-import mutsa.api.service.user.UserService;
+import mutsa.api.service.article.ArticleModuleService;
+import mutsa.api.service.user.UserModuleService;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -30,23 +30,23 @@ public class OrderRepositoryTest {
     private OrderRepository orderRepository;
 
     @Mock
-    private UserService userService;
+    private UserModuleService userService;
     @Mock
-    private ArticleService articleService;
+    private ArticleModuleService articleService;
 
-    User user;
-    Article article;
+    private User user;
+    private Article article;
 
     @BeforeEach
     public void init() {
-        User user = User.of("user", "password", "email", "oauthName", null);
+        user = User.of("user", "password", "email", "oauthName", null);
         when(userService.getByApiId(any())).thenReturn(user);
-        Article article = Article.builder()
+
+        article = Article.builder()
                 .apiId("test")
                 .title("title")
                 .description("description")
                 .build();
-
         when(articleService.getByApiId(any())).thenReturn(article);
     }
 

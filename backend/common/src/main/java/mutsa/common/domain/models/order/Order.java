@@ -5,8 +5,8 @@ import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import mutsa.common.exception.BusinessException;
+import mutsa.common.exception.ErrorCode;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -43,22 +43,44 @@ public class Order extends BaseEntity implements Serializable {
     private User user;
 
     public static Order of(Article article, User user) {
-        return Order.builder()
-                .article(article)
-                .user(user)
+        Order order = Order.builder()
                 .orderStatus(OrderStatus.PROGRESS) // 생성시에 진행중 표기
                 .build();
+
+        //연관관계 매핑
+        order.setArticle(article);
+        order.setUser(user);
+
+        return order;
     }
 
+    //연관관계 편의 메서드
+    private void setUser(User user) {
+        if (this.user != null) {
+            user.getOrders().remove(this);
+        }
+        user.getOrders().add(this);
+        this.user = user;
+    }
+
+    private void setArticle(Article article) {
+        if (this.article != null) {
+            article.getOrders().remove(this);
+        }
+        article.getOrders().add(this);
+        this.article = article;
+    }
+
+    //유효성 검증 메서드
     public void validArticle(Article article) {
         if (this.article != article) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "url path가 부정확합니다.");
+            throw new BusinessException(ErrorCode.INVALID_ARTICLE_ORDER);
         }
     }
 
     public void validUser(User user) {
         if (this.user != user && this.article.getUser() != user) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "권한이 부족한 유저가 확인하려 합니다.");
+            throw new BusinessException(ErrorCode.ORDER_PERMISSION_DENIED);
         }
     }
 }

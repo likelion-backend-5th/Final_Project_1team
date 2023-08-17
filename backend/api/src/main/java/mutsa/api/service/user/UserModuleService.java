@@ -24,4 +24,9 @@ public class UserModuleService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
     }
+
+    public User getByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(USER_NOT_FOUND));
+    }
 }

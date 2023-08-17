@@ -20,15 +20,20 @@ public enum ErrorCode {
 
     //article
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "ARTICLE_NOT_FOUND", "해당 게시글을 찾을 수 없습니다."),
+    INVALID_ARTICLE_ORDER(HttpStatus.BAD_REQUEST.value(), "", "url path가 부정확합니다."),
+    ARTICLE_PERMISSION_DENIED(HttpStatus.FORBIDDEN.value(), "", "판매자의 권한이 아닙니다."),
 
     //order
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "ORDER_NOT_FOUND", "해당 주문을 찾을 수 없습니다."),
+    ORDER_PERMISSION_DENIED(HttpStatus.FORBIDDEN.value(), "", "판매자의 권한이 아닙니다."),
 
     // report
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "REPORT_NOT_FOUND", "해당 신고를 찾을 수 없습니다."),
 
     // review,
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "REVIEW_NOT_FOUND", "해당 리뷰를 찾을 수 없습니다.")
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "REVIEW_NOT_FOUND", "해당 리뷰를 찾을 수 없습니다."),
+
+    REVIEW_NOT_ALLOW(HttpStatus.BAD_REQUEST.value(), "REVIEW_NOT_ALLOW", "아직 리뷰를 작성할 수 없습니다.")
 
     ;
 
