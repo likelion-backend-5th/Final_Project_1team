@@ -18,29 +18,29 @@ public class OrderService {
     private final ArticleModuleService articleModuleService;
     private final OrderModuleService orderModuleService;
 
-    public OrderDetailResponseDto findDetailOrder(String articleApiId, String orderApiId, String currentUserApiId) {
-        User user = userService.getByUsername(currentUserApiId);
+    public OrderDetailResponseDto findDetailOrder(String articleApiId, String orderApiId, String currentUsername) {
+        User user = userService.getByUsername(currentUsername);
         Article article = articleModuleService.getByApiId(articleApiId);
 
         return orderModuleService.findDetailOrder(article, user, orderApiId);
     }
 
-    public List<OrderResponseDto> findAllOrder(String articleApiId, String currentUserApiId) {
-        User user = userService.getByUsername(currentUserApiId);
+    public List<OrderResponseDto> findAllOrder(String articleApiId, String currentUsername) {
+        User user = userService.getByUsername(currentUsername);
         Article article = articleModuleService.getByApiId(articleApiId);
 
         return orderModuleService.findAllOrder(article, user);
     }
 
-    public OrderDetailResponseDto saveOrder(String articleApiId, String currentUserApiId) {
-        User user = userService.getByUsername(currentUserApiId);
+    public OrderDetailResponseDto saveOrder(String articleApiId, String currentUsername) {
+        User user = userService.getByUsername(currentUsername);
         Article article = articleModuleService.getByApiId(articleApiId);
 
         return orderModuleService.saveOrder(article, user);
     }
 
-    public void deleteOrder(String articleApiId, String orderApiId, String currentUserApiId) {
-        User user = userService.getByUsername(currentUserApiId);
+    public void deleteOrder(String articleApiId, String orderApiId, String currentUsername) {
+        User user = userService.getByUsername(currentUsername);
         Article article = articleModuleService.getByApiId(articleApiId);
 
         orderModuleService.deleteOrder(article, user, orderApiId);

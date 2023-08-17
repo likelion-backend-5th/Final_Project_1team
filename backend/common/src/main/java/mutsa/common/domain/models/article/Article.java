@@ -7,8 +7,6 @@ import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,6 +47,7 @@ public class Article extends BaseEntity implements Serializable {
     private User user;
 
     public void validUser(User user) {
-        throw new BusinessException(ErrorCode.ARTICLE_PERMISSION_DENIED);
+        if (this.user != user)
+            throw new BusinessException(ErrorCode.ARTICLE_PERMISSION_DENIED);
     }
 }
