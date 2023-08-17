@@ -27,3 +27,15 @@ spring:
         format_sql: true
         use_sql_comments: true
         dialect: org.hibernate.dialect.MySQL8Dialect
+
+  data:
+    web:
+      pageable:
+        default-page-size: 25
+        max-page-size: 1000
+        one-indexed-parameters: false
+        page-parameter: page
+        size-parameter: limit
+    redis:
+      host: localhost
+      port: 6379

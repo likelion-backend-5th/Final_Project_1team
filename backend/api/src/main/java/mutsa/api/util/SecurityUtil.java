@@ -1,20 +1,20 @@
 package mutsa.api.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import mutsa.common.exception.BusinessException;
+import mutsa.common.exception.ErrorCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 public class SecurityUtil {
-    public static String getCurrentUserApiId() {
+    public static String getCurrentUsername() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) {
             log.debug("context에 정보가 없습니다.");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "context에 정보가 없습니다.");
+            throw new BusinessException(ErrorCode.SECURITY_CONTEXT_ERROR);
         }
 
         String username = null;

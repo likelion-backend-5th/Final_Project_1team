@@ -10,7 +10,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-@Table(schema = "authority")
+@Table(name = "authority")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Authority extends BaseTimeEntity implements Serializable {

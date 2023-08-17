@@ -12,11 +12,12 @@ import mutsa.api.dto.article.ArticleRequestDto;
 import mutsa.api.dto.article.ArticleResponseDto;
 import mutsa.api.dto.article.ArticleUpdateDto;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.exception.BusinessException;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.user.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
+
+import static mutsa.common.exception.ErrorCode.ARTICLE_NOT_FOUND;
 
 @Component
 @RequiredArgsConstructor
@@ -56,11 +57,11 @@ public class ArticleModuleService {
 
     public Article getByApiId(String apiId) {
         return articleRepository.findByApiId(apiId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "없는 order ApiId"));
+                .orElseThrow(() -> new BusinessException(ARTICLE_NOT_FOUND));
     }
 
     public Article getById(Long id) {
         return articleRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "없는 order ID"));
+                .orElseThrow(() -> new BusinessException(ARTICLE_NOT_FOUND));
     }
 }
