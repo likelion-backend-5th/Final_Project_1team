@@ -1,6 +1,7 @@
 package mutsa.common.domain.models.review;
 
 import jakarta.persistence.*;
+import java.util.Objects;
 import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
 
@@ -8,6 +9,8 @@ import java.io.Serializable;
 import java.util.UUID;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
+import mutsa.common.exception.BusinessException;
+import mutsa.common.exception.ErrorCode;
 
 @Entity
 @Table(name = "review")
@@ -80,6 +83,13 @@ public class Review extends BaseEntity implements Serializable {
 
     public void setPoint(Integer point) {
         this.point = point;
+    }
+
+    // 요청을 보낸 유저와 후기를 등록한 유저가 동일한지 검증
+    public void validUser(User user) {
+        if (!Objects.equals(this.user.getId(), user.getId())) {
+            throw new BusinessException(ErrorCode.REVIEW_PERMISSION_DENIED);
+        }
     }
 
     @Override

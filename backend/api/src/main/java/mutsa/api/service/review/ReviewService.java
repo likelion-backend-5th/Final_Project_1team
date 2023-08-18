@@ -2,6 +2,7 @@ package mutsa.api.service.review;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import mutsa.api.dto.review.ReviewDeleteDto;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
 import mutsa.api.dto.review.ReviewUpdateDto;
@@ -54,9 +55,9 @@ public class ReviewService {
     }
 
     // 리뷰 삭제
-    public void deleteReview(String reviewApiId, String username) {
+    public ReviewDeleteDto deleteReview(String reviewApiId, String username) {
         User user = userModuleService.getByUsername(username);
 
-        reviewModuleService.deleteReview(user, reviewApiId);
+        return reviewModuleService.deleteReview(user, reviewApiId);
     }
 }
