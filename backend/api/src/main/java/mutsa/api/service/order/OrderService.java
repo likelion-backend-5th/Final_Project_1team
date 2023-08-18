@@ -7,9 +7,8 @@ import mutsa.api.service.article.ArticleModuleService;
 import mutsa.api.service.user.UserModuleService;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -25,11 +24,11 @@ public class OrderService {
         return orderModuleService.findDetailOrder(article, user, orderApiId);
     }
 
-    public List<OrderResponseDto> findAllOrder(String articleApiId, String currentUsername) {
+    public Page<OrderResponseDto> findAllOrder(String articleApiId, int page, int limit, String currentUsername) {
         User user = userService.getByUsername(currentUsername);
         Article article = articleModuleService.getByApiId(articleApiId);
 
-        return orderModuleService.findAllOrder(article, user);
+        return orderModuleService.findAllOrder(article, user, page, limit);
     }
 
     public OrderDetailResponseDto saveOrder(String articleApiId, String currentUsername) {

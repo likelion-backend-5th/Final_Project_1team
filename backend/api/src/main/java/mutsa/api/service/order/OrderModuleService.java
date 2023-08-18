@@ -8,11 +8,12 @@ import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.repository.order.OrderRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static mutsa.common.exception.ErrorCode.ORDER_NOT_FOUND;
 
@@ -30,9 +31,11 @@ public class OrderModuleService {
         return OrderDetailResponseDto.fromEntity(order);
     }
 
-    public List<OrderResponseDto> findAllOrder(Article article, User user) {
+    public Page<OrderResponseDto> findAllOrder(Article article, User user, int page, int limit) {
         article.validUser(user); //판매자만 확인할 수 있는지
-        return article.getOrders().stream().map(OrderResponseDto::fromEntity).collect(Collectors.toList());
+
+        Pageable pageable = PageRequest.of(page, limit, Sort.by("id"));
+        return orderRepository.findByArticle(article, pageable).map(OrderResponseDto::fromEntity);
     }
 
     @Transactional
