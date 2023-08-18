@@ -6,15 +6,20 @@
 
 package mutsa.api.dto.article;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
-public class ArticleUpdateDto {
+public class ArticleUpdateRequestDto {
+    @NotBlank
     private String title;
+    @NotBlank
     private String description;
+    @NotBlank
     private String username;
+    @NotBlank
     private String apiId;
 }
