@@ -95,11 +95,11 @@ jar {
     enabled = false
 }
 //
-//hibernate {
-//    enhancement {
-//        enableAssociationManagement = true
-//    }
-//}
+hibernate {
+    enhancement {
+        enableAssociationManagement = true
+    }
+}
 
 ext {
     snippetsDir = file('build/generated-snippets')
@@ -120,7 +120,7 @@ asciidoctor.doFirst {
 task copyDocument(type: Copy) {
     dependsOn asciidoctor
     from file("build/docs/asciidoc")
-    into file("src/main/resources/static/docs")
+    into file("/docs")
 }
 
 // build 의 의존작업 명시

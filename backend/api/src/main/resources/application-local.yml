@@ -9,7 +9,17 @@ spring:
     username: root
     password: qwer1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  data:
+    web:
+      pageable:
+        default-page-size: 25
+        max-page-size: 1000
+        one-indexed-parameters: false
+        page-parameter: page
+        size-parameter: limit
+    redis:
+      host: localhost
+      port: 6379
   jpa:
     database: mysql
     show-sql: true
@@ -38,19 +48,9 @@ spring:
             scope:
               - email
               - profile
+
 # jwt token
 jwt:
   secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
   accessTokenExpire: 8165431
   refreshTokenExpire: 564657
-  data:
-    web:
-      pageable:
-        default-page-size: 25
-        max-page-size: 1000
-        one-indexed-parameters: false
-        page-parameter: page
-        size-parameter: limit
-    redis:
-      host: localhost
-      port: 6379
