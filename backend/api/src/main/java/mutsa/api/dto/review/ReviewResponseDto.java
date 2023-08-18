@@ -9,12 +9,14 @@ import mutsa.common.domain.models.review.Review;
 @Builder
 @AllArgsConstructor
 public class ReviewResponseDto {
+    private String apiId;
     private String content;
     private Integer point;
     private String username;
 
     public static ReviewResponseDto fromEntity(Review review) {
         return ReviewResponseDto.builder()
+            .apiId(review.getApiId())
             .content(review.getContent())
             .point(review.getPoint())
             .username(review.getUser().getUsername())

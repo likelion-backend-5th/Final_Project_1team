@@ -44,8 +44,9 @@ public class Article extends BaseEntity implements Serializable {
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "article")
-    private List<Review> reviews;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "article")
+    @Builder.Default
+    private List<Review> reviews = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

@@ -10,7 +10,6 @@ import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
 import mutsa.common.domain.models.review.Review;
-import mutsa.common.domain.models.review.ReviewStatus;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
@@ -30,15 +29,9 @@ public class ReviewModuleService {
     public ReviewResponseDto createReview(Article article, Order order, User user, ReviewRequestDto requestDto) {
         // TODO 유저 검증
         if (order.getOrderStatus().equals(OrderStatus.END)) {
-            Review review = Review.builder()
-                .content(requestDto.getContent())
-                .point(requestDto.getPoint())
-                .user(user)
-                .article(article)
-                .status(ReviewStatus.UPDATE)
-                .build();
-
-            return ReviewResponseDto.fromEntity(reviewRepository.save(review));
+            return ReviewResponseDto.fromEntity(reviewRepository.save(
+                Review.of(user, article, requestDto.getContent(), requestDto.getPoint()))
+            );
         }
 
         throw new BusinessException(ErrorCode.REVIEW_NOT_ALLOW);

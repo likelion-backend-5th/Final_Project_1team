@@ -85,4 +85,8 @@ public class Order extends BaseEntity implements Serializable {
         }
     }
 
+    // 리뷰 테스트 시 사용하기 위한 메소드
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }
