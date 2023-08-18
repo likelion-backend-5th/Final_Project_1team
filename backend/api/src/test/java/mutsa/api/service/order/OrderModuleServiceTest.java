@@ -19,9 +19,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,11 +96,11 @@ class OrderModuleServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when
-        List<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, seller);
+        Page<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, seller, 0, 20);
 
         //then
         log.info(allOrder.toString());
-        assertThat(allOrder.size()).isEqualTo(2);
+        assertThat(allOrder.getTotalElements()).isEqualTo(2);
     }
 
     @Test
@@ -110,11 +110,11 @@ class OrderModuleServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when, then
-        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, consumer))
+        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, consumer, 0, 20))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.ARTICLE_PERMISSION_DENIED.getMessage());
 
-        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, other))
+        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, other, 0, 20))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.ARTICLE_PERMISSION_DENIED.getMessage());
     }

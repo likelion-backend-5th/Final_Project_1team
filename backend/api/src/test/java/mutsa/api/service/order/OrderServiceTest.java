@@ -14,9 +14,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +35,7 @@ class OrderServiceTest {
     @Autowired
     private ArticleRepository articleRepository;
 
-    private User seller,consumer;
+    private User seller, consumer;
     private Article article;
 
     @BeforeEach
@@ -75,11 +75,11 @@ class OrderServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when
-        List<OrderResponseDto> allOrder = orderService.findAllOrder(article.getApiId(), seller.getUsername());
+        Page<OrderResponseDto> allOrder = orderService.findAllOrder(article.getApiId(), 0, 20, seller.getUsername());
 
         //then
         log.info(allOrder.toString());
-        assertThat(allOrder.size()).isEqualTo(2);
+        assertThat(allOrder.getTotalElements()).isEqualTo(2);
 
     }
 
