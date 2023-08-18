@@ -3,6 +3,7 @@ package mutsa.api.service.review;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import mutsa.api.dto.review.ReviewDeleteDto;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
 import mutsa.api.dto.review.ReviewUpdateDto;
@@ -64,11 +65,16 @@ public class ReviewModuleService {
 
     // 리뷰 삭제
     @Transactional
-    public void deleteReview(User user, String reviewApiId) {
+    public ReviewDeleteDto deleteReview(User user, String reviewApiId) {
         // TODO 유저 검증
         Review review = getByApiId(reviewApiId);
 
         reviewRepository.delete(review);
+
+        ReviewDeleteDto dto = new ReviewDeleteDto();
+        dto.setMessage("후기를 삭제했습니다.");
+
+        return dto;
     }
 
     public Review getByApiId(String reviewApiId) {
