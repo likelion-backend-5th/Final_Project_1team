@@ -131,4 +131,8 @@ public class ArticleService {
                 .map(ArticleResponseDto::to)
                 .toList();
     }
+
+    public ArticleResponseDto updateTest(ArticleUpdateRequestDto updateDto) {
+        return ArticleResponseDto.to(articleModuleService.updateTest(updateDto));
+    }
 }

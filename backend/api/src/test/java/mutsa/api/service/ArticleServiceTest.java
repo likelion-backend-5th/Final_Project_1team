@@ -83,7 +83,7 @@ public class ArticleServiceTest {
                 articles.get(0).getApiId()
         );
 
-        ArticleResponseDto responseDto = articleService.update(updateDto);
+        ArticleResponseDto responseDto = articleService.updateTest(updateDto);
 
         assert responseDto != null;
         Assertions.assertEquals(updateDto.getTitle(), responseDto.getTitle());

@@ -53,6 +53,7 @@ public class ArticleControllerTest {
                     passwordEncoder.encode("test"),
                     "articlecontrollertest@gmail.com",
                     null,
+                    null,
                     null
             );
 

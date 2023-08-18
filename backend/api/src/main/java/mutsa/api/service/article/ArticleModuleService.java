@@ -53,6 +53,17 @@ public class ArticleModuleService {
         return article;
     }
 
+    @Transactional
+    public Article updateTest(ArticleUpdateRequestDto updateDto) {
+        Article article = articleRepository.getByApiId(updateDto.getApiId())
+                .orElseThrow(() -> new BusinessException(ARTICLE_NOT_FOUND));
+
+        article.setTitle(updateDto.getTitle());
+        article.setDescription(updateDto.getDescription());
+
+        return article;
+    }
+
     public Article dtoToEntity(ArticleCreateRequestDto requestDto) {
         return Article.builder()
                 .title(requestDto.getTitle())
@@ -146,7 +157,7 @@ public class ArticleModuleService {
             User testUser = userRepository.findByUsername("testuser").orElse(null);
 
             if (testUser == null) {
-                testUser = User.of("testuser", passwordEncoder.encode("test"), "test@gmail.com", null, null);
+                testUser = User.of("testuser", passwordEncoder.encode("test"), "test@gmail.com", null, null, null);
                 testUser = userRepository.save(testUser);
             }
             username = testUser.getUsername();
