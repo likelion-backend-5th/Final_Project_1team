@@ -1,5 +1,7 @@
 package mutsa.common.domain.models.user;
 
+import static jakarta.persistence.FetchType.*;
+
 import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseTimeEntity;
@@ -11,6 +13,7 @@ import mutsa.common.domain.models.user.embedded.Address;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
+import mutsa.common.domain.models.user.embedded.OAuth2Type;
 
 @Entity
 @Getter
@@ -41,8 +44,29 @@ public class User extends BaseTimeEntity implements Serializable {
     @Embedded
     private Address address;
 
-//    @OneToOne(mappedBy = "user", fetch = LAZY)
-//    private Member member;
+    @Column(nullable = false)
+    private String imageUrl;
+
+    /* OAuth2 */
+    @Column(nullable = false, length = 30)
+    private String oauth2Username;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private final OAuth2Type oAuth2Type = OAuth2Type.GOOGLE;
+
+    @Builder.Default
+    @Column(nullable = false, length = 2)
+    private Boolean isOAuth2 = true;
+
+    @Builder.Default
+    @Column(nullable = false, length = 2)
+    private Boolean isAvailable = true;
+
+    /* mapping table  */
+    @OneToOne(mappedBy = "user", fetch = LAZY)
+    private Member member;
 
     @Singular
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
@@ -54,7 +78,7 @@ public class User extends BaseTimeEntity implements Serializable {
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = LAZY)
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
 
@@ -70,19 +94,25 @@ public class User extends BaseTimeEntity implements Serializable {
                 .contains(roleStatus);
     }
 
+    public void addMember(Member member) {
+        if (member != null) {
+            this.member = member;
+            member.addUser(this);
+        }
+    }
 
-    //    Member member
     public static User of(String username, String encodedPassword, String email,
-                          String oauth2Username, String imageUrl) {
+                          String oauth2Username, String imageUrl, Member member) {
 
         User user = User.builder()
                 .username(username)
                 .password(encodedPassword)
                 .email(email)
-//                .oauth2Username(oauth2Username)
-//                .imageUrl(imageUrl)
+                .oauth2Username(oauth2Username)
+                .imageUrl(imageUrl)
                 .build();
-//        user.setMember(member);
+        user.addMember(member);
         return user;
     }
+
 }

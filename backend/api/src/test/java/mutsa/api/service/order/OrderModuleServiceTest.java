@@ -45,9 +45,9 @@ class OrderModuleServiceTest {
 
     @BeforeEach
     public void init() {
-        seller = User.of("user1", "password", "email1@", "oauthName1", null);
-        consumer = User.of("user2", "password", "email2@", "oauthName2", null);
-        other = User.of("user3", "password", "email3@", "oauthName3", null);
+        seller = User.of("user1", "password", "email1@", "oauthName1", null, null);
+        consumer = User.of("user2", "password", "email2@", "oauthName2", null, null);
+        other = User.of("user3", "password", "email3@", "oauthName3", null, null);
         seller = userRepository.save(seller);
         consumer = userRepository.save(consumer);
         other = userRepository.save(other);

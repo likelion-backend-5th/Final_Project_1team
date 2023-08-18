@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.config.jwt.JwtConfig;
 import mutsa.api.util.JwtUtil;
-import mutsa.api.config.security.CustomUserDetails;
+import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.api.dto.LoginResponseDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -36,7 +36,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         //get user details
-        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+        CustomPrincipalDetails user = (CustomPrincipalDetails) authentication.getPrincipal();
 
         boolean createFlag = (boolean) (user.getAttributes().get("create_flag"));
 

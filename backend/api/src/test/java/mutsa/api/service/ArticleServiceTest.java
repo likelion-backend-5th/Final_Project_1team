@@ -38,7 +38,7 @@ public class ArticleServiceTest {
 
     @BeforeEach
     public void init() {
-        user = User.of("user1", "1234", "user1@gmail.com", null, null);
+        user = User.of("user1", "1234", "user1@gmail.com", null, null, null);
 
         user = userRepository.save(user);
 

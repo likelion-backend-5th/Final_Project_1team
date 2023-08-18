@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/team1_project
     username: root
-    password: 1234
+    password: qwer1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -27,7 +27,22 @@ spring:
         format_sql: true
         use_sql_comments: true
         dialect: org.hibernate.dialect.MySQL8Dialect
-
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 446534610656-14r63n2kho9aggjkp8ebi1rgods392uj.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:8080/api/login/oauth2/callback/**
+            scope:
+              - email
+              - profile
+# jwt token
+jwt:
+  secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+  accessTokenExpire: 8165431
+  refreshTokenExpire: 564657
   data:
     web:
       pageable:

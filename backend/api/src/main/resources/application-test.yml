@@ -28,3 +28,10 @@ spring:
     redis:
       host: localhost
       port: 6379
+      
+
+# jwt token
+jwt:
+  secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+  accessTokenExpire: 8165431
+  refreshTokenExpire: 564657

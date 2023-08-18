@@ -1,7 +1,7 @@
 package mutsa.api.service.auth;
 
 import lombok.RequiredArgsConstructor;
-import mutsa.api.config.security.CustomUserDetails;
+import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.repository.user.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +21,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new UsernameNotFoundException("not found username=" + username));
 
-        return CustomUserDetails.of(user, null);
+        return CustomPrincipalDetails.of(user, null);
     }
 }

@@ -4,22 +4,21 @@ import lombok.*;
 import mutsa.common.domain.models.user.Role;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.domain.models.user.UserRole;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class CustomUserDetails implements UserDetails, Serializable {
+public class CustomPrincipalDetails implements UserDetails, OAuth2User, Serializable {
     private String apiId;
     private String username;
-
     private String password;
 
     @Builder.Default
@@ -48,10 +47,15 @@ public class CustomUserDetails implements UserDetails, Serializable {
         return this.username;
     }
 
-//    @Override
-//    public Map<String, Object> getAttributes() {
-//        return this.attributes;
-//    }
+    @Override
+    public String getName() {
+        return this.username;
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return this.attributes;
+    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -74,12 +78,17 @@ public class CustomUserDetails implements UserDetails, Serializable {
     }
 
     @Override
+    public <A> A getAttribute(String name) {
+        return OAuth2User.super.getAttribute(name);
+    }
+
+    @Override
     public Set<SimpleGrantedAuthority> getAuthorities() {
         return authorities;
     }
 
-    public static CustomUserDetails of(User user, Map<String, Object> attributes) {
-        return CustomUserDetails.builder()
+    public static CustomPrincipalDetails of(User user, Map<String, Object> attributes) {
+        return CustomPrincipalDetails.builder()
                 .apiId(user.getApiId())
                 .username(user.getUsername())
                 .password(user.getPassword())
@@ -94,4 +103,5 @@ public class CustomUserDetails implements UserDetails, Serializable {
                 )
                 .build();
     }
+
 }

@@ -37,10 +37,10 @@ class ReportModuleServiceTest {
 
     @BeforeEach
     public void init() {
-        reporter = User.of("reporter", "password", "email_reporter", "oauthName", null);
+        reporter = User.of("reporter", "password", "email_reporter", "oauthName", null, null);
         reporter = userRepository.save(reporter);
 
-        reportedUser = User.of("reported", "password", "email_reported", "oauthName", null);
+        reportedUser = User.of("reported", "password", "email_reported", "oauthName", null, null);
         reportedUser = userRepository.save(reportedUser);
     }
 
