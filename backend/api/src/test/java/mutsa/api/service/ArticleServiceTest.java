@@ -19,12 +19,14 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("test")
 @Transactional
 public class ArticleServiceTest {
     @Autowired
@@ -44,8 +46,8 @@ public class ArticleServiceTest {
 
         for (int i = 0; i < 10; i++) {
             Article article = Article.builder()
-                    .title("article-" + (i+1))
-                    .description("desc-" + (i+1))
+                    .title("article-" + (i + 1))
+                    .description("desc-" + (i + 1))
                     .user(user)
                     .build();
             articles.add(article);
