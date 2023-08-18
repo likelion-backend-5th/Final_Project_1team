@@ -20,12 +20,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("test")
 @Transactional
 public class ArticleRepositoryTest {
     @Autowired
@@ -44,8 +46,8 @@ public class ArticleRepositoryTest {
 
         for (int i = 0; i < 10; i++) {
             Article article = Article.builder()
-                    .title("article-" + (i+1))
-                    .description("desc-" + (i+1))
+                    .title("article-" + (i + 1))
+                    .description("desc-" + (i + 1))
                     .user(user)
                     .build();
             articles.add(article);
