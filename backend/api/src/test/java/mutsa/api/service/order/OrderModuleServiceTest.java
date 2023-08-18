@@ -1,17 +1,21 @@
 package mutsa.api.service.order;
 
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.api.ApiApplication;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.user.User;
+import mutsa.common.exception.BusinessException;
+import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
 import mutsa.common.repository.user.UserRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +26,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(classes = ApiApplication.class)
 @ActiveProfiles("test")
 @Transactional
 @Slf4j
@@ -35,21 +39,23 @@ class OrderModuleServiceTest {
     private UserRepository userRepository;
     @Autowired
     private ArticleRepository articleRepository;
-    @Autowired
-    private EntityManager em;
 
-    private User user;
+    private User seller, consumer, other;
     private Article article;
 
     @BeforeEach
     public void init() {
-        user = User.of("user", "password", "email", "oauthName", null, null);
-        user = userRepository.save(user);
+        seller = User.of("user1", "password", "email1@", "oauthName1", null, null);
+        consumer = User.of("user2", "password", "email2@", "oauthName2", null, null);
+        other = User.of("user3", "password", "email3@", "oauthName3", null, null);
+        seller = userRepository.save(seller);
+        consumer = userRepository.save(consumer);
+        other = userRepository.save(other);
 
         article = Article.builder()
                 .title("Pre Article 1")
                 .description("Pre Article 1 desc")
-                .user(user)
+                .user(seller)
                 .build();
 
         article = articleRepository.save(article);
@@ -58,11 +64,11 @@ class OrderModuleServiceTest {
     @Test
     void findDetailOrder() {
         //given
-        Order order = Order.of(article, user);
+        Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
 
         //when
-        OrderDetailResponseDto detailOrder = orderModuleService.findDetailOrder(article, user, savedOrder.getApiId());
+        OrderDetailResponseDto detailOrder = orderModuleService.findDetailOrder(article, seller, savedOrder.getApiId());
 
         //then
         assertThat(detailOrder.getArticleApiId()).isEqualTo(savedOrder.getArticle().getApiId());
@@ -70,18 +76,47 @@ class OrderModuleServiceTest {
     }
 
     @Test
+    @DisplayName("판매자나 소비자가 아닌사람이 확인하려 하는 경우")
+    void findDetailOrderOtherPeople() {
+        //given
+        Order order = Order.of(article, consumer);
+        Order savedOrder = orderRepository.save(order);
+
+        //when, then
+        Assertions.assertThatThrownBy(() -> orderModuleService.findDetailOrder(article, other, savedOrder.getApiId()))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.ORDER_PERMISSION_DENIED.getMessage());
+    }
+
+
+    @Test
     void findAllOrder() {
         //given
-        Order savedOrder1 = orderRepository.save(Order.of(article, user));
-        Order savedOrder2 = orderRepository.save(Order.of(article, user));
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when
-        List<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, user);
+        List<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, seller);
 
         //then
         log.info(allOrder.toString());
         assertThat(allOrder.size()).isEqualTo(2);
+    }
 
+    @Test
+    void findAllOrderNotSeller() {
+        //given
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
+
+        //when, then
+        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, consumer))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.ARTICLE_PERMISSION_DENIED.getMessage());
+
+        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, other))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.ARTICLE_PERMISSION_DENIED.getMessage());
     }
 
     @Test
@@ -89,20 +124,20 @@ class OrderModuleServiceTest {
         //given
 
         //when
-        OrderDetailResponseDto orderDetailResponseDto = orderModuleService.saveOrder(article, user);
+        OrderDetailResponseDto orderDetailResponseDto = orderModuleService.saveOrder(article, consumer);
 
         //then
-        assertThat(orderDetailResponseDto.getUsername()).isEqualTo(user.getUsername());
+        assertThat(orderDetailResponseDto.getUsername()).isEqualTo(consumer.getUsername());
     }
 
     @Test
     void deleteOrder() {
         //given
-        Order order = Order.of(article, user);
+        Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
 
         //when
-        orderModuleService.deleteOrder(article, user, savedOrder.getApiId());
+        orderModuleService.deleteOrder(article, consumer, savedOrder.getApiId());
 
         //then
         Optional<Order> byApiId = orderRepository.findByApiId(article.getApiId());
@@ -112,7 +147,7 @@ class OrderModuleServiceTest {
     @Test
     void getByApiId() {
         //given
-        Order order = Order.of(article, user);
+        Order order = Order.of(article, consumer);
         order = orderRepository.save(order);
 
         //when
@@ -125,7 +160,7 @@ class OrderModuleServiceTest {
     @Test
     void getById() {
         //given
-        Order order = Order.of(article, user);
+        Order order = Order.of(article, consumer);
         order = orderRepository.save(order);
 
         //when

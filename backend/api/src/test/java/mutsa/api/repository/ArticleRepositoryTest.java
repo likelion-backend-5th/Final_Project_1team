@@ -16,10 +16,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Transactional
 public class ArticleRepositoryTest {
     @Autowired
@@ -28,30 +34,68 @@ public class ArticleRepositoryTest {
     private ArticleRepository articleRepository;
     private final Logger log = LoggerFactory.getLogger(ArticleRepositoryTest.class);
     private User user;
+    private List<Article> articles = new ArrayList<>();
 
-    @BeforeAll
+    @BeforeEach
     public void init() {
         user = User.of("user1", "1234", "user1@gmail.com", null, null, null);
 
         user = userRepository.save(user);
+
+        for (int i = 0; i < 10; i++) {
+            Article article = Article.builder()
+                    .title("article-" + (i+1))
+                    .description("desc-" + (i+1))
+                    .user(user)
+                    .build();
+            articles.add(article);
+        }
+
+        articles = articleRepository.saveAll(articles);
     }
 
     @Test
-    public void ArticleEntityTestCase1() {
-        Article article = Article.builder()
-                .title("test Article 1")
-                .description("test description 1")
-                .user(user)
-                .build();
+    @DisplayName("게시글 읽기 테스트")
+    public void readAllByUserApiIdTest() {
+        List<Article> entities = articleRepository.findAllByUser_username(user.getUsername());
 
-        article = articleRepository.save(article);
+        assert entities != null && !entities.isEmpty();
+        Assertions.assertEquals(articles, entities);
+    }
 
-        Article find = articleRepository.findById(article.getId()).orElse(null);
+    @Test
+    @DisplayName("유저가 올린 게시글 페이지네이션 테스트")
+    public void readAllPageByUserApiIdTest() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "id");
 
-        log.info("{} {}", "article", article);
-        assert find != null;
-        log.info("{} {}", "find", find);
+        Page<Article> page = articleRepository.getPageByUsername(user.getUsername(), pageable);
 
-        Assertions.assertEquals(article, find);
+        assert page != null && !page.isEmpty();
+        Assertions.assertEquals(articles, page.getContent());
+    }
+
+    @Test
+    @DisplayName("모든 게시글 페이지네이션 테스트")
+    public void readAllPage() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "id");
+
+        Page<Article> page = articleRepository.getPage(pageable);
+
+        assert page != null && !page.isEmpty();
+        Assertions.assertEquals(articles, page.getContent());
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 테스트")
+    public void deleteArticleTest() {
+        Article entity = articles.get(0);
+
+        articleRepository.delete(entity);
+        articles.remove(0);
+
+        List<Article> entities = articleRepository.findAll();
+
+        assert entities != null && !entities.isEmpty();
+        Assertions.assertEquals(articles, entities);
     }
 }

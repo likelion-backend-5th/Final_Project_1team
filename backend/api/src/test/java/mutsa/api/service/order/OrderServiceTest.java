@@ -35,18 +35,20 @@ class OrderServiceTest {
     @Autowired
     private ArticleRepository articleRepository;
 
-    private User user;
+    private User seller,consumer;
     private Article article;
 
     @BeforeEach
     public void init() {
-        user = User.of("user", "password", "email", "oauthName", null, null);
-        user = userRepository.save(user);
-
+        seller = User.of("user1", "password", "email1@", "oauthName1", null, null);
+        consumer = User.of("user2", "password", "email2@", "oauthName2", null, null);
+        seller = userRepository.save(seller);
+        consumer = userRepository.save(consumer);
+      
         article = Article.builder()
                 .title("Pre Article 1")
                 .description("Pre Article 1 desc")
-                .user(user)
+                .user(seller)
                 .build();
 
         article = articleRepository.save(article);
@@ -55,11 +57,11 @@ class OrderServiceTest {
     @Test
     void findDetailOrder() {
         //given
-        Order order = Order.of(article, user);
+        Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
 
         //when
-        OrderDetailResponseDto detailOrder = orderService.findDetailOrder(article.getApiId(), savedOrder.getApiId(), user.getUsername());
+        OrderDetailResponseDto detailOrder = orderService.findDetailOrder(article.getApiId(), savedOrder.getApiId(), seller.getUsername());
 
         //then
         assertThat(detailOrder.getArticleApiId()).isEqualTo(savedOrder.getArticle().getApiId());
@@ -69,11 +71,11 @@ class OrderServiceTest {
     @Test
     void findAllOrder() {
         //given
-        Order savedOrder1 = orderRepository.save(Order.of(article, user));
-        Order savedOrder2 = orderRepository.save(Order.of(article, user));
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when
-        List<OrderResponseDto> allOrder = orderService.findAllOrder(article.getApiId(), user.getUsername());
+        List<OrderResponseDto> allOrder = orderService.findAllOrder(article.getApiId(), seller.getUsername());
 
         //then
         log.info(allOrder.toString());
@@ -86,20 +88,20 @@ class OrderServiceTest {
         //given
 
         //when
-        OrderDetailResponseDto orderDetailResponseDto = orderService.saveOrder(article.getApiId(), user.getUsername());
+        OrderDetailResponseDto orderDetailResponseDto = orderService.saveOrder(article.getApiId(), seller.getUsername());
 
         //then
-        assertThat(orderDetailResponseDto.getUsername()).isEqualTo(user.getUsername());
+        assertThat(orderDetailResponseDto.getUsername()).isEqualTo(seller.getUsername());
     }
 
     @Test
     void deleteOrder() {
         //given
-        Order order = Order.of(article, user);
+        Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
 
         //when
-        orderService.deleteOrder(article.getApiId(), savedOrder.getApiId(), user.getUsername());
+        orderService.deleteOrder(article.getApiId(), savedOrder.getApiId(), seller.getUsername());
 
         //then
         Optional<Order> byApiId = orderRepository.findByApiId(article.getApiId());

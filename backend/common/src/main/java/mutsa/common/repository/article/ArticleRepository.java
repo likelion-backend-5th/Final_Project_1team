@@ -8,13 +8,16 @@ package mutsa.common.repository.article;
 
 import mutsa.common.domain.models.article.Article;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface ArticleRepository extends JpaRepository<Article, Long> {
-    Article getByApiId(String apiId);
+public interface ArticleRepository extends JpaRepository<Article, Long>, ArticleRepositoryCustom {
+    Optional<Article> getByApiId(String apiId);
 
     Optional<Article> findByApiId(String apiId);
+
+    List<Article> findAllByUser_username(String userApiId);
+
+    void deleteByApiId(String apiId);
 }
