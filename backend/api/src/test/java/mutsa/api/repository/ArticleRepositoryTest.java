@@ -6,7 +6,6 @@
 
 package mutsa.api.repository;
 
-import jakarta.transaction.Transactional;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.repository.article.ArticleRepository;
@@ -20,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;

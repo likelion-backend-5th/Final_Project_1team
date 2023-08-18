@@ -6,10 +6,9 @@
 
 package mutsa.api.service;
 
-import jakarta.transaction.Transactional;
 import mutsa.api.dto.article.ArticleCreateRequestDto;
 import mutsa.api.dto.article.ArticleResponseDto;
-import mutsa.api.dto.article.ArticleUpdateDto;
+import mutsa.api.dto.article.ArticleUpdateRequestDto;
 import mutsa.api.service.article.ArticleService;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
@@ -19,6 +18,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
@@ -76,14 +76,14 @@ public class ArticleServiceTest {
     @Test
     @DisplayName("Article Service 수정 테스트")
     public void updateTest() {
-        ArticleUpdateDto updateDto = new ArticleUpdateDto(
+        ArticleUpdateRequestDto updateDto = new ArticleUpdateRequestDto(
                 "[Updated]Pre Article 1",
                 "[Updated]Pre Article 1 desc",
                 "user1",
                 articles.get(0).getApiId()
         );
 
-        ArticleResponseDto responseDto = articleService.update(updateDto);
+        ArticleResponseDto responseDto = articleService.updateTest(updateDto);
 
         assert responseDto != null;
         Assertions.assertEquals(updateDto.getTitle(), responseDto.getTitle());
