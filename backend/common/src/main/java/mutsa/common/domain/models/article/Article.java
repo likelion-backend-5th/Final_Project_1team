@@ -50,8 +50,16 @@ public class Article extends BaseEntity implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public void addReview(Review review) {
+        this.reviews.add(review);
+    }
+
+    public void addOrder(Order order) {
+        this.orders.add(order);
+    }
+
     public void validUser(User user) {
-        if (this.user != user)
+        if (!this.user.equals(user))
             throw new BusinessException(ErrorCode.ARTICLE_PERMISSION_DENIED);
     }
 }
