@@ -1,7 +1,5 @@
 package mutsa.common.domain.models.user;
 
-import static jakarta.persistence.FetchType.*;
-
 import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseTimeEntity;
@@ -9,11 +7,14 @@ import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.review.Review;
 import mutsa.common.domain.models.user.embedded.Address;
+import mutsa.common.domain.models.user.embedded.OAuth2Type;
+import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
-import mutsa.common.domain.models.user.embedded.OAuth2Type;
+
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -108,8 +109,8 @@ public class User extends BaseTimeEntity implements Serializable {
                 .username(username)
                 .password(encodedPassword)
                 .email(email)
-                .oauth2Username(oauth2Username)
-                .imageUrl(imageUrl)
+                .oauth2Username(oauth2Username == null ? "" : username)
+                .imageUrl(StringUtils.hasText(imageUrl) ? imageUrl : "")
                 .build();
         user.addMember(member);
         return user;

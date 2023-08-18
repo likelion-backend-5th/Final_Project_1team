@@ -16,6 +16,17 @@ spring:
     properties:
       hibernate:
         globally_quoted_identifiers: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 446534610656-14r63n2kho9aggjkp8ebi1rgods392uj.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:8080/api/login/oauth2/callback/**
+            scope:
+              - email
+              - profile
 
   data:
     web:
@@ -28,10 +39,21 @@ spring:
     redis:
       host: localhost
       port: 6379
-      
+
 
 # jwt token
 jwt:
   secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
   accessTokenExpire: 8165431
   refreshTokenExpire: 564657
+  data:
+    web:
+      pageable:
+        default-page-size: 25
+        max-page-size: 1000
+        one-indexed-parameters: false
+        page-parameter: page
+        size-parameter: limit
+    redis:
+      host: localhost
+      port: 6379

@@ -6,12 +6,12 @@ import mutsa.common.domain.models.BaseTimeEntity;
 
 import java.io.Serializable;
 
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-@Table(schema = "user_role")
+@Table(name = "user_role")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserRole extends BaseTimeEntity implements Serializable {
