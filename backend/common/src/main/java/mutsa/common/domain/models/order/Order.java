@@ -9,6 +9,7 @@ import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.UUID;
 
 import static jakarta.persistence.FetchType.LAZY;
@@ -73,14 +74,15 @@ public class Order extends BaseEntity implements Serializable {
 
     //유효성 검증 메서드
     public void validArticle(Article article) {
-        if (this.article != article) {
+        if (!Objects.equals(this.article.getId(), article.getId())) {
             throw new BusinessException(ErrorCode.INVALID_ARTICLE_ORDER);
         }
     }
 
     public void validUser(User user) {
-        if (this.user != user && this.article.getUser() != user) {
+        if (!Objects.equals(this.user.getId(), user.getId()) && !Objects.equals(this.article.getUser().getId(), user.getId())) {
             throw new BusinessException(ErrorCode.ORDER_PERMISSION_DENIED);
         }
     }
+
 }

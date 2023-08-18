@@ -25,7 +25,7 @@ public enum ErrorCode {
 
     //order
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "ORDER_NOT_FOUND", "해당 주문을 찾을 수 없습니다."),
-    ORDER_PERMISSION_DENIED(HttpStatus.FORBIDDEN.value(), "", "판매자의 권한이 아닙니다."),
+    ORDER_PERMISSION_DENIED(HttpStatus.FORBIDDEN.value(), "", "판매자나 구매자가 아닙니다."),
 
     // report
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "REPORT_NOT_FOUND", "해당 신고를 찾을 수 없습니다."),
