@@ -12,6 +12,7 @@ import mutsa.common.exception.ErrorCode;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -51,7 +52,7 @@ public class Article extends BaseEntity implements Serializable {
     private User user;
 
     public void validUser(User user) {
-        if (this.user != user)
+        if (!Objects.equals(this.user.getId(), user.getId()))
             throw new BusinessException(ErrorCode.ARTICLE_PERMISSION_DENIED);
     }
 }
