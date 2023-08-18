@@ -6,6 +6,7 @@ import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.api.service.order.OrderService;
 import mutsa.api.util.SecurityUtil;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,9 +37,11 @@ public class OrderController {
      * @return 게시글의 주문 모두 조회(판매자만 가능)
      */
     @GetMapping
-    public ResponseEntity<List<OrderResponseDto>> getAllOrder(
-            @PathVariable("articleApiId") String articleApiId) {
-        List<OrderResponseDto> dtos = orderService.findAllOrder(articleApiId, SecurityUtil.getCurrentUsername());
+    public ResponseEntity<Page<OrderResponseDto>> getAllOrder(
+            @PathVariable("articleApiId") String articleApiId,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "limit", defaultValue = "20") Integer limit) {
+        Page<OrderResponseDto> dtos = orderService.findAllOrder(articleApiId, page,limit,SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dtos);
     }
 
@@ -47,7 +50,7 @@ public class OrderController {
      * @return 주문 생성
      */
     @PostMapping
-    public ResponseEntity<OrderDetailResponseDto> getDetailOrder(
+    public ResponseEntity<OrderDetailResponseDto> saveOrder(
             @PathVariable("articleApiId") String articleApiId) {
         OrderDetailResponseDto dto = orderService.saveOrder(articleApiId, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dto);
