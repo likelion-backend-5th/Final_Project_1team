@@ -3,16 +3,20 @@ package mutsa.common.domain.models.order;
 import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
+import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
 import static jakarta.persistence.FetchType.LAZY;
+import static mutsa.common.domain.models.Status.ACTIVE;
 
 @Entity
 @Getter
@@ -20,6 +24,8 @@ import static jakarta.persistence.FetchType.LAZY;
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE `order` SET status = 'DELETED' WHERE order_id = ?")
+@Where(clause = "status = 'ACTIVE' ")
 public class Order extends BaseEntity implements Serializable {
 
     @Id
@@ -42,6 +48,10 @@ public class Order extends BaseEntity implements Serializable {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Status status = ACTIVE;
 
     public static Order of(Article article, User user) {
         Order order = Order.builder()

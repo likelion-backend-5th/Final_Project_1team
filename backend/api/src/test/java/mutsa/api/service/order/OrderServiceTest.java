@@ -1,5 +1,6 @@
 package mutsa.api.service.order;
 
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.order.OrderDetailResponseDto;
@@ -34,6 +35,8 @@ class OrderServiceTest {
     private UserRepository userRepository;
     @Autowired
     private ArticleRepository articleRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     private User seller, consumer;
     private Article article;
@@ -102,6 +105,8 @@ class OrderServiceTest {
 
         //when
         orderService.deleteOrder(article.getApiId(), savedOrder.getApiId(), seller.getUsername());
+        entityManager.flush();
+        entityManager.clear();
 
         //then
         Optional<Order> byApiId = orderRepository.findByApiId(article.getApiId());

@@ -1,5 +1,6 @@
 package mutsa.api.service.order;
 
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.ApiApplication;
@@ -39,6 +40,8 @@ class OrderModuleServiceTest {
     private UserRepository userRepository;
     @Autowired
     private ArticleRepository articleRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     private User seller, consumer, other;
     private Article article;
@@ -135,13 +138,20 @@ class OrderModuleServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
+        entityManager.flush();
+        entityManager.clear();
 
         //when
         orderModuleService.deleteOrder(article, consumer, savedOrder.getApiId());
+        entityManager.flush();
+        entityManager.clear();
 
         //then
-        Optional<Order> byApiId = orderRepository.findByApiId(article.getApiId());
+        Optional<Order> byApiId = orderRepository.findByApiId(order.getApiId());
         assertThat(byApiId.isPresent()).isFalse();
+
+        Optional<Order> byWithDelete = orderRepository.findByWithDelete(order.getId());
+        assertThat(byWithDelete.isPresent()).isTrue();
     }
 
     @Test
