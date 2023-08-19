@@ -34,11 +34,12 @@ public class ArticleFilter {
         return articleFilter;
     }
 
-    public static ArticleFilter of (Status status, ArticleStatus articleStatus, String title, String content, String username) {
+    public static ArticleFilter of (Status status, ArticleStatus articleStatus, String title, String description, String username) {
         ArticleFilter articleFilter = of(status, articleStatus);
 
         articleFilter.setTitle(title);
-        articleFilter.setDescription(content);
+        articleFilter.setDescription(description);
+        articleFilter.setUsername(username);
 
         return articleFilter;
     }

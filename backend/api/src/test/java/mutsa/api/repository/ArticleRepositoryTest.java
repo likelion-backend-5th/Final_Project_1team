@@ -6,9 +6,7 @@
 
 package mutsa.api.repository;
 
-import mutsa.api.dto.article.ArticleFilterDto;
 import mutsa.common.domain.filter.article.ArticleFilter;
-import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.repository.article.ArticleRepository;
@@ -26,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest
@@ -33,61 +32,98 @@ import java.util.List;
 @ActiveProfiles("test")
 @Transactional
 public class ArticleRepositoryTest {
+    public final Pageable PAGEABLE = PageRequest.of(0, 10, Sort.Direction.ASC, "id");
+    private ArticleFilter articleFilter = ArticleFilter.of();
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private ArticleRepository articleRepository;
     private final Logger log = LoggerFactory.getLogger(ArticleRepositoryTest.class);
-    private User user;
+    private User user1, user2;
     private List<Article> articles = new ArrayList<>();
 
     @BeforeEach
     public void init() {
-        user = User.of("user1", "1234", "user1@gmail.com", null, null, null);
+        user1 = User.of("ArticleRepositoryTestUser1", "1234", "user1@gmail.com", null, null, null);
 
-        user = userRepository.save(user);
+        user1 = userRepository.save(user1);
+
+        user2 = User.of("ArticleRepositoryTestUser2", "1234", "user2@gmail.com", null, null, null);
+
+        user2 = userRepository.save(user2);
 
         for (int i = 0; i < 10; i++) {
             Article article = Article.builder()
                     .title("article-" + (i + 1))
                     .description("desc-" + (i + 1))
-                    .user(user)
+                    .user(user1)
                     .build();
             articles.add(article);
         }
+        articles.get(0).setUser(user2);
 
         articles = articleRepository.saveAll(articles);
     }
 
     @Test
     @DisplayName("게시글 읽기 테스트")
-    public void readAllByUserApiIdTest() {
-        List<Article> entities = articleRepository.findAllByUser_username(user.getUsername());
+    public void readByApiIdTest() {
+        Article actual = articleRepository.findByApiId(articles.get(0).getApiId()).orElse(null);
 
-        assert entities != null && !entities.isEmpty();
-        Assertions.assertEquals(articles, entities);
+        assert actual != null;
+        Assertions.assertEquals(articles.get(0), actual);
     }
 
     @Test
     @DisplayName("유저가 올린 게시글 페이지네이션 테스트")
-    public void readAllPageByUserApiIdTest() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "id");
-
-        Page<Article> page = articleRepository.getPageByUsername(user.getUsername(), ArticleFilter.of(), pageable);
+    public void readAllPageByUsernameTest() {
+        Page<Article> page = articleRepository.getPageByUsername(user1.getUsername(), articleFilter, PAGEABLE);
 
         assert page != null && !page.isEmpty();
-        Assertions.assertEquals(articles, page.getContent());
+        Assertions.assertEquals(articles.size() - 1, page.getNumberOfElements());
+        Assertions.assertNotEquals(-1, Collections.indexOfSubList(articles, page.getContent()));
     }
 
     @Test
     @DisplayName("모든 게시글 페이지네이션 테스트")
     public void readAllPage() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "id");
-
-        Page<Article> page = articleRepository.getPage(ArticleFilter.of(), pageable);
+        Page<Article> page = articleRepository.getPage(articleFilter, PAGEABLE);
 
         assert page != null && !page.isEmpty();
         Assertions.assertEquals(articles, page.getContent());
+    }
+
+    @Test
+    @DisplayName("게시글 제목 기반 검색")
+    public void readPageByTitle() {
+        articleFilter.setTitle("article-1");
+
+        Page<Article> page = articleRepository.getPage(articleFilter, PAGEABLE);
+
+        assert page != null && !page.isEmpty();
+        checkArticleEntity(articles.get(0), page.getContent().get(0));
+    }
+
+    @Test
+    @DisplayName("게시글 내용 기반 검색")
+    public void readPageByDescription() {
+        articleFilter.setDescription("desc-1");
+
+        Page<Article> page = articleRepository.getPage(articleFilter, PAGEABLE);
+
+        assert page != null && !page.isEmpty();
+        checkArticleEntity(articles.get(0), page.getContent().get(0));
+    }
+
+    @Test
+    @DisplayName("게시글 유저이름 기반 검색")
+    public void readPageByUsername() {
+        articleFilter.setUsername(user2.getUsername());
+
+        Page<Article> page = articleRepository.getPage(articleFilter, PAGEABLE);
+
+        assert page != null && !page.isEmpty();
+        checkArticleEntity(articles.get(0), page.getContent().get(0));
     }
 
     @Test
@@ -101,11 +137,12 @@ public class ArticleRepositoryTest {
         List<Article> entities = articleRepository.findAll();
 
         assert entities != null && !entities.isEmpty();
-//        for (int i = 0; i < entities.size(); i++) {
-//            if (entities.get(i).getStatus() == Status.DELETED) {
-//                continue;
-//            }
-//        }
         Assertions.assertTrue(entities.containsAll(articles));
+    }
+
+    private void checkArticleEntity(Article expected, Article actual) {
+        Assertions.assertEquals(expected.getId(), actual.getId());
+        Assertions.assertEquals(expected.getApiId(), actual.getApiId());
+        Assertions.assertEquals(expected.getUser().getUsername(), actual.getUser().getUsername());
     }
 }

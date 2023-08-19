@@ -56,15 +56,15 @@ public class ArticleFilterDto {
             Status status,
             ArticleStatus articleState,
             String title,
-            String content,
+            String description,
             String username
     ) {
         ArticleFilterDto articleFilterDto = ArticleFilterDto.of(status, articleState);
 
         articleFilterDto.setTitle(title);
-        articleFilterDto.setDescription(content);
+        articleFilterDto.setDescription(description);
         articleFilterDto.setUsername(username);
 
-        return null;
+        return articleFilterDto;
     }
 }
