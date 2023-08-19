@@ -2,6 +2,7 @@ package mutsa.api.service.review;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,8 @@ public class ReviewModuleServiceTest {
     private ArticleRepository articleRepository;
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     private User reviewer1, reviewer2;
     private Article article;
@@ -86,14 +89,12 @@ public class ReviewModuleServiceTest {
 
         reviewRequestDto.setContent("Review Test");
         reviewRequestDto.setPoint(5);
-        reviewRequestDto.setUsername(reviewer1.getUsername());
 
         // when
         ReviewResponseDto responseDto = reviewModuleService.createReview(article, order, reviewer1, reviewRequestDto);
 
         // then
         log.info(article.getReviews().toString());
-        assertThat(reviewRequestDto.getUsername()).isEqualTo(responseDto.getUsername());
         assertThat(reviewRequestDto.getContent()).isEqualTo(responseDto.getContent());
         assertThat(reviewRequestDto.getPoint()).isEqualTo(responseDto.getPoint());
     }
@@ -158,12 +159,16 @@ public class ReviewModuleServiceTest {
     void deleteReview() {
         // given
         Review review = reviewRepository.save(Review.of(reviewer1, article, "content1", 1));
+        entityManager.flush();
+        entityManager.clear();
 
         // when
         reviewModuleService.deleteReview(reviewer1, review.getApiId());
+        entityManager.flush();
+        entityManager.clear();
 
         // then
-        Optional<Review> deletedReview = reviewRepository.findByApiId(article.getApiId());
+        Optional<Review> deletedReview = reviewRepository.findByApiId(review.getApiId());
         assertThat(deletedReview.isPresent()).isFalse();
     }
 
