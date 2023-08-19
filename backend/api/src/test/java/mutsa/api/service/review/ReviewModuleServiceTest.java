@@ -55,7 +55,7 @@ public class ReviewModuleServiceTest {
         reviewer1 = User.of("user1", "password", "email1@", "oauthName1", null, null);
         reviewer1 = userRepository.save(reviewer1);
 
-        reviewer2 = User.of("user3", "password", "email3@", "oauthName3", null, null);
+        reviewer2 = User.of("user2", "password", "email2@", "oauthName2", null, null);
         reviewer2 = userRepository.save(reviewer2);
 
         User seller = User.of("seller", "password", "sellerEmail@", "sellerOauthName", null, null);
@@ -189,16 +189,14 @@ public class ReviewModuleServiceTest {
 
     @DisplayName("후기 삭제 모듈 서비스 테스트")
     @Test
+    // TODO Soft Delete 로 수정
     void deleteReview() {
         // given
         Review review = reviewRepository.save(Review.of(reviewer1, article, "content1", 1));
-        entityManager.flush();
         entityManager.clear();
 
         // when
         reviewModuleService.deleteReview(reviewer1, review.getApiId());
-        entityManager.flush();
-        entityManager.clear();
 
         // then
         Optional<Review> deletedReview = reviewRepository.findByApiId(review.getApiId());
