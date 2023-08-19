@@ -4,13 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
+import mutsa.api.dto.order.OrderStatueRequestDto;
 import mutsa.api.service.order.OrderService;
 import mutsa.api.util.SecurityUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -33,7 +32,7 @@ public class OrderController {
     }
 
     /**
-     * @param articleApiId
+     * @param articleApiId article apiID
      * @return 게시글의 주문 모두 조회(판매자만 가능)
      */
     @GetMapping
@@ -41,7 +40,7 @@ public class OrderController {
             @PathVariable("articleApiId") String articleApiId,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "limit", defaultValue = "20") Integer limit) {
-        Page<OrderResponseDto> dtos = orderService.findAllOrder(articleApiId, page,limit,SecurityUtil.getCurrentUsername());
+        Page<OrderResponseDto> dtos = orderService.findAllOrder(articleApiId, page, limit, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dtos);
     }
 
@@ -53,6 +52,21 @@ public class OrderController {
     public ResponseEntity<OrderDetailResponseDto> saveOrder(
             @PathVariable("articleApiId") String articleApiId) {
         OrderDetailResponseDto dto = orderService.saveOrder(articleApiId, SecurityUtil.getCurrentUsername());
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
+     * @param articleApiId
+     * @param orderApiId
+     * @param orderStatueRequestDto
+     * @return 주문 수정
+     */
+    @PutMapping("/{orderApiId}")
+    public ResponseEntity<OrderDetailResponseDto> updateOrderStatus(
+            @PathVariable("articleApiId") String articleApiId,
+            @PathVariable("orderApiId") String orderApiId,
+            @RequestBody OrderStatueRequestDto orderStatueRequestDto) {
+        OrderDetailResponseDto dto = orderService.updateOrderStatus(articleApiId, orderApiId, orderStatueRequestDto, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dto);
     }
 

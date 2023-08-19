@@ -83,19 +83,18 @@ public class Order extends BaseEntity implements Serializable {
     }
 
     //유효성 검증 메서드
-    public void validArticle(Article article) {
+    public void validArticleId(Article article) {
         if (!Objects.equals(this.article.getId(), article.getId())) {
             throw new BusinessException(ErrorCode.INVALID_ARTICLE_ORDER);
         }
     }
 
-    public void validUser(User user) {
+    public void validSellerOrConsumerId(User user) {
         if (!Objects.equals(this.user.getId(), user.getId()) && !Objects.equals(this.article.getUser().getId(), user.getId())) {
             throw new BusinessException(ErrorCode.ORDER_PERMISSION_DENIED);
         }
     }
 
-    // 리뷰 테스트 시 사용하기 위한 메소드
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }

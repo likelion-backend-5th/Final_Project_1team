@@ -3,6 +3,7 @@ package mutsa.api.service.order;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
+import mutsa.api.dto.order.OrderStatueRequestDto;
 import mutsa.api.service.article.ArticleModuleService;
 import mutsa.api.service.user.UserModuleService;
 import mutsa.common.domain.models.article.Article;
@@ -36,6 +37,13 @@ public class OrderService {
         Article article = articleModuleService.getByApiId(articleApiId);
 
         return orderModuleService.saveOrder(article, user);
+    }
+
+    public OrderDetailResponseDto updateOrderStatus(String articleApiId, String orderApiId, OrderStatueRequestDto orderStatueRequestDto, String currentUsername) {
+        User user = userService.getByUsername(currentUsername);
+        Article article = articleModuleService.getByApiId(articleApiId);
+
+        return orderModuleService.updateOrderStatus(article, user, orderStatueRequestDto, orderApiId);
     }
 
     public void deleteOrder(String articleApiId, String orderApiId, String currentUsername) {

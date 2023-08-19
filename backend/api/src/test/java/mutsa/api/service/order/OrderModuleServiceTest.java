@@ -6,8 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import mutsa.api.ApiApplication;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
+import mutsa.api.dto.order.OrderStatueRequestDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
+import mutsa.common.domain.models.order.OrderStatus;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
@@ -132,6 +134,25 @@ class OrderModuleServiceTest {
         //then
         assertThat(orderDetailResponseDto.getUsername()).isEqualTo(consumer.getUsername());
     }
+
+    @Test
+    void updateOrder() {
+        //given
+        Order order = Order.of(article, consumer);
+        Order savedOrder = orderRepository.save(order);
+        entityManager.flush();
+        entityManager.clear();
+
+        //when
+        orderModuleService.updateOrderStatus(article, consumer, new OrderStatueRequestDto("END"), savedOrder.getApiId());
+        entityManager.flush();
+        entityManager.clear();
+
+        //then
+        Optional<Order> byApiId = orderRepository.findByApiId(order.getApiId());
+        Assertions.assertThat(byApiId.get().getOrderStatus()).isEqualTo(OrderStatus.END);
+    }
+
 
     @Test
     void deleteOrder() {

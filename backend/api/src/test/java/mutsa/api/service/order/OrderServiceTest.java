@@ -5,12 +5,15 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
+import mutsa.api.dto.order.OrderStatueRequestDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
+import mutsa.common.domain.models.order.OrderStatus;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
 import mutsa.common.repository.user.UserRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +50,7 @@ class OrderServiceTest {
         consumer = User.of("user2", "password", "email2@", "oauthName2", null, null);
         seller = userRepository.save(seller);
         consumer = userRepository.save(consumer);
-      
+
         article = Article.builder()
                 .title("Pre Article 1")
                 .description("Pre Article 1 desc")
@@ -96,6 +99,25 @@ class OrderServiceTest {
         //then
         assertThat(orderDetailResponseDto.getUsername()).isEqualTo(seller.getUsername());
     }
+
+    @Test
+    void updateOrder() {
+        //given
+        Order order = Order.of(article, consumer);
+        Order savedOrder = orderRepository.save(order);
+        entityManager.flush();
+        entityManager.clear();
+
+        //when
+        orderService.updateOrderStatus(article.getApiId(), savedOrder.getApiId(), new OrderStatueRequestDto("END"), consumer.getUsername());
+        entityManager.flush();
+        entityManager.clear();
+
+        //then
+        Optional<Order> byApiId = orderRepository.findByApiId(order.getApiId());
+        Assertions.assertThat(byApiId.get().getOrderStatus()).isEqualTo(OrderStatus.END);
+    }
+
 
     @Test
     void deleteOrder() {
