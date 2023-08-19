@@ -8,9 +8,11 @@ package mutsa.api.service.article;
 
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.article.ArticleCreateRequestDto;
+import mutsa.api.dto.article.ArticleFilterDto;
 import mutsa.api.dto.article.ArticleResponseDto;
 import mutsa.api.dto.article.ArticleUpdateRequestDto;
 import mutsa.api.util.SecurityUtil;
+import mutsa.common.domain.filter.article.ArticleFilter;
 import mutsa.common.domain.models.article.Article;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -31,10 +33,6 @@ public class ArticleService {
         return ArticleResponseDto.to(articleModuleService.update(updateDto));
     }
 
-    public Article requestDtoToEntity(ArticleCreateRequestDto requestDto) {
-        return articleModuleService.dtoToEntity(requestDto);
-    }
-
     protected Article getByApiId(String apiId) {
         return articleModuleService.getByApiId(apiId);
     }
@@ -47,58 +45,65 @@ public class ArticleService {
         return ArticleResponseDto.to(articleModuleService.getByApiId(apiId));
     }
 
-    public List<Article> getsByUserApiId(String userApiId) {
-        return articleModuleService.getsByUserApiId(userApiId);
-    }
-
-    public List<ArticleResponseDto> getPageByUsername(String username, Sort.Direction direction) {
-        return getPageByUsername(username, 0, 10, direction);
-    }
-
-    public List<ArticleResponseDto> getPageByUsername(
-            String username,
-            int pageNum,
-            int size,
-            Sort.Direction direction
+    public Page<ArticleResponseDto> getPageByUsername(
+            String username, Sort.Direction direction, ArticleFilterDto articleFilter
     ) {
-        Page<Article> page = articleModuleService.getPageByUsername(username, pageNum, size, direction, "id");
-        List<ArticleResponseDto> dtoPage = page.getContent().stream().map(ArticleResponseDto::to).toList();
-
-        return articleModuleService.getPageByUsername(username, pageNum, size, direction, "id")
-                .getContent()
-                .stream()
-                .map(ArticleResponseDto::to)
-                .toList();
+        return getPageByUsername(username, 0, 10, direction, articleFilter);
     }
 
-    public List<ArticleResponseDto> getPageByUsername(
+    public Page<ArticleResponseDto> getPageByUsername(
+            String username, int pageNum, int size, Sort.Direction direction, ArticleFilterDto articleFilter
+    ) {
+        return articleModuleService.getPageByUsername(
+                username,
+                pageNum,
+                size,
+                direction,
+                "id",
+                ArticleFilterDto.to(articleFilter)
+        ).map(ArticleResponseDto::to);
+    }
+
+    public Page<ArticleResponseDto> getPageByUsername(
             String username,
             int pageNum,
             int size,
             Sort.Direction direction,
-            String orderProperties
+            String orderProperties,
+            ArticleFilterDto articleFilter
     ) {
-        return articleModuleService.getPageByUsername(username, pageNum, size, direction, orderProperties)
-                .getContent()
-                .stream()
-                .map(ArticleResponseDto::to)
-                .toList();
+        return articleModuleService.getPageByUsername(
+                username,
+                pageNum,
+                size,
+                direction,
+                orderProperties,
+                ArticleFilterDto.to(articleFilter)
+        ).map(ArticleResponseDto::to);
     }
 
-    public List<ArticleResponseDto> getPage(int pageNum, int size, Sort.Direction direction) {
-        return articleModuleService.getPage(pageNum, size, direction, "id")
-                .getContent()
-                .stream()
-                .map(ArticleResponseDto::to)
-                .toList();
+    public Page<ArticleResponseDto> getPage(
+            int pageNum, int size, Sort.Direction direction, ArticleFilterDto articleFilter
+    ) {
+        return articleModuleService.getPage(
+                pageNum,
+                size,
+                direction,
+                "id",
+                ArticleFilterDto.to(articleFilter)
+        ).map(ArticleResponseDto::to);
     }
 
-    public List<ArticleResponseDto> getPage(int pageNum, int size, Sort.Direction direction, String orderProperties) {
-        return articleModuleService.getPage(pageNum, size, direction, orderProperties)
-                .getContent()
-                .stream()
-                .map(ArticleResponseDto::to)
-                .toList();
+    public Page<ArticleResponseDto> getPage(
+            int pageNum, int size, Sort.Direction direction, String orderProperties, ArticleFilterDto articleFilter
+    ) {
+        return articleModuleService.getPage(
+                pageNum,
+                size,
+                direction,
+                orderProperties,
+                ArticleFilterDto.to(articleFilter)
+        ).map(ArticleResponseDto::to);
     }
 
     public void deleteById(Long id) {
@@ -121,15 +126,12 @@ public class ArticleService {
 
     /**
      * 테스트용 더미 게시글 생성 메소드
-     * @param count
-     * 게시글 생성 수, 최소 1이상 이어야 동작
+     *
+     * @param count 게시글 생성 수, 최소 1이상 이어야 동작
      * @return
      */
     public List<ArticleResponseDto> saveDummyArticles(Integer count) {
-        return articleModuleService.saveDummyArticles(count)
-                .stream()
-                .map(ArticleResponseDto::to)
-                .toList();
+        return articleModuleService.saveDummyArticles(count).stream().map(ArticleResponseDto::to).toList();
     }
 
     public ArticleResponseDto updateTest(ArticleUpdateRequestDto updateDto) {

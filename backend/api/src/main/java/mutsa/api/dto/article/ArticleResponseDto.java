@@ -9,7 +9,9 @@ package mutsa.api.dto.article;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.article.ArticleStatus;
 
 @Builder
 @Getter
@@ -20,6 +22,8 @@ public class ArticleResponseDto {
     private String username;
     private String thumbnail;
     private String apiId;
+    private Status status;
+    private ArticleStatus articleStatus;
 
     public static ArticleResponseDto to(Article entity) {
         return ArticleResponseDto.builder()
@@ -28,6 +32,8 @@ public class ArticleResponseDto {
                 .username(entity.getUser().getUsername())
                 .thumbnail(entity.getThumbnail())
                 .apiId(entity.getApiId())
+                .status(entity.getStatus())
+                .articleStatus(entity.getArticleStatus())
                 .build();
     }
 }

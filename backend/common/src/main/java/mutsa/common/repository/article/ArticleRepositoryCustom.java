@@ -6,6 +6,7 @@
 
 package mutsa.common.repository.article;
 
+import mutsa.common.domain.filter.article.ArticleFilter;
 import mutsa.common.domain.models.article.Article;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ArticleRepositoryCustom {
-    Page<Article> getPageByUsername(String username, Pageable pageable);
-    Page<Article> getPage(Pageable pageable);
+    Page<Article> getPageByUsername(String username, ArticleFilter articleFilter, Pageable pageable);
+    Page<Article> getPage(ArticleFilter articleFilter, Pageable pageable);
 }

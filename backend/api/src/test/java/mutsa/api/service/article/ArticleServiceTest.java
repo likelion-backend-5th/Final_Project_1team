@@ -4,19 +4,23 @@
  * @since 2023-08-16 PM 1:30
  */
 
-package mutsa.api.service;
+package mutsa.api.service.article;
 
 import mutsa.api.dto.article.ArticleCreateRequestDto;
+import mutsa.api.dto.article.ArticleFilterDto;
 import mutsa.api.dto.article.ArticleResponseDto;
 import mutsa.api.dto.article.ArticleUpdateRequestDto;
 import mutsa.api.service.article.ArticleService;
+import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.article.ArticleStatus;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.user.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
@@ -92,27 +96,95 @@ public class ArticleServiceTest {
     }
 
     @Test
+    @DisplayName("Article Service 삭제 테스트")
+    public void deleteTest() {
+        articleService.deleteByApiId(articles.get(0).getApiId());
+
+        Assertions.assertEquals(
+                Status.DELETED,
+                articleRepository.findByApiId(articles.get(0).getApiId()).get().getStatus()
+        );
+        Assertions.assertEquals(
+                ArticleStatus.EXPIRED,
+                articleRepository.findByApiId(articles.get(0).getApiId()).get().getArticleStatus()
+        );
+    }
+
+    @Test
     @DisplayName("Article Service 유저 이름 기반 페이지네이션 테스트")
     public void pageByUsernameTest() {
         String username = user.getUsername();
 
-        List<ArticleResponseDto> dtos = articleService.getPageByUsername(username, Sort.Direction.ASC);
+        Page<ArticleResponseDto> dtos = articleService.getPageByUsername(
+                username,
+                Sort.Direction.ASC,
+                ArticleFilterDto.of()
+        );
 
         assert dtos != null && !dtos.isEmpty();
         for (int i = 0; i < articles.size(); i++) {
-            checkSameValue(articles.get(i), dtos.get(i));
+            checkSameValue(articles.get(i), dtos.getContent().get(i));
         }
     }
 
     @Test
     @DisplayName("Article Service 페이지네이션 테스트")
     public void pageTest() {
-        List<ArticleResponseDto> dtos = articleService.getPage(0, 10, Sort.Direction.ASC);
+        Page<ArticleResponseDto> dtos = articleService.getPage(0, 10, Sort.Direction.ASC, ArticleFilterDto.of());
 
         assert dtos != null && !dtos.isEmpty();
         for (int i = 0; i < articles.size(); i++) {
-            checkSameValue(articles.get(i), dtos.get(i));
+            checkSameValue(articles.get(i), dtos.getContent().get(i));
         }
+    }
+
+    @Test
+    @DisplayName("Article Service 필터 테스트 - 게시글 상태가 LIVE 인 경우만 페이징")
+    public void filterTest() {
+        articles.get(0).setArticleStatus(ArticleStatus.EXPIRED);
+
+        articles = articleRepository.saveAll(articles);
+
+        Page<ArticleResponseDto> dtos = articleService.getPage(0, 10, Sort.Direction.ASC, ArticleFilterDto.of());
+
+        assert dtos != null && !dtos.isEmpty();
+        Assertions.assertEquals(9, dtos.getNumberOfElements());
+    }
+
+    @Test
+    @DisplayName("Article Service 필터 테스트 - 게시글 상태가 EXPIRED 인 경우만 페이징")
+    public void filterTest2() {
+        articles.get(0).setArticleStatus(ArticleStatus.EXPIRED);
+
+        articles = articleRepository.saveAll(articles);
+
+        Page<ArticleResponseDto> dtos = articleService.getPage(
+                0,
+                10,
+                Sort.Direction.ASC,
+                ArticleFilterDto.of(Status.ACTIVE, ArticleStatus.EXPIRED)
+        );
+
+        assert dtos != null && !dtos.isEmpty();
+        checkSameValue(articles.get(0), dtos.getContent().get(0));
+    }
+
+    @Test
+    @DisplayName("Article Service 필터 테스트 - 삭제되고 게시글 상태가 EXPIRED 인 경우만 페이징")
+    public void filterTest3() {
+        articleRepository.delete(articles.get(0));
+
+        articles = articleRepository.findAll();
+
+        Page<ArticleResponseDto> dtos = articleService.getPage(
+                0,
+                10,
+                Sort.Direction.ASC,
+                ArticleFilterDto.of(Status.DELETED, ArticleStatus.EXPIRED)
+        );
+
+        assert dtos != null && !dtos.isEmpty();
+        checkSameValue(articles.get(0), dtos.getContent().get(0));
     }
 
     private void checkSameValue(Article articleEntity, ArticleResponseDto articleResponseDto) {
@@ -121,5 +193,7 @@ public class ArticleServiceTest {
         Assertions.assertEquals(articleEntity.getDescription(), articleResponseDto.getDescription());
         Assertions.assertEquals(articleEntity.getUser().getUsername(), articleResponseDto.getUsername());
         Assertions.assertEquals(articleEntity.getThumbnail(), articleResponseDto.getThumbnail());
+        Assertions.assertEquals(articleEntity.getStatus(), articleResponseDto.getStatus());
+        Assertions.assertEquals(articleEntity.getArticleStatus(), articleResponseDto.getArticleStatus());
     }
 }
