@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum OrderStatus {
-    SALE, BUY, PROGRESS, END,
+    PROGRESS, END , CANCEL, WAIT
     ;
 
     public static OrderStatus of(String s) {

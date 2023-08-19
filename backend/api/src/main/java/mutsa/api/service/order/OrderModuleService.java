@@ -3,6 +3,7 @@ package mutsa.api.service.order;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
+import mutsa.api.dto.order.OrderStatueRequestDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.user.User;
@@ -26,8 +27,8 @@ public class OrderModuleService {
     public OrderDetailResponseDto findDetailOrder(Article article, User user, String orderApiId) {
         Order order = getByApiId(orderApiId);
 
-        order.validArticle(article);
-        order.validUser(user); //판매자와 구매자만 확인할 수 있도록
+        order.validArticleId(article);
+        order.validSellerOrConsumerId(user); //판매자와 구매자만 확인할 수 있도록
         return OrderDetailResponseDto.fromEntity(order);
     }
 
@@ -44,10 +45,20 @@ public class OrderModuleService {
     }
 
     @Transactional
+    public OrderDetailResponseDto updateOrderStatus(Article article, User user, OrderStatueRequestDto orderStatueRequestDto, String orderApiId) {
+        Order order = getByApiId(orderApiId);
+        order.validArticleId(article);
+        order.validSellerOrConsumerId(user); //판매자와 구매자만 상태를 변경할 수 있다.
+
+        order.setOrderStatus(orderStatueRequestDto.getOrderStatus());
+        return OrderDetailResponseDto.fromEntity(order);
+    }
+
+    @Transactional
     public void deleteOrder(Article article, User user, String orderApiId) {
         Order order = getByApiId(orderApiId);
-        order.validArticle(article);
-        order.validUser(user); //판매자와 구매자만
+        order.validArticleId(article);
+        order.validSellerOrConsumerId(user); //판매자와 구매자만
         orderRepository.delete(getByApiId(orderApiId));
     }
 

@@ -3,14 +3,13 @@ package mutsa.api.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.order.OrderDetailResponseDto;
+import mutsa.api.dto.order.OrderStatueRequestDto;
 import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.api.service.order.OrderService;
 import mutsa.api.util.SecurityUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -53,6 +52,20 @@ public class OrderController {
     public ResponseEntity<OrderDetailResponseDto> saveOrder(
             @PathVariable("articleApiId") String articleApiId) {
         OrderDetailResponseDto dto = orderService.saveOrder(articleApiId, SecurityUtil.getCurrentUsername());
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
+     *
+     * @param articleApiId
+     * @return 주문 수정
+     */
+    @PutMapping("/{orderApiId}")
+    public ResponseEntity<OrderDetailResponseDto> saveOrder(
+            @PathVariable("articleApiId") String articleApiId,
+            @PathVariable("orderApiId") String orderApiId,
+            @RequestBody OrderStatueRequestDto orderStatueRequestDto) {
+        OrderDetailResponseDto dto = orderService.updateOrderStatus(articleApiId, orderApiId, orderStatueRequestDto,SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dto);
     }
 
