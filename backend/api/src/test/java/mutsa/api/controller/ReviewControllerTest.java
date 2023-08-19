@@ -194,7 +194,7 @@ public class ReviewControllerTest {
         when(SecurityUtil.getCurrentUsername()).thenReturn(reviewer1.getUsername());
         Review review = reviewRepository.save(Review.of(reviewer1, article, "content1", 1));
         ReviewRequestDto updateDto = new ReviewRequestDto();
-        updateDto.setContent("test Content");
+        updateDto.setContent("updated Content");
         updateDto.setPoint(3);
 
         // when
