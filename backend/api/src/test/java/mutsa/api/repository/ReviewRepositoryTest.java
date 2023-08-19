@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import java.util.Optional;
 import mutsa.api.service.article.ArticleModuleService;
 import mutsa.api.service.user.UserModuleService;
+import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.review.Review;
 import mutsa.common.domain.models.review.ReviewStatus;
@@ -63,7 +64,7 @@ public class ReviewRepositoryTest {
         assertThat(review.getUser()).isEqualTo(user);
         assertThat(review.getContent()).isEqualTo(content);
         assertThat(review.getPoint()).isEqualTo(point);
-        assertThat(review.getStatus()).isEqualTo(ReviewStatus.UPLOAD);
+        assertThat(review.getReviewStatus()).isEqualTo(ReviewStatus.UPLOAD);
     }
 
     @DisplayName("후기 삭제")
@@ -77,8 +78,10 @@ public class ReviewRepositoryTest {
         // when
         reviewRepository.delete(review);
         Optional<Review> deleted = reviewRepository.findByApiId(review.getApiId());
+        Optional<Review> deletedReview = reviewRepository.findByStatus(Status.DELETED);
 
         // then
         assertThat(deleted.isPresent()).isFalse();
+        assertThat(deletedReview.isPresent()).isTrue();
     }
 }

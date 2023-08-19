@@ -1,5 +1,7 @@
 package mutsa.common.domain.models.review;
 
+import static mutsa.common.domain.models.Status.ACTIVE;
+
 import jakarta.persistence.*;
 import java.util.Objects;
 import lombok.*;
@@ -7,10 +9,13 @@ import mutsa.common.domain.models.BaseEntity;
 
 import java.io.Serializable;
 import java.util.UUID;
+import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "review")
@@ -18,6 +23,8 @@ import mutsa.common.exception.ErrorCode;
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE `review` SET status = 'DELETED' WHERE review_id = ?")
+@Where(clause = "status = 'ACTIVE'")
 public class Review extends BaseEntity implements Serializable {
 
     @Id
@@ -25,6 +32,7 @@ public class Review extends BaseEntity implements Serializable {
     @Column(name = "review_id")
     private Long id;
 
+    @Column(nullable = false, unique = true)
     @Builder.Default
     private final String apiId = UUID.randomUUID().toString();
 
@@ -38,7 +46,11 @@ public class Review extends BaseEntity implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ReviewStatus status;
+    private ReviewStatus reviewStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Status status = ACTIVE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -52,7 +64,7 @@ public class Review extends BaseEntity implements Serializable {
         Review review = Review.builder()
             .content(content)
             .point(point)
-            .status(ReviewStatus.UPLOAD)
+            .reviewStatus(ReviewStatus.UPLOAD)
             .build();
 
         review.setUser(user);
@@ -85,8 +97,12 @@ public class Review extends BaseEntity implements Serializable {
         this.point = point;
     }
 
+    public void setReviewStatus(ReviewStatus reviewStatus) {
+        this.reviewStatus = reviewStatus;
+    }
+
     // 요청을 보낸 유저와 후기를 등록한 유저가 동일한지 검증
-    public void validUser(User user) {
+    public void validUserById(User user) {
         if (!Objects.equals(this.user.getId(), user.getId())) {
             throw new BusinessException(ErrorCode.REVIEW_PERMISSION_DENIED);
         }
@@ -99,7 +115,7 @@ public class Review extends BaseEntity implements Serializable {
             ", apiId='" + apiId + '\'' +
             ", content='" + content + '\'' +
             ", point=" + point +
-            ", status=" + status +
+            ", reviewStatus=" + reviewStatus +
             '}';
     }
 }

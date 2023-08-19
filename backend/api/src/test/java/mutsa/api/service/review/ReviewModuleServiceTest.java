@@ -4,13 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.persistence.EntityManager;
-import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.ApiApplication;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
-import mutsa.api.dto.review.ReviewUpdateDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -26,6 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(classes = ApiApplication.class)
@@ -138,17 +137,16 @@ public class ReviewModuleServiceTest {
     @Test
     void findAllReview() {
         // given
-        Review review1 = reviewRepository.save(Review.of(reviewer1, article, "content1", 1));
-        Review review2 = reviewRepository.save(Review.of(reviewer2, article, "content2", 2));
-
-        log.info(review1.getApiId());
-        log.info(review2.getApiId());
+        reviewRepository.save(Review.of(reviewer1, article, "content1", 1));
+        reviewRepository.save(Review.of(reviewer2, article, "content2", 2));
 
         // when
-        List<ReviewResponseDto> allReviews = reviewModuleService.findAllReview(article);
+        Page<ReviewResponseDto> allReviews = reviewModuleService.findAllReview(article, 1, 20);
 
         // then
-        assertThat(allReviews.size()).isEqualTo(2);
+        log.info(allReviews.getContent().toString());
+        assertThat(allReviews.getTotalPages()).isEqualTo(1);
+        assertThat(allReviews.getTotalElements()).isEqualTo(2);
     }
 
     @DisplayName("후기 수정 모듈 서비스 테스트")
@@ -159,7 +157,7 @@ public class ReviewModuleServiceTest {
         Integer point = 5;
         Review review = reviewRepository.save(Review.of(reviewer1, article, content, point));
 
-        ReviewUpdateDto updateDto = new ReviewUpdateDto();
+        ReviewRequestDto updateDto = new ReviewRequestDto();
         updateDto.setContent("test Content");
         updateDto.setPoint(3);
 
@@ -177,7 +175,7 @@ public class ReviewModuleServiceTest {
         // given
         Review review = reviewRepository.save(Review.of(reviewer1, article, "testReview", 2));
 
-        ReviewUpdateDto updateDto = new ReviewUpdateDto();
+        ReviewRequestDto updateDto = new ReviewRequestDto();
         updateDto.setContent("Review Update Exception test");
         updateDto.setPoint(4);
 
@@ -189,7 +187,6 @@ public class ReviewModuleServiceTest {
 
     @DisplayName("후기 삭제 모듈 서비스 테스트")
     @Test
-    // TODO Soft Delete 로 수정
     void deleteReview() {
         // given
         Review review = reviewRepository.save(Review.of(reviewer1, article, "content1", 1));

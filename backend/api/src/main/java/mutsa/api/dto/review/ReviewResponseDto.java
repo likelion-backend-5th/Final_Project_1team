@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import mutsa.common.domain.models.review.Review;
+import mutsa.common.domain.models.review.ReviewStatus;
 
 @Getter
 @Builder
@@ -13,6 +14,7 @@ public class ReviewResponseDto {
     private String content;
     private Integer point;
     private String username;
+    private ReviewStatus reviewStatus;
 
     public static ReviewResponseDto fromEntity(Review review) {
         return ReviewResponseDto.builder()
@@ -20,6 +22,7 @@ public class ReviewResponseDto {
             .content(review.getContent())
             .point(review.getPoint())
             .username(review.getUser().getUsername())
+            .reviewStatus(review.getReviewStatus())
             .build();
     }
 
@@ -30,6 +33,7 @@ public class ReviewResponseDto {
             ", content='" + content + '\'' +
             ", point=" + point +
             ", username='" + username + '\'' +
+            ", reviewStatus=" + reviewStatus +
             '}';
     }
 }

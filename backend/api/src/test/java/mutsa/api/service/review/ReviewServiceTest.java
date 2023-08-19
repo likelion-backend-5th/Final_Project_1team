@@ -3,12 +3,10 @@ package mutsa.api.service.review;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.persistence.EntityManager;
-import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
-import mutsa.api.dto.review.ReviewUpdateDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -23,6 +21,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -43,7 +42,7 @@ public class ReviewServiceTest {
     @Autowired
     private EntityManager entityManager;
 
-    private User reviewer1, reviewer2, seller;
+    private User reviewer1, reviewer2, reviewer3, reviewer4;
     private Article article;
     private Order order;
 
@@ -55,7 +54,13 @@ public class ReviewServiceTest {
         reviewer2 = User.of("user2", "password", "email2@", "oauthName2", null, null);
         reviewer2 = userRepository.save(reviewer2);
 
-        seller = User.of("seller", "password", "sellerEmail@", "sellerOauthName", null, null);
+        reviewer3 = User.of("user3", "password", "email3@", "oauthName3", null, null);
+        reviewer3 = userRepository.save(reviewer3);
+
+        reviewer4 = User.of("user4", "password", "email4@", "oauthName4", null, null);
+        reviewer4 = userRepository.save(reviewer4);
+
+        User seller = User.of("seller", "password", "sellerEmail@", "sellerOauthName", null, null);
         seller = userRepository.save(seller);
 
         article = Article.builder()
@@ -95,7 +100,7 @@ public class ReviewServiceTest {
         review = reviewRepository.save(review);
 
         // when
-        ReviewResponseDto responseDto = reviewService.findReview(review.getApiId());
+        ReviewResponseDto responseDto = reviewService.getReview(review.getApiId());
 
         // then
         assertThat(responseDto.getContent()).isEqualTo(review.getContent());
@@ -109,13 +114,16 @@ public class ReviewServiceTest {
         // given
         reviewRepository.save(Review.of(reviewer1, article, "content1", 1));
         reviewRepository.save(Review.of(reviewer2, article, "content2", 2));
+        reviewRepository.save(Review.of(reviewer3, article, "content3", 3));
+        reviewRepository.save(Review.of(reviewer4, article, "content4", 4));
 
         // when
-        List<ReviewResponseDto> allReviews = reviewService.findAllReview(article.getApiId());
+        Page<ReviewResponseDto> allReviews = reviewService.findAllReview(article.getApiId(), 1, 20);
 
         // then
-        log.info(allReviews.toString());
-        assertThat(allReviews.size()).isEqualTo(2);
+        log.info(allReviews.getContent().toString());
+        assertThat(allReviews.getTotalPages()).isEqualTo(1);
+        assertThat(allReviews.getTotalElements()).isEqualTo(4);
     }
 
     @DisplayName("후기 수정 서비스 테스트")
@@ -124,7 +132,7 @@ public class ReviewServiceTest {
         // given
         Review review = Review.of(reviewer1, article, "test Review", 5);
 
-        ReviewUpdateDto updateDto = new ReviewUpdateDto();
+        ReviewRequestDto updateDto = new ReviewRequestDto();
         updateDto.setContent("reviewUpdate test");
         updateDto.setPoint(3);
 
