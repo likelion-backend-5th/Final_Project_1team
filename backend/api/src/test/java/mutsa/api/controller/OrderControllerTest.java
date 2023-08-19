@@ -1,8 +1,10 @@
 package mutsa.api.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.api.dto.order.OrderStatueRequestDto;
 import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
@@ -34,6 +36,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -168,6 +171,38 @@ class OrderControllerTest {
         );
 
     }
+
+    @DisplayName("주문 상태 수정")
+    @Test
+    void updateOrder() throws Exception {
+        Order savedOrder = orderRepository.save(Order.of(article, consumer));
+        entityManager.flush();
+        entityManager.clear();
+
+        //given
+        when(SecurityUtil.getCurrentUsername()).thenReturn(consumer.getUsername());
+        OrderStatueRequestDto dto = new OrderStatueRequestDto(OrderStatus.END);
+        String requestBody = new ObjectMapper().writeValueAsString(dto);
+
+
+        //when
+        mockMvc.perform(put("/api/articles/{articleApiId}/order/{orderApiId}", article.getApiId(), savedOrder.getApiId())
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document("api/order/주문 싱태 수정",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint())));
+
+
+        //then
+        entityManager.flush();
+        entityManager.clear();
+        assertThat(orderRepository.findById(savedOrder.getId()).isEmpty()).isFalse();
+        assertThat(orderRepository.findById(savedOrder.getId()).get().getOrderStatus()).isEqualTo(OrderStatus.END);
+    }
+
 
     @DisplayName("주문 삭제")
     @Test
