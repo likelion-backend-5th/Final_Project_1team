@@ -1,6 +1,7 @@
 package mutsa.api.service.review;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -15,6 +16,7 @@ import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
 import mutsa.common.domain.models.review.Review;
 import mutsa.common.domain.models.user.User;
+import mutsa.common.exception.BusinessException;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
 import mutsa.common.repository.review.ReviewRepository;
@@ -99,6 +101,21 @@ public class ReviewModuleServiceTest {
         assertThat(reviewRequestDto.getPoint()).isEqualTo(responseDto.getPoint());
     }
 
+    @DisplayName("후기 생성 예외 테스트")
+    @Test
+    void createReviewException() {
+        // given
+        ReviewRequestDto reviewRequestDto = new ReviewRequestDto();
+
+        reviewRequestDto.setContent("Review Exception Test");
+        reviewRequestDto.setPoint(1);
+
+        // when
+        // then
+        assertThrows(BusinessException.class,
+            () -> reviewModuleService.createReview(article, order, reviewer2, reviewRequestDto));
+    }
+
     @DisplayName("후기 단일 조회 모듈 서비스 테스트")
     @Test
     void getReview() {
@@ -140,7 +157,7 @@ public class ReviewModuleServiceTest {
         // given
         String content = "testContent";
         Integer point = 5;
-        Review review = Review.of(reviewer1, article, content, point);
+        Review review = reviewRepository.save(Review.of(reviewer1, article, content, point));
 
         ReviewUpdateDto updateDto = new ReviewUpdateDto();
         updateDto.setContent("test Content");
@@ -152,6 +169,22 @@ public class ReviewModuleServiceTest {
         // then
         assertThat(updateDto.getContent()).isEqualTo(responseDto.getContent());
         assertThat(updateDto.getPoint()).isEqualTo(responseDto.getPoint());
+    }
+
+    @DisplayName("후기 수정 예외 테스트")
+    @Test
+    void updateReviewException() {
+        // given
+        Review review = reviewRepository.save(Review.of(reviewer1, article, "testReview", 2));
+
+        ReviewUpdateDto updateDto = new ReviewUpdateDto();
+        updateDto.setContent("Review Update Exception test");
+        updateDto.setPoint(4);
+
+        // when
+        // then
+        assertThrows(BusinessException.class,
+            () -> reviewModuleService.updateReview(reviewer2, review.getApiId(), updateDto));
     }
 
     @DisplayName("후기 삭제 모듈 서비스 테스트")
@@ -170,6 +203,18 @@ public class ReviewModuleServiceTest {
         // then
         Optional<Review> deletedReview = reviewRepository.findByApiId(review.getApiId());
         assertThat(deletedReview.isPresent()).isFalse();
+    }
+
+    @DisplayName("후기 삭제 예외 테스트")
+    @Test
+    void deleteReviewException() {
+        // given
+        Review review = reviewRepository.save(Review.of(reviewer1, article, "test Review", 1));
+
+        // when
+        // then
+        assertThrows(BusinessException.class,
+            () -> reviewModuleService.deleteReview(reviewer2, review.getApiId()));
     }
 
     @Test
