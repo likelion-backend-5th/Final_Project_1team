@@ -7,10 +7,13 @@
 package mutsa.api.service;
 
 import mutsa.api.dto.article.ArticleCreateRequestDto;
+import mutsa.api.dto.article.ArticleFilterDto;
 import mutsa.api.dto.article.ArticleResponseDto;
 import mutsa.api.dto.article.ArticleUpdateRequestDto;
 import mutsa.api.service.article.ArticleService;
+import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.article.ArticleStatus;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.user.UserRepository;
@@ -96,7 +99,11 @@ public class ArticleServiceTest {
     public void pageByUsernameTest() {
         String username = user.getUsername();
 
-        List<ArticleResponseDto> dtos = articleService.getPageByUsername(username, Sort.Direction.ASC);
+        List<ArticleResponseDto> dtos = articleService.getPageByUsername(
+                username,
+                Sort.Direction.ASC,
+                ArticleFilterDto.of()
+        );
 
         assert dtos != null && !dtos.isEmpty();
         for (int i = 0; i < articles.size(); i++) {
@@ -107,12 +114,63 @@ public class ArticleServiceTest {
     @Test
     @DisplayName("Article Service 페이지네이션 테스트")
     public void pageTest() {
-        List<ArticleResponseDto> dtos = articleService.getPage(0, 10, Sort.Direction.ASC);
+        List<ArticleResponseDto> dtos = articleService.getPage(0, 10, Sort.Direction.ASC, ArticleFilterDto.of());
 
         assert dtos != null && !dtos.isEmpty();
         for (int i = 0; i < articles.size(); i++) {
             checkSameValue(articles.get(i), dtos.get(i));
         }
+    }
+
+    @Test
+    @DisplayName("Article Service 필터 테스트 - 게시글 상태가 LIVE 인 경우만 페이징")
+    public void filterTest() {
+        articles.get(0).setArticleStatus(ArticleStatus.EXPIRED);
+
+        articles = articleRepository.saveAll(articles);
+
+        List<ArticleResponseDto> dtos = articleService.getPage(0, 10, Sort.Direction.ASC, ArticleFilterDto.of());
+
+        assert dtos != null && !dtos.isEmpty();
+        for (int i = 1; i < dtos.size(); i++) {
+            checkSameValue(articles.get(i), dtos.get(i));
+        }
+    }
+
+    @Test
+    @DisplayName("Article Service 필터 테스트 - 게시글 상태가 EXPIRED 인 경우만 페이징")
+    public void filterTest2() {
+        articles.get(0).setArticleStatus(ArticleStatus.EXPIRED);
+
+        articles = articleRepository.saveAll(articles);
+
+        List<ArticleResponseDto> dtos = articleService.getPage(
+                0,
+                10,
+                Sort.Direction.ASC,
+                ArticleFilterDto.of(Status.ACTIVE, ArticleStatus.EXPIRED)
+        );
+
+        assert dtos != null && !dtos.isEmpty();
+        checkSameValue(articles.get(0), dtos.get(0));
+    }
+
+    @Test
+    @DisplayName("Article Service 필터 테스트 - 삭제되고 게시글 상태가 EXPIRED 인 경우만 페이징")
+    public void filterTest3() {
+        articleRepository.delete(articles.get(0));
+
+        articles = articleRepository.findAll();
+
+        List<ArticleResponseDto> dtos = articleService.getPage(
+                0,
+                10,
+                Sort.Direction.ASC,
+                ArticleFilterDto.of(Status.DELETED, ArticleStatus.EXPIRED)
+        );
+
+        assert dtos != null && !dtos.isEmpty();
+        checkSameValue(articles.get(0), dtos.get(0));
     }
 
     private void checkSameValue(Article articleEntity, ArticleResponseDto articleResponseDto) {
@@ -121,5 +179,7 @@ public class ArticleServiceTest {
         Assertions.assertEquals(articleEntity.getDescription(), articleResponseDto.getDescription());
         Assertions.assertEquals(articleEntity.getUser().getUsername(), articleResponseDto.getUsername());
         Assertions.assertEquals(articleEntity.getThumbnail(), articleResponseDto.getThumbnail());
+        Assertions.assertEquals(articleEntity.getStatus(), articleResponseDto.getStatus());
+        Assertions.assertEquals(articleEntity.getArticleStatus(), articleResponseDto.getArticleStatus());
     }
 }

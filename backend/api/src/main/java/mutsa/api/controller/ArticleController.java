@@ -9,10 +9,7 @@ package mutsa.api.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mutsa.api.dto.article.ArticleCreateRequestDto;
-import mutsa.api.dto.article.ArticleResponseDto;
-import mutsa.api.dto.article.ArticleOrderDirection;
-import mutsa.api.dto.article.ArticleUpdateRequestDto;
+import mutsa.api.dto.article.*;
 import mutsa.api.service.article.ArticleService;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -34,9 +31,10 @@ public class ArticleController {
     public ResponseEntity<List<ArticleResponseDto>> getArticleList(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "20") Integer size,
-            @RequestParam(value = "order", defaultValue = "DESC") ArticleOrderDirection direction
+            @RequestParam(value = "order", defaultValue = "DESC") ArticleOrderDirection direction,
+            @Valid @RequestBody ArticleFilterDto articleFilterDto
             ) {
-        return ResponseEntity.ok(articleService.getPage(page, size, Sort.Direction.fromString(direction.name())));
+        return ResponseEntity.ok(articleService.getPage(page, size, Sort.Direction.fromString(direction.name()), articleFilterDto));
     }
 
     @GetMapping("/{articleApiId}")

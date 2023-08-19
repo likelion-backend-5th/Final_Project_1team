@@ -3,11 +3,14 @@ package mutsa.common.domain.models.article;
 import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
+import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.review.Review;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +25,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "article")
+@SQLDelete(sql = "UPDATE `article` SET (status, article_status) = ('DELETED', 'EXPIRED') WHERE article_id = ?")
+@Where(clause = "status = 'ACTIVE' ")
 public class Article extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +44,16 @@ public class Article extends BaseEntity implements Serializable {
     private String description;
 
     private String thumbnail;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private Status status = Status.ACTIVE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private ArticleStatus articleStatus = ArticleStatus.LIVE;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "article")
     @Builder.Default

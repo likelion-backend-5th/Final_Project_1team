@@ -11,6 +11,7 @@ import mutsa.api.dto.article.ArticleCreateRequestDto;
 import mutsa.api.dto.article.ArticleUpdateRequestDto;
 import mutsa.api.util.ArticleUtil;
 import mutsa.api.util.SecurityUtil;
+import mutsa.common.domain.filter.article.ArticleFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
@@ -129,18 +130,23 @@ public class ArticleModuleService {
             int pageNum,
             int size,
             Sort.Direction direction,
-            String orderProperties
+            String orderProperties,
+            ArticleFilter articleFilter
     ) {
         Pageable pageable = PageRequest.of(Math.max(0, pageNum - 1), size, direction, orderProperties);
 
-        return articleRepository.getPageByUsername(username, pageable);
+        return articleRepository.getPageByUsername(
+                username,
+                articleFilter,
+                pageable
+        );
     }
 
     @Transactional(readOnly = true)
-    public Page<Article> getPage(int pageNum, int size, Sort.Direction direction, String orderProperties) {
+    public Page<Article> getPage(int pageNum, int size, Sort.Direction direction, String orderProperties, ArticleFilter articleFilter) {
         Pageable pageable = PageRequest.of(Math.max(0, pageNum - 1), size, direction, orderProperties);
 
-        return articleRepository.getPage(pageable);
+        return articleRepository.getPage(articleFilter, pageable);
     }
 
     /**
