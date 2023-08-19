@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.article.*;
 import mutsa.api.service.article.ArticleService;
+import mutsa.common.domain.models.Status;
+import mutsa.common.domain.models.article.ArticleStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,13 +31,19 @@ public class ArticleController {
 
     //  조회
     @GetMapping
-    public ResponseEntity<List<ArticleResponseDto>> getArticleList(
+    public ResponseEntity<Page<ArticleResponseDto>> getArticleList(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "20") Integer size,
             @RequestParam(value = "order", defaultValue = "DESC") ArticleOrderDirection direction,
-            @Valid @RequestBody ArticleFilterDto articleFilterDto
-            ) {
-        return ResponseEntity.ok(articleService.getPage(page, size, Sort.Direction.fromString(direction.name()), articleFilterDto));
+            @RequestParam(value = "articleStatue", defaultValue = "LIVE") ArticleStatus articleState,
+            @RequestParam(value = "statue", defaultValue = "ACTIVE") Status status
+    ) {
+        return ResponseEntity.ok(articleService.getPage(
+                page,
+                size,
+                Sort.Direction.fromString(direction.name()),
+                ArticleFilterDto.of(status, articleState)
+        ));
     }
 
     @GetMapping("/{articleApiId}")
@@ -71,5 +80,14 @@ public class ArticleController {
             @RequestParam(value = "amount", defaultValue = "1") Integer count
     ) {
         return ResponseEntity.ok(articleService.saveDummyArticles(count));
+    }
+
+    //  DEBUG 디버깅용 테스트 메소드
+    @DeleteMapping("/{articleApiId}/test")
+    public ResponseEntity<?> deleteArticleTest(
+            @PathVariable("articleApiId") String apiId
+    ) {
+        articleService.deleteByApiId(apiId);
+        return ResponseEntity.ok().body(null);
     }
 }

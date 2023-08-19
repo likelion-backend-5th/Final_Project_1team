@@ -114,17 +114,6 @@ public class ArticleModuleService {
     }
 
     @Transactional(readOnly = true)
-    public List<Article> getsByUserApiId(String userApiId) {
-        List<Article> articles = articleRepository.findAllByUser_username(userApiId);
-
-        if (articles == null || articles.isEmpty()) {
-            throw new BusinessException(ARTICLE_NOT_FOUND);
-        }
-
-        return articles;
-    }
-
-    @Transactional(readOnly = true)
     public Page<Article> getPageByUsername(
             String username,
             int pageNum,

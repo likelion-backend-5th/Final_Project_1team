@@ -45,6 +45,8 @@ public class ArticleRepositoryImpl extends Querydsl4RepositorySupport implements
     public Page<Article> getPage(ArticleFilter articleFilter, Pageable pageable) {
         JPAQuery<Article> query = getQuery();
 
+        doFilter(query, articleFilter);
+
         return getResultPage(query, pageable);
     }
 

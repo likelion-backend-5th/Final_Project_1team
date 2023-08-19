@@ -33,10 +33,6 @@ public class ArticleService {
         return ArticleResponseDto.to(articleModuleService.update(updateDto));
     }
 
-    public Article requestDtoToEntity(ArticleCreateRequestDto requestDto) {
-        return articleModuleService.dtoToEntity(requestDto);
-    }
-
     protected Article getByApiId(String apiId) {
         return articleModuleService.getByApiId(apiId);
     }
@@ -49,17 +45,13 @@ public class ArticleService {
         return ArticleResponseDto.to(articleModuleService.getByApiId(apiId));
     }
 
-    public List<Article> getsByUserApiId(String userApiId) {
-        return articleModuleService.getsByUserApiId(userApiId);
-    }
-
-    public List<ArticleResponseDto> getPageByUsername(
+    public Page<ArticleResponseDto> getPageByUsername(
             String username, Sort.Direction direction, ArticleFilterDto articleFilter
     ) {
         return getPageByUsername(username, 0, 10, direction, articleFilter);
     }
 
-    public List<ArticleResponseDto> getPageByUsername(
+    public Page<ArticleResponseDto> getPageByUsername(
             String username, int pageNum, int size, Sort.Direction direction, ArticleFilterDto articleFilter
     ) {
         return articleModuleService.getPageByUsername(
@@ -69,10 +61,10 @@ public class ArticleService {
                 direction,
                 "id",
                 ArticleFilterDto.to(articleFilter)
-        ).getContent().stream().map(ArticleResponseDto::to).toList();
+        ).map(ArticleResponseDto::to);
     }
 
-    public List<ArticleResponseDto> getPageByUsername(
+    public Page<ArticleResponseDto> getPageByUsername(
             String username,
             int pageNum,
             int size,
@@ -87,10 +79,10 @@ public class ArticleService {
                 direction,
                 orderProperties,
                 ArticleFilterDto.to(articleFilter)
-        ).getContent().stream().map(ArticleResponseDto::to).toList();
+        ).map(ArticleResponseDto::to);
     }
 
-    public List<ArticleResponseDto> getPage(
+    public Page<ArticleResponseDto> getPage(
             int pageNum, int size, Sort.Direction direction, ArticleFilterDto articleFilter
     ) {
         return articleModuleService.getPage(
@@ -99,10 +91,10 @@ public class ArticleService {
                 direction,
                 "id",
                 ArticleFilterDto.to(articleFilter)
-        ).getContent().stream().map(ArticleResponseDto::to).toList();
+        ).map(ArticleResponseDto::to);
     }
 
-    public List<ArticleResponseDto> getPage(
+    public Page<ArticleResponseDto> getPage(
             int pageNum, int size, Sort.Direction direction, String orderProperties, ArticleFilterDto articleFilter
     ) {
         return articleModuleService.getPage(
@@ -111,7 +103,7 @@ public class ArticleService {
                 direction,
                 orderProperties,
                 ArticleFilterDto.to(articleFilter)
-        ).getContent().stream().map(ArticleResponseDto::to).toList();
+        ).map(ArticleResponseDto::to);
     }
 
     public void deleteById(Long id) {

@@ -13,6 +13,7 @@ import lombok.*;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class ArticleUpdateRequestDto {
     @NotBlank
     private String title;

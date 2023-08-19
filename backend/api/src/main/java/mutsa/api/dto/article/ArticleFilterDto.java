@@ -8,11 +8,13 @@ package mutsa.api.dto.article;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 import mutsa.common.domain.filter.article.ArticleFilter;
 import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.ArticleStatus;
 
 @Getter
+@Setter
 public class ArticleFilterDto {
     @NotNull
     private ArticleStatus articleStatus;

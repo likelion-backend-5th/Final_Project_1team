@@ -8,6 +8,7 @@ package mutsa.api.repository;
 
 import mutsa.api.dto.article.ArticleFilterDto;
 import mutsa.common.domain.filter.article.ArticleFilter;
+import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.repository.article.ArticleRepository;
@@ -100,6 +101,11 @@ public class ArticleRepositoryTest {
         List<Article> entities = articleRepository.findAll();
 
         assert entities != null && !entities.isEmpty();
-        Assertions.assertEquals(articles, entities);
+//        for (int i = 0; i < entities.size(); i++) {
+//            if (entities.get(i).getStatus() == Status.DELETED) {
+//                continue;
+//            }
+//        }
+        Assertions.assertTrue(entities.containsAll(articles));
     }
 }

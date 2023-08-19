@@ -25,8 +25,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "article")
-@SQLDelete(sql = "UPDATE `article` SET (status, article_status) = ('DELETED', 'EXPIRED') WHERE article_id = ?")
-@Where(clause = "status = 'ACTIVE' ")
+@SQLDelete(sql = "UPDATE `article` SET status = 'DELETED', article_status = 'EXPIRED' WHERE article_id = ?")
 public class Article extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
