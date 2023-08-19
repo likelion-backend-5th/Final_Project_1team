@@ -22,4 +22,14 @@ public class ReviewResponseDto {
             .username(review.getUser().getUsername())
             .build();
     }
+
+    @Override
+    public String toString() {
+        return "ReviewResponseDto{" +
+            "apiId='" + apiId + '\'' +
+            ", content='" + content + '\'' +
+            ", point=" + point +
+            ", username='" + username + '\'' +
+            '}';
+    }
 }

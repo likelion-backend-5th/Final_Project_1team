@@ -6,7 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReviewRequestDto {
-    private String username;
     private String content;
     private Integer point;
 }
