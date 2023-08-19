@@ -144,7 +144,7 @@ class OrderModuleServiceTest {
         entityManager.clear();
 
         //when
-        orderModuleService.updateOrderStatus(article, consumer, new OrderStatueRequestDto(OrderStatus.END), savedOrder.getApiId());
+        orderModuleService.updateOrderStatus(article, consumer, new OrderStatueRequestDto("END"), savedOrder.getApiId());
         entityManager.flush();
         entityManager.clear();
 

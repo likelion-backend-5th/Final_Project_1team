@@ -6,6 +6,7 @@ import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.api.dto.order.OrderStatueRequestDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
+import mutsa.common.domain.models.order.OrderStatus;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.repository.order.OrderRepository;
@@ -50,7 +51,7 @@ public class OrderModuleService {
         order.validArticleId(article);
         order.validSellerOrConsumerId(user); //판매자와 구매자만 상태를 변경할 수 있다.
 
-        order.setOrderStatus(orderStatueRequestDto.getOrderStatus());
+        order.setOrderStatus(OrderStatus.of(orderStatueRequestDto.getOrderStatus()));
         return OrderDetailResponseDto.fromEntity(order);
     }
 

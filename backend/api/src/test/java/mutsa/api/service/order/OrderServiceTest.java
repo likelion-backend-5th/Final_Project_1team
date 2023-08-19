@@ -109,7 +109,7 @@ class OrderServiceTest {
         entityManager.clear();
 
         //when
-        orderService.updateOrderStatus(article.getApiId(), savedOrder.getApiId(), new OrderStatueRequestDto(OrderStatus.END), consumer.getUsername());
+        orderService.updateOrderStatus(article.getApiId(), savedOrder.getApiId(), new OrderStatueRequestDto("END"), consumer.getUsername());
         entityManager.flush();
         entityManager.clear();
 

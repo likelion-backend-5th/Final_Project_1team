@@ -181,7 +181,7 @@ class OrderControllerTest {
 
         //given
         when(SecurityUtil.getCurrentUsername()).thenReturn(consumer.getUsername());
-        OrderStatueRequestDto dto = new OrderStatueRequestDto(OrderStatus.END);
+        OrderStatueRequestDto dto = new OrderStatueRequestDto("END");
         String requestBody = new ObjectMapper().writeValueAsString(dto);
 
 
