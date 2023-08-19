@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import mutsa.api.ApiApplication;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
-import mutsa.api.dto.review.ReviewUpdateDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -158,7 +157,7 @@ public class ReviewModuleServiceTest {
         Integer point = 5;
         Review review = reviewRepository.save(Review.of(reviewer1, article, content, point));
 
-        ReviewUpdateDto updateDto = new ReviewUpdateDto();
+        ReviewRequestDto updateDto = new ReviewRequestDto();
         updateDto.setContent("test Content");
         updateDto.setPoint(3);
 
@@ -176,7 +175,7 @@ public class ReviewModuleServiceTest {
         // given
         Review review = reviewRepository.save(Review.of(reviewer1, article, "testReview", 2));
 
-        ReviewUpdateDto updateDto = new ReviewUpdateDto();
+        ReviewRequestDto updateDto = new ReviewRequestDto();
         updateDto.setContent("Review Update Exception test");
         updateDto.setPoint(4);
 
@@ -188,7 +187,6 @@ public class ReviewModuleServiceTest {
 
     @DisplayName("후기 삭제 모듈 서비스 테스트")
     @Test
-    // TODO Soft Delete 로 수정
     void deleteReview() {
         // given
         Review review = reviewRepository.save(Review.of(reviewer1, article, "content1", 1));

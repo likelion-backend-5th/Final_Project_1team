@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.review.ReviewDeleteDto;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
-import mutsa.api.dto.review.ReviewUpdateDto;
 import mutsa.api.service.article.ArticleModuleService;
 import mutsa.api.service.order.OrderModuleService;
 import mutsa.api.service.user.UserModuleService;
@@ -35,7 +34,7 @@ public class ReviewService {
     }
 
     // 리뷰 단일 조회 (모든 유저 접근 가능)
-    public ReviewResponseDto findReview(String reviewApiId) {
+    public ReviewResponseDto getReview(String reviewApiId) {
 
         return reviewModuleService.getReview(reviewApiId);
     }
@@ -48,7 +47,7 @@ public class ReviewService {
     }
 
     // 리뷰 수정
-    public ReviewResponseDto updateReview(String reviewApiId, String username, ReviewUpdateDto reviewUpdateDto) {
+    public ReviewResponseDto updateReview(String reviewApiId, String username, ReviewRequestDto reviewUpdateDto) {
         User user = userModuleService.getByUsername(username);
 
         return reviewModuleService.updateReview(user, reviewApiId, reviewUpdateDto);

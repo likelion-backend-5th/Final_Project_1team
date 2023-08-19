@@ -7,7 +7,6 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
-import mutsa.api.dto.review.ReviewUpdateDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -101,7 +100,7 @@ public class ReviewServiceTest {
         review = reviewRepository.save(review);
 
         // when
-        ReviewResponseDto responseDto = reviewService.findReview(review.getApiId());
+        ReviewResponseDto responseDto = reviewService.getReview(review.getApiId());
 
         // then
         assertThat(responseDto.getContent()).isEqualTo(review.getContent());
@@ -133,7 +132,7 @@ public class ReviewServiceTest {
         // given
         Review review = Review.of(reviewer1, article, "test Review", 5);
 
-        ReviewUpdateDto updateDto = new ReviewUpdateDto();
+        ReviewRequestDto updateDto = new ReviewRequestDto();
         updateDto.setContent("reviewUpdate test");
         updateDto.setPoint(3);
 

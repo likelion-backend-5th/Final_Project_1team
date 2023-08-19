@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.review.ReviewDeleteDto;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
-import mutsa.api.dto.review.ReviewUpdateDto;
 import mutsa.api.service.review.ReviewService;
 import mutsa.api.util.SecurityUtil;
 import org.springframework.data.domain.Page;
@@ -52,7 +51,7 @@ public class ReviewController {
     ) {
         return ResponseEntity
             .ok()
-            .body(reviewService.findReview(reviewApiId));
+            .body(reviewService.getReview(reviewApiId));
     }
 
     // 후기 전체 조회
@@ -71,13 +70,13 @@ public class ReviewController {
     @PutMapping("/review/{reviewApiId}")
     public ResponseEntity<ReviewResponseDto> updateReview(
         @PathVariable("reviewApiId") String reviewApiId,
-        @RequestBody ReviewUpdateDto updateDto
+        @RequestBody ReviewRequestDto reviewUpdateDto
     ) {
         String username = SecurityUtil.getCurrentUsername();
 
         return ResponseEntity
             .ok()
-            .body(reviewService.updateReview(reviewApiId, username, updateDto));
+            .body(reviewService.updateReview(reviewApiId, username, reviewUpdateDto));
     }
 
     // 후기 삭제

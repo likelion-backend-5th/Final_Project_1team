@@ -20,7 +20,6 @@ import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.ApiApplication;
 import mutsa.api.dto.review.ReviewRequestDto;
-import mutsa.api.dto.review.ReviewUpdateDto;
 import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
@@ -194,7 +193,7 @@ public class ReviewControllerTest {
         // given
         when(SecurityUtil.getCurrentUsername()).thenReturn(reviewer1.getUsername());
         Review review = reviewRepository.save(Review.of(reviewer1, article, "content1", 1));
-        ReviewUpdateDto updateDto = new ReviewUpdateDto();
+        ReviewRequestDto updateDto = new ReviewRequestDto();
         updateDto.setContent("test Content");
         updateDto.setPoint(3);
 
@@ -227,7 +226,6 @@ public class ReviewControllerTest {
 
         // when
         // then
-        // TODO Soft Delete 로 수정
         mockMvc.perform(delete("/api/review/{reviewApiId}", review.getApiId())
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(MockMvcResultHandlers.print())

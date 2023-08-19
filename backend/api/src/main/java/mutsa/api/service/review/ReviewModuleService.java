@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.review.ReviewDeleteDto;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
-import mutsa.api.dto.review.ReviewUpdateDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -71,7 +70,7 @@ public class ReviewModuleService {
     // 리뷰 수정
     @Transactional
     public ReviewResponseDto updateReview(User user, String reviewApiId,
-        ReviewUpdateDto reviewUpdateDto) {
+        ReviewRequestDto reviewUpdateDto) {
         Review review = getByApiId(reviewApiId);
         // 유저 검증
         review.validUserById(user);
