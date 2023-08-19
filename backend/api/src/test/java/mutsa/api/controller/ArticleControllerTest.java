@@ -6,11 +6,13 @@
 
 package mutsa.api.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.article.ArticleCreateRequestDto;
-import mutsa.api.dto.article.ArticleFilterDto;
+import mutsa.api.dto.article.ArticleResponseDto;
 import mutsa.api.dto.article.ArticleUpdateRequestDto;
 import mutsa.api.service.article.ArticleService;
 import mutsa.api.util.SecurityUtil;
@@ -36,6 +38,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -69,7 +72,7 @@ public class ArticleControllerTest {
     private static MockedStatic<SecurityUtil> securityUtilMockedStatic;
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    private User user;
+    private User user1, user2;
     private List<Article> articles;
 
     @BeforeAll
@@ -84,16 +87,25 @@ public class ArticleControllerTest {
 
     @BeforeEach
     public void init() {
-        user = User.of(
-                "ArticleControllerTest",
+        user1 = User.of(
+                "ArticleControllerTestUser1",
                 passwordEncoder.encode("test"),
-                "articlecontrollertest@gmail.com",
+                "articlecontrollertestuser1@gmail.com",
                 null,
                 null,
                 null
         );
+        user1 = userRepository.save(user1);
 
-        user = userRepository.save(user);
+        user2 = User.of(
+                "ArticleControllerTestUser2",
+                passwordEncoder.encode("test"),
+                "articlecontrollertestuser2@gmail.com",
+                null,
+                null,
+                null
+        );
+        user2 = userRepository.save(user2);
 
         articles = new ArrayList<>();
 
@@ -101,7 +113,7 @@ public class ArticleControllerTest {
             Article article = Article.builder()
                     .title("title-" + (i + 1))
                     .description("desc-" + (i + 1))
-                    .user(user)
+                    .user(i % 2 == 0 ? user1 : user2)
                     .build();
 
             articles.add(article);
@@ -116,14 +128,14 @@ public class ArticleControllerTest {
     @DisplayName("게시글 단일 조회")
     public void getArticle() throws Exception {
         Article entity = Article.builder()
-                .user(user)
+                .user(user1)
                 .title("test")
                 .description("test")
                 .build();
 
         entity = articleRepository.save(entity);
 
-        when(SecurityUtil.getCurrentUsername()).thenReturn(user.getUsername());
+        when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         mockMvc.perform(get("/api/articles/{articleApiId}", entity.getApiId())
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -148,7 +160,7 @@ public class ArticleControllerTest {
     @Test
     @DisplayName("게시글 목록 조회")
     public void getPage() throws Exception {
-        when(SecurityUtil.getCurrentUsername()).thenReturn(user.getUsername());
+        when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         MvcResult mvcResult = mockMvc.perform(get("/api/articles")
                                                       .param("page", String.valueOf(0))
@@ -167,11 +179,118 @@ public class ArticleControllerTest {
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("totalElements", equalTo(10)),
-                        jsonPath("totalPages", equalTo(1)),
+                        jsonPath("size", equalTo(10)),
+                        jsonPath("number", equalTo(0)),
                         jsonPath("numberOfElements", equalTo(10))
                 )
                 .andReturn();
+    }
+
+    @Test
+    @DisplayName("게시글 제목 조회")
+    public void getPageByTitle() throws Exception {
+        when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/articles")
+                                                      .param("page", String.valueOf(0))
+                                                      .param("size", String.valueOf(10))
+                                                      .param("order", "ASC")
+                                                      .param("articleStatus", ArticleStatus.LIVE.toString())
+                                                      .param("status", Status.ACTIVE.toString())
+                                                      .param("title", "title-1")
+                                                      .contentType(MediaType.APPLICATION_JSON))
+
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document(
+                        "api/article/게시글 제목 조회",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint())
+                ))
+                .andExpectAll(
+                        status().isOk(),
+                        status().is2xxSuccessful(),
+                        jsonPath("$['content'][0]['apiId']").value(articles.get(0).getApiId()),
+                        jsonPath("$['content'][0]['title']").value(articles.get(0).getTitle()),
+                        jsonPath("$['content'][0]['description']").value(articles.get(0).getDescription()),
+                        jsonPath("$['content'][0]['username']").value(articles.get(0).getUser().getUsername()),
+                        content().contentType(MediaType.APPLICATION_JSON)
+                )
+                .andReturn();
+    }
+
+    @Test
+    @DisplayName("게시글 내용 조회")
+    public void getPageByDescription() throws Exception {
+        when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/articles")
+                                                      .param("page", String.valueOf(0))
+                                                      .param("size", String.valueOf(10))
+                                                      .param("order", "ASC")
+                                                      .param("articleStatus", ArticleStatus.LIVE.toString())
+                                                      .param("status", Status.ACTIVE.toString())
+                                                      .param("description", "desc-1")
+                                                      .contentType(MediaType.APPLICATION_JSON))
+
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document(
+                        "api/article/게시글 내용 조회",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint())
+                ))
+                .andExpectAll(
+                        status().isOk(),
+                        status().is2xxSuccessful(),
+                        jsonPath("$['content'][0]['apiId']").value(articles.get(0).getApiId()),
+                        jsonPath("$['content'][0]['title']").value(articles.get(0).getTitle()),
+                        jsonPath("$['content'][0]['description']").value(articles.get(0).getDescription()),
+                        jsonPath("$['content'][0]['username']").value(articles.get(0).getUser().getUsername()),
+                        content().contentType(MediaType.APPLICATION_JSON)
+                )
+                .andReturn();
+    }
+
+    @Test
+    @DisplayName("게시글 유저이름 조회")
+    public void getPageByUsername() throws Exception {
+        when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/articles")
+                                                      .param("page", String.valueOf(0))
+                                                      .param("size", String.valueOf(10))
+                                                      .param("order", "ASC")
+                                                      .param("articleStatus", ArticleStatus.LIVE.toString())
+                                                      .param("status", Status.ACTIVE.toString())
+                                                      .param("username", "ArticleControllerTestUser1")
+                                                      .contentType(MediaType.APPLICATION_JSON))
+
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document(
+                        "api/article/게시글 내용 조회",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint())
+                ))
+                .andExpectAll(
+                        status().isOk(),
+                        status().is2xxSuccessful(),
+                        jsonPath("size", equalTo(10)),
+                        jsonPath("number", equalTo(0)),
+                        jsonPath("numberOfElements", equalTo(5)),
+                        content().contentType(MediaType.APPLICATION_JSON)
+                )
+                .andReturn();
+
+        JsonNode jsonNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString());
+        String content = jsonNode.get("content").toString();
+
+        ArticleResponseDto[] responseDtos = objectMapper.readValue(
+                content,
+                ArticleResponseDto[].class
+        );
+
+        for (ArticleResponseDto responseDto : responseDtos) {
+            Assertions.assertEquals(user1.getUsername(), responseDto.getUsername());
+        }
     }
 
     @Test
@@ -180,9 +299,9 @@ public class ArticleControllerTest {
         ArticleCreateRequestDto articleCreateRequestDto = new ArticleCreateRequestDto();
         articleCreateRequestDto.setTitle("test Article");
         articleCreateRequestDto.setDescription("test Desc");
-        articleCreateRequestDto.setUsername("ArticleControllerTest");
+        articleCreateRequestDto.setUsername(user1.getUsername());
 
-        when(SecurityUtil.getCurrentUsername()).thenReturn(user.getUsername());
+        when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         MvcResult mvcResult = mockMvc.perform(post("/api/articles")
                                                       .content(objectMapper.writeValueAsString(
@@ -212,10 +331,10 @@ public class ArticleControllerTest {
         ArticleUpdateRequestDto articleUpdateRequestDto = new ArticleUpdateRequestDto();
         articleUpdateRequestDto.setTitle("test Article");
         articleUpdateRequestDto.setDescription("test Desc");
-        articleUpdateRequestDto.setUsername("ArticleControllerTest");
+        articleUpdateRequestDto.setUsername(user1.getUsername());
         articleUpdateRequestDto.setApiId(articles.get(0).getApiId());
 
-        when(SecurityUtil.getCurrentUsername()).thenReturn(user.getUsername());
+        when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         MvcResult mvcResult = mockMvc.perform(put("/api/articles")
                                                       .content(objectMapper.writeValueAsString(
@@ -242,7 +361,7 @@ public class ArticleControllerTest {
     @Test
     @DisplayName("게시글 삭제")
     public void deleteArticle() throws Exception {
-        when(SecurityUtil.getCurrentUsername()).thenReturn(user.getUsername());
+        when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         mockMvc.perform(delete("/api/articles/{articleApiId}", articles.get(0).getApiId())
                                 .contentType(MediaType.APPLICATION_JSON))

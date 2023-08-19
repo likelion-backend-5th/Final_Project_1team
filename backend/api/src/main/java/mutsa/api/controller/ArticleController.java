@@ -36,13 +36,16 @@ public class ArticleController {
             @RequestParam(value = "size", defaultValue = "20") Integer size,
             @RequestParam(value = "order", defaultValue = "DESC") ArticleOrderDirection direction,
             @RequestParam(value = "articleStatue", defaultValue = "LIVE") ArticleStatus articleState,
-            @RequestParam(value = "statue", defaultValue = "ACTIVE") Status status
+            @RequestParam(value = "statue", defaultValue = "ACTIVE") Status status,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "username", required = false) String username
     ) {
         return ResponseEntity.ok(articleService.getPage(
                 page,
                 size,
                 Sort.Direction.fromString(direction.name()),
-                ArticleFilterDto.of(status, articleState)
+                ArticleFilterDto.of(status, articleState, title, description, username)
         ));
     }
 
