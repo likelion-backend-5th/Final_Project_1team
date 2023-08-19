@@ -63,7 +63,7 @@ public class ReviewRepositoryTest {
         assertThat(review.getUser()).isEqualTo(user);
         assertThat(review.getContent()).isEqualTo(content);
         assertThat(review.getPoint()).isEqualTo(point);
-        assertThat(review.getStatus()).isEqualTo(ReviewStatus.UPLOAD);
+        assertThat(review.getReviewStatus()).isEqualTo(ReviewStatus.UPLOAD);
     }
 
     @DisplayName("후기 삭제")

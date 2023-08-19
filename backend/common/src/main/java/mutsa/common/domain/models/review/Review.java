@@ -91,7 +91,7 @@ public class Review extends BaseEntity implements Serializable {
     }
 
     // 요청을 보낸 유저와 후기를 등록한 유저가 동일한지 검증
-    public void validUser(User user) {
+    public void validUserById(User user) {
         if (!Objects.equals(this.user.getId(), user.getId())) {
             throw new BusinessException(ErrorCode.REVIEW_PERMISSION_DENIED);
         }

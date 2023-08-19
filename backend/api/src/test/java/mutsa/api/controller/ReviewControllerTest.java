@@ -4,6 +4,7 @@ package mutsa.api.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,15 +38,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(classes = ApiApplication.class)
 @Transactional
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs
 @Slf4j
 public class ReviewControllerTest {
 
@@ -117,6 +123,12 @@ public class ReviewControllerTest {
         mockMvc.perform(post("/api/article/{articleApiId}/order/{orderApiId}/review", article.getApiId(), order.getApiId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(toJson(reviewRequestDto)))
+            .andDo(MockMvcResultHandlers.print())
+            .andDo(MockMvcRestDocumentation.document(
+                "api/review/후기 생성",
+                Preprocessors.preprocessRequest(prettyPrint()),
+                Preprocessors.preprocessResponse(prettyPrint())
+            ))
             .andExpectAll(
                 status().is2xxSuccessful(),
                 content().contentType(MediaType.APPLICATION_JSON),
@@ -136,11 +148,43 @@ public class ReviewControllerTest {
         // then
         mockMvc.perform(get("/api/review/{reviewApiId}", review.getApiId())
                 .contentType(MediaType.APPLICATION_JSON))
+            .andDo(MockMvcResultHandlers.print())
+            .andDo(MockMvcRestDocumentation.document(
+                "api/review/후기 단일 조회",
+                Preprocessors.preprocessRequest(prettyPrint()),
+                Preprocessors.preprocessResponse(prettyPrint())
+            ))
             .andExpectAll(
                 status().is2xxSuccessful(),
                 content().contentType(MediaType.APPLICATION_JSON),
                 jsonPath("apiId").value(review.getApiId()),
                 jsonPath("username").value(reviewer1.getUsername())
+            );
+    }
+
+    @DisplayName("후기 전체 조회(페이징)")
+    @Test
+    void findAllReview() throws Exception {
+        // given
+        reviewRepository.save(Review.of(reviewer1, article, "content1", 1));
+        reviewRepository.save(Review.of(reviewer2, article, "content2", 2));
+
+        // when
+        // then
+        mockMvc.perform(get("/api/article/{articleApiId}/review", article.getApiId())
+                .contentType(MediaType.APPLICATION_JSON))
+            .andDo(MockMvcResultHandlers.print())
+            .andDo(MockMvcRestDocumentation.document(
+                "api/review/후기 전체 조회",
+                Preprocessors.preprocessRequest(prettyPrint()),
+                Preprocessors.preprocessResponse(prettyPrint())
+            ))
+            .andExpectAll(
+                status().is2xxSuccessful(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("totalPages").value(1),
+                jsonPath("totalElements").value(2),
+                jsonPath("sort.sorted").value(true)
             );
     }
 
@@ -159,10 +203,16 @@ public class ReviewControllerTest {
         mockMvc.perform(put("/api/review/{reviewApiId}", review.getApiId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(updateDto)))
+            .andDo(MockMvcResultHandlers.print())
+            .andDo(MockMvcRestDocumentation.document(
+                "api/review/후기 수정",
+                Preprocessors.preprocessRequest(prettyPrint()),
+                Preprocessors.preprocessResponse(prettyPrint())
+            ))
             .andExpectAll(
                 status().is2xxSuccessful(),
                 content().contentType(MediaType.APPLICATION_JSON),
-                jsonPath("content").value("test Content"),
+                jsonPath("content").value("updated Content"),
                 jsonPath("point").value(3)
             );
     }
@@ -180,6 +230,12 @@ public class ReviewControllerTest {
         // TODO Soft Delete 로 수정
         mockMvc.perform(delete("/api/review/{reviewApiId}", review.getApiId())
                 .contentType(MediaType.APPLICATION_JSON))
+            .andDo(MockMvcResultHandlers.print())
+            .andDo(MockMvcRestDocumentation.document(
+                "api/review/후기 삭제",
+                Preprocessors.preprocessRequest(prettyPrint()),
+                Preprocessors.preprocessResponse(prettyPrint())
+            ))
             .andExpectAll(
                 status().is2xxSuccessful(),
                 content().contentType(MediaType.APPLICATION_JSON),

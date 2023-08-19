@@ -74,7 +74,7 @@ public class ReviewModuleService {
         ReviewUpdateDto reviewUpdateDto) {
         Review review = getByApiId(reviewApiId);
         // 유저 검증
-        review.validUser(user);
+        review.validUserById(user);
 
         review.setContent(reviewUpdateDto.getContent());
         review.setPoint(reviewUpdateDto.getPoint());
@@ -88,7 +88,7 @@ public class ReviewModuleService {
     public ReviewDeleteDto deleteReview(User user, String reviewApiId) {
         Review review = getByApiId(reviewApiId);
         // 유저 검증
-        review.validUser(user);
+        review.validUserById(user);
 
         reviewRepository.delete(review);
 
