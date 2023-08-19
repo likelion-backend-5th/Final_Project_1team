@@ -1,6 +1,7 @@
 package mutsa.api.controller;
 
 
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.models.article.Article;
@@ -10,7 +11,6 @@ import mutsa.common.domain.models.user.User;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
 import mutsa.common.repository.user.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -51,6 +52,8 @@ class OrderControllerTest {
     private UserRepository userRepository;
     @Autowired
     private ArticleRepository articleRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     private static MockedStatic<SecurityUtil> securityUtilMockedStatic;
 
@@ -106,7 +109,7 @@ class OrderControllerTest {
                         content().contentType(MediaType.APPLICATION_JSON)
                 );
 
-        Assertions.assertThat(orderRepository.findAll().size()).isEqualTo(1);
+        assertThat(orderRepository.findAll().size()).isEqualTo(1);
     }
 
     @Test
@@ -170,7 +173,8 @@ class OrderControllerTest {
     @Test
     void deleteOrder() throws Exception {
         Order savedOrder = orderRepository.save(Order.of(article, consumer));
-
+        entityManager.flush();
+        entityManager.clear();
         //given
         when(SecurityUtil.getCurrentUsername()).thenReturn(consumer.getUsername());
 
@@ -185,6 +189,9 @@ class OrderControllerTest {
 
 
         //then
-        Assertions.assertThat(orderRepository.findById(savedOrder.getId())).isEmpty();
+        entityManager.flush();
+        entityManager.clear();
+        assertThat(orderRepository.findById(savedOrder.getId())).isEmpty();
+        assertThat(orderRepository.findByWithDelete(savedOrder.getId()).isEmpty()).isFalse();
     }
 }
