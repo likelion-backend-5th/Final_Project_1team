@@ -1,7 +1,6 @@
 package mutsa.api.controller.review;
 
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.review.ReviewDeleteDto;
@@ -10,6 +9,7 @@ import mutsa.api.dto.review.ReviewResponseDto;
 import mutsa.api.dto.review.ReviewUpdateDto;
 import mutsa.api.service.review.ReviewService;
 import mutsa.api.util.SecurityUtil;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -55,14 +56,15 @@ public class ReviewController {
     }
 
     // 후기 전체 조회
-    // TODO 페이징 처리
     @GetMapping("/article/{articleApiId}/review")
-    public ResponseEntity<List<ReviewResponseDto>> getAllReview(
-        @PathVariable("articleApiId") String articleApiId
+    public ResponseEntity<Page<ReviewResponseDto>> getAllReview(
+        @PathVariable("articleApiId") String articleApiId,
+        @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
+        @RequestParam(value = "limit", defaultValue = "20") Integer pageSize
     ) {
         return ResponseEntity
             .ok()
-            .body(reviewService.findAllReview(articleApiId));
+            .body(reviewService.findAllReview(articleApiId, pageNum, pageSize));
     }
 
     // 후기 수정

@@ -1,8 +1,6 @@
 package mutsa.api.service.review;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.review.ReviewDeleteDto;
 import mutsa.api.dto.review.ReviewRequestDto;
@@ -12,10 +10,15 @@ import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
 import mutsa.common.domain.models.review.Review;
+import mutsa.common.domain.models.review.ReviewStatus;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.review.ReviewRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,10 +54,18 @@ public class ReviewModuleService {
     }
 
     // 전체 리뷰 조회 (모든 유저 접근 가능)
-    // TODO 페이징 처리
-    public List<ReviewResponseDto> findAllReview(Article article) {
+    public Page<ReviewResponseDto> findAllReview(Article article, int pageNum, int pageSize) {
+        // 생성 날짜 내림차순 정렬 후 수정 날짜 내림차순 정렬 -> 갱신순으로 출력하기 위한 정렬방식 정의
+        Sort sortByCreatedAt = Sort.by("createdAt").descending();
 
-        return article.getReviews().stream().map(ReviewResponseDto::fromEntity).collect(Collectors.toList());
+        Sort sortByModifiedAt = Sort.by("modifiedAt").descending();
+
+        Sort sortByCreatedAtAndModifiedAt = sortByCreatedAt.and(sortByModifiedAt);
+
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sortByCreatedAtAndModifiedAt);
+        Page<Review> reviewPage = reviewRepository.findByArticle(article, pageable);
+
+        return reviewPage.map(ReviewResponseDto::fromEntity);
     }
 
     // 리뷰 수정
@@ -67,6 +78,7 @@ public class ReviewModuleService {
 
         review.setContent(reviewUpdateDto.getContent());
         review.setPoint(reviewUpdateDto.getPoint());
+        review.setReviewStatus(ReviewStatus.UPDATED);
 
         return ReviewResponseDto.fromEntity(reviewRepository.save(review));
     }

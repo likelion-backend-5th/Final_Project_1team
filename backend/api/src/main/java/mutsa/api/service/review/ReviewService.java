@@ -1,6 +1,5 @@
 package mutsa.api.service.review;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.review.ReviewDeleteDto;
 import mutsa.api.dto.review.ReviewRequestDto;
@@ -12,6 +11,7 @@ import mutsa.api.service.user.UserModuleService;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.user.User;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,10 +41,10 @@ public class ReviewService {
     }
 
     // 전체 리뷰 조회 (모든 유저 접근 가능)
-    public List<ReviewResponseDto> findAllReview(String articleApiId) {
+    public Page<ReviewResponseDto> findAllReview(String articleApiId, int pageNum, int pageSize) {
         Article article = articleModuleService.getByApiId(articleApiId);
 
-        return reviewModuleService.findAllReview(article);
+        return reviewModuleService.findAllReview(article, pageNum, pageSize);
     }
 
     // 리뷰 수정
