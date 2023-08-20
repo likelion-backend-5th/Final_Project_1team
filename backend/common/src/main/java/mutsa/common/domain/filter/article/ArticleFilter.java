@@ -10,8 +10,6 @@ import lombok.*;
 import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.ArticleStatus;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,6 +17,9 @@ import java.time.LocalDateTime;
 public class ArticleFilter {
     private ArticleStatus articleStatus = ArticleStatus.LIVE;
     private Status status = Status.ACTIVE;
+    private String title = null;
+    private String description = null;
+    private String username = null;
 
     public static ArticleFilter of() {
         return new ArticleFilter();
@@ -29,6 +30,16 @@ public class ArticleFilter {
 
         articleFilter.setStatus(status);
         articleFilter.setArticleStatus(articleStatus);
+
+        return articleFilter;
+    }
+
+    public static ArticleFilter of (Status status, ArticleStatus articleStatus, String title, String description, String username) {
+        ArticleFilter articleFilter = of(status, articleStatus);
+
+        articleFilter.setTitle(title);
+        articleFilter.setDescription(description);
+        articleFilter.setUsername(username);
 
         return articleFilter;
     }

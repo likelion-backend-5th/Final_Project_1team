@@ -6,9 +6,7 @@
 
 package mutsa.api.dto.article;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.article.ArticleStatus;
@@ -16,6 +14,8 @@ import mutsa.common.domain.models.article.ArticleStatus;
 @Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ArticleResponseDto {
     private String title;
     private String description;

@@ -20,6 +20,9 @@ public class ArticleFilterDto {
     private ArticleStatus articleStatus;
     @NotNull
     private Status status;
+    private String title;
+    private String description;
+    private String username;
 
     public static ArticleFilterDto of() {
         ArticleFilterDto articleFilterDto = new ArticleFilterDto();
@@ -42,7 +45,26 @@ public class ArticleFilterDto {
     public static ArticleFilter to(ArticleFilterDto filterDto) {
         return ArticleFilter.of(
                 filterDto.getStatus(),
-                filterDto.getArticleStatus()
+                filterDto.getArticleStatus(),
+                filterDto.getTitle(),
+                filterDto.getDescription(),
+                filterDto.getUsername()
         );
+    }
+
+    public static ArticleFilterDto of(
+            Status status,
+            ArticleStatus articleState,
+            String title,
+            String description,
+            String username
+    ) {
+        ArticleFilterDto articleFilterDto = ArticleFilterDto.of(status, articleState);
+
+        articleFilterDto.setTitle(title);
+        articleFilterDto.setDescription(description);
+        articleFilterDto.setUsername(username);
+
+        return articleFilterDto;
     }
 }

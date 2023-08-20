@@ -10,12 +10,12 @@ import com.querydsl.jpa.impl.JPAQuery;
 import mutsa.common.customRepository.Querydsl4RepositorySupport;
 import mutsa.common.domain.filter.article.ArticleFilter;
 import mutsa.common.domain.models.article.Article;
-import mutsa.common.domain.models.article.ArticleStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -55,7 +55,6 @@ public class ArticleRepositoryImpl extends Querydsl4RepositorySupport implements
     }
 
     private void doFilter(JPAQuery<Article> query, ArticleFilter articleFilter) {
-
         //  게시글 현재 상태에 따른 필터 처리
         switch (articleFilter.getArticleStatus()) {
             case LIVE, EXPIRED -> query.where(article.articleStatus.eq(articleFilter.getArticleStatus()));
@@ -65,6 +64,18 @@ public class ArticleRepositoryImpl extends Querydsl4RepositorySupport implements
         //  게시글 현재 상태에 따른 필터 처리
         switch (articleFilter.getStatus()) {
             default -> query.where(article.status.eq(articleFilter.getStatus()));
+        }
+
+        if (StringUtils.hasText(articleFilter.getTitle())) {
+            query.where(article.title.eq(articleFilter.getTitle()));
+        }
+
+        if (StringUtils.hasText(articleFilter.getDescription())) {
+            query.where(article.description.eq(articleFilter.getDescription()));
+        }
+
+        if (StringUtils.hasText(articleFilter.getUsername())) {
+            query.where(article.user.username.eq(articleFilter.getUsername()));
         }
     }
 
