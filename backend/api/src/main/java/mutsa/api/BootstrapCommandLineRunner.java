@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class BootstrapCommandLineRunner implements CommandLineRunner {
+    private final BootstrapDataLoader bootStrapDataLoader;
 
-        private final BootstrapDataLoader bootStrapDataLoader;
-        @Override
-        public void run(String... args) throws Exception {
-            bootStrapDataLoader.createAdminUser();
+    @Override
+    public void run(String... args) throws Exception {
+        bootStrapDataLoader.createAdminUser();
     }
 }

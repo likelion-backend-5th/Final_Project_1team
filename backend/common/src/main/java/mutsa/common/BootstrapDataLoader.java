@@ -1,13 +1,20 @@
 package mutsa.common;
 
+import jakarta.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.common.domain.models.user.Authority;
+import mutsa.common.domain.models.user.Member;
 import mutsa.common.domain.models.user.Role;
 import mutsa.common.domain.models.user.RoleStatus;
+import mutsa.common.domain.models.user.User;
+import mutsa.common.domain.models.user.UserRole;
 import mutsa.common.repository.member.MemberRepository;
 import mutsa.common.repository.user.AuthorityRepository;
 import mutsa.common.repository.user.RoleRepository;
@@ -34,6 +41,7 @@ public class BootstrapDataLoader {
         Map<String, Object> admin = new HashMap<>();
         admin.put("id", 1);
         admin.put("login", "admin");
+        admin.put("password", "admin1234");
         admin.put("email", "mutsaproject@gmail.com");
         admin.put("image_url", "");
         admin.put("role", RoleStatus.ROLE_ADMIN);
@@ -100,14 +108,56 @@ public class BootstrapDataLoader {
             createReview, updateReview, deleteReview, readReview);
 
         roleRepository.saveAll(Arrays.asList(userRole, adminRole));
-
-
     }
 
     private void loadUser(Map<String, Object> attributes) {
+        String apiId = ((Integer) attributes.get("id")).toString();
+        String login = (String) attributes.get("login");
+        String email = (String) attributes.get("email");
+        String imageUrl = (String) attributes.get("image_url");
+        String password = (String) attributes.get("password");
 
+        RoleStatus role = (RoleStatus) attributes.get("role");
+        HashMap<String, Object> necessaryAttributes = createNecessaryAttributes(apiId, login,
+            email, imageUrl);
+
+        String username = login;
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        User user = signUpOrUpdateUser(login, email, imageUrl, username, password, userOptional,
+            necessaryAttributes, role);
     }
 
+    private User signUpOrUpdateUser(String login, String email, String imageUrl, String username, String password,
+        Optional<User> userOptional, Map<String, Object> necessaryAttributes, RoleStatus roleEnum) {
+        User user;
+        //회원가입
+        if (userOptional.isEmpty()) {
+            Member member = Member.of(login);
+            memberRepository.save(member);
+            Role role = roleRepository.findByValue(roleEnum).orElseThrow(() ->
+                new EntityNotFoundException(roleEnum + "에 해당하는 Role이 없습니다."));
+            user = User.of(username, bCryptPasswordEncoder.encode(password), email, login, imageUrl, member);
+            UserRole userRole = UserRole.of(user, role);
+
+            userRepository.save(user);
+            userRoleRepository.save(userRole);
+            necessaryAttributes.put("create_flag", true);
+        } else {
+            user = userOptional.get();
+            necessaryAttributes.put("create_flag", false);
+        }
+        return user;
+    }
+
+    private HashMap<String, Object> createNecessaryAttributes(String apiId, String login,
+        String email, String imageUrl) {
+        HashMap<String, Object> necessaryAttributes = new HashMap<>();
+        necessaryAttributes.put("id", apiId);
+        necessaryAttributes.put("login", login);
+        necessaryAttributes.put("email", email);
+        necessaryAttributes.put("image_url", imageUrl);
+        return necessaryAttributes;
+    }
     private Authority saveAuthority(String name) {
         return authorityRepository.save(Authority.of(name));
     }
