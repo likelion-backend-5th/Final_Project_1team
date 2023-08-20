@@ -1,9 +1,11 @@
 package mutsa.api.config.security;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.config.security.filter.CustomAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -44,6 +47,7 @@ public class SecurityConfig {
                 handle.authenticationEntryPoint(authenticationEntryPoint))
             .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
+
         httpSecurity.sessionManagement(session ->
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -62,10 +66,19 @@ public class SecurityConfig {
                     userInfoEndpointConfig.userService(defaultOAuth2UserService))
                 .successHandler(authenticationSuccessHandler)
                 .failureHandler(authenticationFailureHandler)
-        );
+        ).logout(logout ->
+            logout
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.setStatus(HttpStatus.NO_CONTENT.value());
+                    response.sendRedirect("/login");
+                })
+                .clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/api/security/logout")
+        ));
 
         httpSecurity.formLogin(login ->
-            login.loginProcessingUrl("/api/auth/login")
+            login
+                .loginProcessingUrl("/api/auth/login")
                 .successHandler(authenticationSuccessHandler)
                 .failureHandler(authenticationFailureHandler)
                 .usernameParameter("username")
@@ -78,10 +91,9 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("HEAD","POST","GET","DELETE","PUT"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
