@@ -1,4 +1,4 @@
-package mutsa.api.service.auth;
+package mutsa.api.service.user;
 
 import lombok.RequiredArgsConstructor;
 import mutsa.api.config.security.CustomPrincipalDetails;
@@ -19,8 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new UsernameNotFoundException("not found username=" + username));
-
+                new UsernameNotFoundException("not found username:" + username));
         return CustomPrincipalDetails.of(user, null);
     }
 }
