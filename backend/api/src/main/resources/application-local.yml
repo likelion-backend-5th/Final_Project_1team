@@ -49,7 +49,7 @@ spring:
               - email
               - profile
 
-frontendUrl: *
+frontendUrl: http://localhost:8080
 
 # jwt token
 jwt:

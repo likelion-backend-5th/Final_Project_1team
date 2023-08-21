@@ -1,6 +1,8 @@
 package mutsa.api.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.config.security.filter.CustomAuthorizationFilter;
 import mutsa.api.config.security.filter.JsonUsernamePasswordAuthenticationFilter;
@@ -32,16 +34,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${frontendUrl}")
-    private String frontendUrl;
     private final ObjectMapper objectMapper;
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAuthorizationFilter customAuthorizationFilter;
@@ -54,6 +51,9 @@ public class SecurityConfig {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserDetailsService userDetailsService;
 
+    @Value("${frontendUrl}")
+    private String frontendUrl;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
@@ -64,34 +64,33 @@ public class SecurityConfig {
             .addFilterBefore(jsonUsernamePasswordAuthenticationFilter(),
                 UsernamePasswordAuthenticationFilter.class);
 
-
         httpSecurity.sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         httpSecurity.authorizeHttpRequests(registry -> registry.anyRequest().permitAll());
 
         httpSecurity.oauth2Login(oAuth2LoginConfigurer ->
-                oAuth2LoginConfigurer
-                        .authorizationEndpoint(
-                                authorizationEndpointConfig ->
-                                        authorizationEndpointConfig.authorizationRequestRepository(
-                                                        httOAuth2AuthorizationRequestAuthorizationRequestRepository)
-                                                .baseUri("/oauth2/authorization"))
-                        .redirectionEndpoint(redirectionEndpointConfig ->
-                                redirectionEndpointConfig.baseUri("/login/oauth2/callback/**"))
-                        .userInfoEndpoint(userInfoEndpointConfig ->
-                                userInfoEndpointConfig.userService(defaultOAuth2UserService))
-                        .successHandler(redirectAuthenticationSuccessHandler)
-                        .failureHandler(redirectAuthenticationFailureHandler)
+            oAuth2LoginConfigurer
+                .authorizationEndpoint(
+                    authorizationEndpointConfig ->
+                        authorizationEndpointConfig.authorizationRequestRepository(
+                                httOAuth2AuthorizationRequestAuthorizationRequestRepository)
+                            .baseUri("/oauth2/authorization"))
+                .redirectionEndpoint(redirectionEndpointConfig ->
+                    redirectionEndpointConfig.baseUri("/login/oauth2/callback/**"))
+                .userInfoEndpoint(userInfoEndpointConfig ->
+                    userInfoEndpointConfig.userService(defaultOAuth2UserService))
+                .successHandler(redirectAuthenticationSuccessHandler)
+                .failureHandler(redirectAuthenticationFailureHandler)
         ).logout(logout ->
-                logout
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(HttpStatus.NO_CONTENT.value());
-                            response.sendRedirect("/login");
-                        })
-                        .clearAuthentication(true)
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/api/security/logout")
-                        ));
+            logout
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.setStatus(HttpStatus.NO_CONTENT.value());
+                    response.sendRedirect("/login");
+                })
+                .clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/api/security/logout")
+                ));
 
         return httpSecurity.build();
     }
@@ -113,7 +112,8 @@ public class SecurityConfig {
     @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter() {
         JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter =
-            new JsonUsernamePasswordAuthenticationFilter(objectMapper, customAuthenticationSuccessHandler, customAuthenticationFailureHandler);
+            new JsonUsernamePasswordAuthenticationFilter(objectMapper,
+                customAuthenticationSuccessHandler, customAuthenticationFailureHandler);
         jsonUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
         return jsonUsernamePasswordAuthenticationFilter;
     }

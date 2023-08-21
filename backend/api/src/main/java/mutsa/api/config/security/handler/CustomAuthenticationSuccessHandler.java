@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import mutsa.api.config.jwt.JwtConfig;
 import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.api.dto.LoginResponseDto;
@@ -22,10 +21,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
     private final JwtConfig jwtConfig;
 
     @Override
@@ -33,17 +32,21 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         Authentication authentication) throws IOException, ServletException {
         CustomPrincipalDetails user = (CustomPrincipalDetails) authentication.getPrincipal();
 
-        //token 생성
         Algorithm algorithm = Algorithm.HMAC256(jwtConfig.getSecretKey().getBytes());
-        String accessToken = JwtUtil.createToken(request.getRequestURL().toString(), user.getUsername(),
-            jwtConfig.getAccessTokenExpire(), algorithm,
+        String accessToken = JwtUtil.createToken(request.getRequestURL().toString(),
+            user.getUsername(), jwtConfig.getAccessTokenExpire(), algorithm,
             user.getAuthorities().stream()
                 .map(SimpleGrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
-        String refreshToken = JwtUtil.createToken(request.getRequestURL().toString(), user.getUsername(), jwtConfig.getRefreshTokenExpire(), algorithm);
+        String refreshToken = JwtUtil.createToken(request.getRequestURL().toString(),
+            user.getUsername(), jwtConfig.getRefreshTokenExpire(), algorithm);
 
-        // create cookie
-        ResponseCookie cookie = ResponseCookie.from(JwtUtil.REFRESH_TOKEN, refreshToken)
+        LoginResponseDto body = new LoginResponseDto();
+        body.setUserId(user.getApiId());
+        body.setAccessToken(accessToken);
+
+        ResponseCookie cookie = ResponseCookie.from(JwtUtil.REFRESH_TOKEN,
+                refreshToken)
             .httpOnly(true)
             .secure(true)
             .path("/")
@@ -51,15 +54,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             .sameSite("None")
             .build();
 
-        LoginResponseDto responseBody = new LoginResponseDto();
-        responseBody.setUserId(user.getApiId());
-        responseBody.setAccessToken(accessToken);
-
         response.setStatus(200);
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
+        response.getWriter().write(new ObjectMapper().writeValueAsString(body));
     }
 
     @Override
@@ -68,5 +67,4 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         AuthenticationSuccessHandler.super.onAuthenticationSuccess(request, response, chain,
             authentication);
     }
-
 }
