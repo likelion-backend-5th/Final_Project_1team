@@ -9,9 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.config.jwt.JwtConfig;
-import mutsa.api.util.JwtUtil;
 import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.api.dto.LoginResponseDto;
+import mutsa.api.util.JwtUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     private final JwtConfig jwtConfig;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         AuthenticationSuccessHandler.super.onAuthenticationSuccess(request, response, chain, authentication);
@@ -38,7 +39,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         //get user details
         CustomPrincipalDetails user = (CustomPrincipalDetails) authentication.getPrincipal();
 
-        boolean createFlag = (boolean) (user.getAttributes().get("create_flag"));
+//        boolean createFlag = (boolean) (user.getAttributes().get("create_flag"));
 
         //token 생성
         Algorithm algorithm = Algorithm.HMAC256(jwtConfig.getSecretKey().getBytes());
