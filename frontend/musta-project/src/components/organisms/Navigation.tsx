@@ -14,7 +14,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link, useNavigate } from 'react-router-dom';
 
-const pages = [['Hello', '/hello'], ['Home', '/home'], ['Blog', '/blog']];
+const pages = [['Hello', '/hello'], ['Home', '/home'], ['Blog', '/blog'],['ORDRS','/orders']];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 export const Navigation = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
