@@ -49,6 +49,8 @@ spring:
               - email
               - profile
 
+frontendUrl: *
+
 # jwt token
 jwt:
   secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest

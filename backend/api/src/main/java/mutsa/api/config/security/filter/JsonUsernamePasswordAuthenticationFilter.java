@@ -22,11 +22,11 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private static final String DEFAULT_LOGIN_REQUEST_URL = "/api/auth/login";  // /login/oauth2/ + ????? 로 오는 요청을 처리할 것이다
-    private static final String HTTP_METHOD = "POST";    //HTTP 메서드의 방식은 POST 이다.
-    private static final String CONTENT_TYPE = "application/json";//json 타입의 데이터로만 로그인을 진행한다.
+    private static final String DEFAULT_LOGIN_REQUEST_URL = "/api/auth/login";
+    private static final String HTTP_METHOD = "POST";
+    private static final String CONTENT_TYPE = "application/json";
     private static final AntPathRequestMatcher DEFAULT_LOGIN_PATH_REQUEST_MATCHER =
-            new AntPathRequestMatcher(DEFAULT_LOGIN_REQUEST_URL, HTTP_METHOD); //=>   /login 의 요청에, POST로 온 요청에 매칭된다.
+            new AntPathRequestMatcher(DEFAULT_LOGIN_REQUEST_URL, HTTP_METHOD);
 
     private final ObjectMapper objectMapper;
 
@@ -59,7 +59,6 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
         }
 
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-        // Allow subclasses to set the "details" property
         setDetails(request, authRequest);
         return this.getAuthenticationManager().authenticate(authRequest);
     }
@@ -67,5 +66,4 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
     protected void setDetails(HttpServletRequest request, UsernamePasswordAuthenticationToken authRequest) {
         authRequest.setDetails(this.authenticationDetailsSource.buildDetails(request));
     }
-
 }

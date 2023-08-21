@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.config.security.filter.CustomAuthorizationFilter;
 import mutsa.api.config.security.filter.JsonUsernamePasswordAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -38,12 +40,17 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Value("frontendUrl")
+    private String frontend;
     private final ObjectMapper objectMapper;
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAuthorizationFilter customAuthorizationFilter;
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> defaultOAuth2UserService;
-    private final AuthenticationSuccessHandler authenticationSuccessHandler;
-    private final AuthenticationFailureHandler authenticationFailureHandler;
+    private final AuthenticationSuccessHandler redirectAuthenticationSuccessHandler;
+    private final AuthenticationFailureHandler redirectAuthenticationFailureHandler;
+    private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final AuthenticationFailureHandler customAuthenticationFailureHandler;
     private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> httOAuth2AuthorizationRequestAuthorizationRequestRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserDetailsService userDetailsService;
@@ -51,10 +58,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
-                .exceptionHandling(handle ->
-                        handle.authenticationEntryPoint(authenticationEntryPoint))
-                .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .exceptionHandling(handle ->
+                handle.authenticationEntryPoint(authenticationEntryPoint))
+            .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jsonUsernamePasswordAuthenticationFilter(),
+                UsernamePasswordAuthenticationFilter.class);
 
 
         httpSecurity.sessionManagement(session ->
@@ -73,8 +82,8 @@ public class SecurityConfig {
                                 redirectionEndpointConfig.baseUri("/login/oauth2/callback/**"))
                         .userInfoEndpoint(userInfoEndpointConfig ->
                                 userInfoEndpointConfig.userService(defaultOAuth2UserService))
-                        .successHandler(authenticationSuccessHandler)
-                        .failureHandler(authenticationFailureHandler)
+                        .successHandler(redirectAuthenticationSuccessHandler)
+                        .failureHandler(redirectAuthenticationFailureHandler)
         ).logout(logout ->
                 logout
                         .logoutSuccessHandler((request, response, authentication) -> {
@@ -85,14 +94,13 @@ public class SecurityConfig {
                         .logoutRequestMatcher(new AntPathRequestMatcher("/api/security/logout")
                         ));
 
-        httpSecurity.addFilterBefore(jsonUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
         return httpSecurity.build();
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of(frontend));
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT"));
         configuration.setAllowedHeaders(List.of("*"));
@@ -105,7 +113,8 @@ public class SecurityConfig {
 
     @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter() {
-        JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter = new JsonUsernamePasswordAuthenticationFilter(objectMapper, authenticationSuccessHandler, authenticationFailureHandler);
+        JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter =
+            new JsonUsernamePasswordAuthenticationFilter(objectMapper, customAuthenticationSuccessHandler, customAuthenticationFailureHandler);
         jsonUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
         return jsonUsernamePasswordAuthenticationFilter;
     }
