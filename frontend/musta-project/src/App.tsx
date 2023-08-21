@@ -2,7 +2,7 @@ import Footer from './components/organisms/Footer';
 import Header from './components/organisms/Header';
 import { Navigation } from './components/organisms/Navigation';
 import UserRouter from './router/UserRouter';
-import './App.css'
+import './App.css';
 import { styled } from 'styled-components';
 
 const StyledMain = styled.main`
@@ -14,7 +14,6 @@ const StyledMain = styled.main`
   background-color: rgba(220, 250, 250);
 `;
 
-
 function App() {
   return (
     <StyledMain>
@@ -24,7 +23,7 @@ function App() {
       <UserRouter />
       <Footer />
     </StyledMain>
-  )
+  );
 }
 
-export default App
+export default App;
