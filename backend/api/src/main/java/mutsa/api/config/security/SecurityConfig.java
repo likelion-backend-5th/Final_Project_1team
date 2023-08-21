@@ -7,7 +7,6 @@ import mutsa.api.config.security.filter.JsonUsernamePasswordAuthenticationFilter
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -41,8 +40,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("frontendUrl")
-    private String frontend;
+    @Value("${frontendUrl}")
+    private String frontendUrl;
     private final ObjectMapper objectMapper;
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAuthorizationFilter customAuthorizationFilter;
@@ -100,7 +99,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(frontend));
+        configuration.setAllowedOrigins(List.of(frontendUrl));
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT"));
         configuration.setAllowedHeaders(List.of("*"));
