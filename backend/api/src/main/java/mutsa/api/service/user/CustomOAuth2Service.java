@@ -1,4 +1,4 @@
-package mutsa.api.config.oauth2;
+package mutsa.api.service.user;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.HashMap;
