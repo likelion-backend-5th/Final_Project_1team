@@ -7,6 +7,8 @@ import mutsa.api.ApiApplication;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.api.dto.order.OrderStatueRequestDto;
+import mutsa.common.domain.filter.order.OrderConsumerFilter;
+import mutsa.common.domain.filter.order.OrderSellerFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -46,7 +48,7 @@ class OrderModuleServiceTest {
     private EntityManager entityManager;
 
     private User seller, consumer, other;
-    private Article article;
+    private Article article, article2;
 
     @BeforeEach
     public void init() {
@@ -64,6 +66,14 @@ class OrderModuleServiceTest {
                 .build();
 
         article = articleRepository.save(article);
+
+        article2 = Article.builder()
+                .title("Pre Article 2")
+                .description("Pre Article 2 desc")
+                .user(consumer)
+                .build();
+
+        article2 = articleRepository.save(article2);
     }
 
     @Test
@@ -122,6 +132,54 @@ class OrderModuleServiceTest {
         Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, other, 0, 20))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.ARTICLE_PERMISSION_DENIED.getMessage());
+    }
+
+    @Test
+    void findByFilterBySeller() {
+        //given
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
+
+        //when
+        Page<OrderResponseDto> allOrder = orderModuleService.findByFilterBySeller(seller, OrderSellerFilter.of(OrderStatus.PROGRESS, article), new String[]{"id"}, 0, 20);
+
+        //then
+        log.info(allOrder.toString());
+        assertThat(allOrder.getTotalElements()).isEqualTo(2);
+
+        //excetpion
+        Assertions.assertThatThrownBy(()
+                        -> orderModuleService.findByFilterBySeller(
+                        seller, OrderSellerFilter.of(OrderStatus.PROGRESS, article2), new String[]{"id"}, 0, 20))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.ARTICLE_PERMISSION_DENIED.getMessage());
+    }
+
+    @Test
+    void findByFilterBySeller2() {
+        //given
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
+
+        //when
+        Page<OrderResponseDto> allOrder = orderModuleService.findByFilterBySeller(seller, OrderSellerFilter.of(OrderStatus.PROGRESS, null), new String[]{"id"}, 0, 20);
+
+        //then
+        log.info(allOrder.toString());
+        assertThat(allOrder.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    void findByFilterByConsumer() {
+        //given
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, seller));
+
+        //when
+        Page<OrderResponseDto> allOrder = orderModuleService.findByFilterByConsumer(consumer, OrderConsumerFilter.of(OrderStatus.PROGRESS), new String[]{"id"}, 0, 20);
+
+        //then
+        assertThat(allOrder.getTotalElements()).isEqualTo(1);
     }
 
     @Test

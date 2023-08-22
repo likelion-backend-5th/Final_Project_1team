@@ -9,11 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<Order, Long>,OrderRepositoryCustom {
     Optional<Order> findByApiId(String uuid);
 
     Page<Order> findByArticle(Article article, Pageable pageable);
 
     @Query(value = "select * from `order` where order_id = ?1", nativeQuery = true)
     Optional<Order> findByWithDelete(Long id); //soft delete 확인용
+
+
 }

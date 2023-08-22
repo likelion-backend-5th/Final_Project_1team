@@ -1,9 +1,12 @@
 package mutsa.api.service.order;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.api.dto.order.OrderStatueRequestDto;
+import mutsa.common.domain.filter.order.OrderConsumerFilter;
+import mutsa.common.domain.filter.order.OrderSellerFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -22,6 +25,7 @@ import static mutsa.common.exception.ErrorCode.ORDER_NOT_FOUND;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class OrderModuleService {
     private final OrderRepository orderRepository;
 
@@ -62,6 +66,23 @@ public class OrderModuleService {
         order.validSellerOrConsumerId(user); //판매자와 구매자만
         orderRepository.delete(getByApiId(orderApiId));
     }
+
+    //판매자의 필터
+    public Page<OrderResponseDto> findByFilterBySeller(User user, OrderSellerFilter orderFilter, String[] sortingProperties, int page, int limit) {
+        if (orderFilter.getArticle() != null) {
+            orderFilter.getArticle().validUser(user); //판매자임을 확인한다.
+        }
+
+        Pageable pageable = PageRequest.of(page, limit, Sort.by(sortingProperties));
+        return orderRepository.getOrderByFilterBySeller(orderFilter, pageable).map(OrderResponseDto::fromEntity);
+    }
+
+    //자신이 주문한것을 확인하는 필터
+    public Page<OrderResponseDto> findByFilterByConsumer(User user, OrderConsumerFilter orderFilter, String[] sortingProperties, int page, int limit) {
+        Pageable pageable = PageRequest.of(page, limit, Sort.by(sortingProperties));
+        return orderRepository.getOrderByFilterByConsumer(orderFilter, user, pageable).map(OrderResponseDto::fromEntity);
+    }
+
 
     public Order getByApiId(String apiId) {
         return orderRepository.findByApiId(apiId)
