@@ -9,8 +9,8 @@ import java.util.List;
 
 @Data
 public class CustomPage<T> implements Serializable {
-    public List<T> content;
-    public CustomPageable pageable;
+    private List<T> content;
+    private CustomPageable pageable;
 
     public CustomPage(Page<T> page) {
         this.content = page.getContent();
@@ -22,10 +22,10 @@ public class CustomPage<T> implements Serializable {
     @Data
     @AllArgsConstructor
     public class CustomPageable {
-        public int pageNumber;
-        public int pageSize;
-        public long totalElements;
-        public long totalPages;
-        public long numberOfElements;
+        private int pageNumber;
+        private int pageSize;
+        private long totalElements;
+        private long totalPages;
+        private long numberOfElements;
     }
 }

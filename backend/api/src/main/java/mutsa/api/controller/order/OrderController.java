@@ -1,20 +1,17 @@
-package mutsa.api.controller;
+package mutsa.api.controller.order;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.CustomPage;
-import mutsa.api.dto.order.OrderDetailResponseDto;
-import mutsa.api.dto.order.OrderResponseDto;
-import mutsa.api.dto.order.OrderStatueRequestDto;
+import mutsa.api.dto.order.*;
 import mutsa.api.service.order.OrderService;
 import mutsa.api.util.SecurityUtil;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/articles/{articleApiId}/order")
+@RequestMapping("api")
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
@@ -24,7 +21,7 @@ public class OrderController {
      * @param orderApiId
      * @return 주문 단건 조회
      */
-    @GetMapping("/{orderApiId}")
+    @GetMapping("articles/{articleApiId}/order/{orderApiId}")
     public ResponseEntity<OrderDetailResponseDto> getDetailOrder(
             @PathVariable("articleApiId") String articleApiId,
             @PathVariable("orderApiId") String orderApiId) {
@@ -36,7 +33,7 @@ public class OrderController {
      * @param articleApiId article apiID
      * @return 게시글의 주문 모두 조회(판매자만 가능)
      */
-    @GetMapping
+    @GetMapping("articles/{articleApiId}/order")
     public ResponseEntity<CustomPage<OrderResponseDto>> getAllOrder(
             @PathVariable("articleApiId") String articleApiId,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
@@ -45,11 +42,28 @@ public class OrderController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("order/sell")
+    public ResponseEntity<OrderBySellerResponseListDto> getOrderBySellerFilter(
+            @RequestBody OrderSellerFilterDto orderSellerFilterDto,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "limit", defaultValue = "20") Integer limit) {
+        return ResponseEntity.ok(orderService.findByFilterBySeller(orderSellerFilterDto, page, limit, SecurityUtil.getCurrentUsername()));
+    }
+
+    @GetMapping("order/consume")
+    public ResponseEntity<OrderByConsumerResponseListDto> getOrderByConsumerFilter(
+            @RequestBody OrderConsumerFilterDto orderConsumerFilterDto,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "limit", defaultValue = "20") Integer limit) {
+        return ResponseEntity.ok(orderService.findByFilterByConsumer(orderConsumerFilterDto, page, limit, SecurityUtil.getCurrentUsername()));
+    }
+
+
     /**
      * @param articleApiId
      * @return 주문 생성
      */
-    @PostMapping
+    @PostMapping("articles/{articleApiId}/order")
     public ResponseEntity<OrderDetailResponseDto> saveOrder(
             @PathVariable("articleApiId") String articleApiId) {
         OrderDetailResponseDto dto = orderService.saveOrder(articleApiId, SecurityUtil.getCurrentUsername());
@@ -62,7 +76,7 @@ public class OrderController {
      * @param orderStatueRequestDto
      * @return 주문 수정
      */
-    @PutMapping("/{orderApiId}")
+    @PutMapping("articles/{articleApiId}/order/{orderApiId}")
     public ResponseEntity<OrderDetailResponseDto> updateOrderStatus(
             @PathVariable("articleApiId") String articleApiId,
             @PathVariable("orderApiId") String orderApiId,
@@ -71,11 +85,12 @@ public class OrderController {
         return ResponseEntity.ok(dto);
     }
 
-    @DeleteMapping("/{orderApiId}")
+    @DeleteMapping("articles/{articleApiId}/order/{orderApiId}")
     public ResponseEntity<String> deleteOrder(
             @PathVariable("articleApiId") String articleApiId,
             @PathVariable("orderApiId") String orderApiId) {
         orderService.deleteOrder(articleApiId, orderApiId, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok("삭제 완료");
     }
+
 }

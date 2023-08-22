@@ -5,14 +5,10 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.CustomPage;
 import mutsa.api.dto.order.*;
-import mutsa.common.domain.filter.order.OrderConsumerFilter;
-import mutsa.common.domain.filter.order.OrderSellerFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
 import mutsa.common.domain.models.user.User;
-import mutsa.common.exception.BusinessException;
-import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
 import mutsa.common.repository.user.UserRepository;
@@ -21,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -110,11 +105,11 @@ class OrderServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when
-        CustomPage<OrderResponseDto> allOrder = orderService.findByFilterBySeller(new OrderSellerFilterDto(article.getApiId(), OrderStatus.PROGRESS.name()),0, 20,seller.getUsername());
+        CustomPage<OrderResponseDto> allOrder = orderService.findByFilterBySeller(new OrderSellerFilterDto(article.getApiId(), OrderStatus.PROGRESS.name()), 0, 20, seller.getUsername()).getOrderResponseDtos();
 
         //then
         log.info(allOrder.toString());
-        assertThat(allOrder.pageable.getTotalElements()).isEqualTo(2);
+        assertThat(allOrder.getPageable().getTotalElements()).isEqualTo(2);
     }
 
     @Test
@@ -124,11 +119,10 @@ class OrderServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when
-        CustomPage<OrderResponseDto> allOrder = orderService.findByFilterBySeller(new OrderSellerFilterDto("",OrderStatus.PROGRESS.name()),0, 20,seller.getUsername());
+        CustomPage<OrderResponseDto> orderResponseDtos = orderService.findByFilterBySeller(new OrderSellerFilterDto("", OrderStatus.PROGRESS.name()), 0, 20, seller.getUsername()).getOrderResponseDtos();
 
         //then
-        log.info(allOrder.toString());
-        assertThat(allOrder.pageable.totalElements).isEqualTo(2);
+        assertThat(orderResponseDtos.getPageable().getTotalElements()).isEqualTo(2);
     }
 
 
@@ -139,10 +133,10 @@ class OrderServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, seller));
 
         //when
-        CustomPage<OrderResponseDto> allOrder = orderService.findByFilterByConsumer(new OrderConsumerFilterDto(OrderStatus.PROGRESS.name()), 0, 20,consumer.getUsername());
+        OrderByConsumerResponseListDto byFilterByConsumer = orderService.findByFilterByConsumer(new OrderConsumerFilterDto(OrderStatus.PROGRESS.name()), 0, 20, consumer.getUsername());
 
         //then
-        assertThat(allOrder.pageable.totalElements).isEqualTo(1);
+        assertThat(byFilterByConsumer.getOrderResponseDtos().getPageable().getTotalPages()).isEqualTo(1);
     }
 
     @Test

@@ -156,6 +156,20 @@ class OrderModuleServiceTest {
     }
 
     @Test
+    void findByFilterBySeller2() {
+        //given
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
+
+        //when
+        Page<OrderResponseDto> allOrder = orderModuleService.findByFilterBySeller(seller, OrderSellerFilter.of(OrderStatus.PROGRESS, null), new String[]{"id"}, 0, 20);
+
+        //then
+        log.info(allOrder.toString());
+        assertThat(allOrder.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
     void findByFilterByConsumer() {
         //given
         Order savedOrder1 = orderRepository.save(Order.of(article, consumer));

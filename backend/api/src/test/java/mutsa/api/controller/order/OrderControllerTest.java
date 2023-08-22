@@ -1,9 +1,11 @@
-package mutsa.api.controller;
+package mutsa.api.controller.order;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.api.dto.order.OrderConsumerFilterDto;
+import mutsa.api.dto.order.OrderSellerFilterDto;
 import mutsa.api.dto.order.OrderStatueRequestDto;
 import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.models.article.Article;
@@ -172,6 +174,72 @@ class OrderControllerTest {
 
     }
 
+
+    @Test
+    void testGetOrderBySellerFilter() throws Exception {
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder3 = orderRepository.save(Order.of(article, consumer));
+
+        //given
+        when(SecurityUtil.getCurrentUsername()).thenReturn(seller.getUsername());
+        OrderSellerFilterDto dto = new OrderSellerFilterDto("", OrderStatus.PROGRESS.name());
+        String requestBody = new ObjectMapper().writeValueAsString(dto);
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/api/order/sell")
+                        .param("page", String.valueOf(0))
+                        .param("limit", String.valueOf(10))
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document("api/order/판매자의 필터 조회",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint())));
+        //then
+        perform.andExpectAll(
+                status().isOk(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("orderResponseDtos.pageable.totalElements", equalTo(3)),
+                jsonPath("orderResponseDtos.pageable.totalPages", equalTo(1)),
+                jsonPath("orderResponseDtos.pageable.numberOfElements", equalTo(3))
+        );
+    }
+
+    @Test
+    void testGetOrderByConsumerFilter() throws Exception {
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder3 = orderRepository.save(Order.of(article, consumer));
+
+        //given
+        when(SecurityUtil.getCurrentUsername()).thenReturn(consumer.getUsername());
+        OrderConsumerFilterDto dto = new OrderConsumerFilterDto("PROGRESS");
+        String requestBody = new ObjectMapper().writeValueAsString(dto);
+
+        //when
+        ResultActions perform = mockMvc.perform(get("/api/order/consume")
+                        .param("page", String.valueOf(0))
+                        .param("limit", String.valueOf(10))
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document("api/order/구매자의 필터 조회",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint())));
+        //then
+        perform.andExpectAll(
+                status().isOk(),
+                content().contentType(MediaType.APPLICATION_JSON),
+                jsonPath("orderResponseDtos.pageable.totalElements", equalTo(3)),
+                jsonPath("orderResponseDtos.pageable.totalPages", equalTo(1)),
+                jsonPath("orderResponseDtos.pageable.numberOfElements", equalTo(3))
+        );
+    }
+
+
     @DisplayName("주문 상태 수정")
     @Test
     void updateOrder() throws Exception {
@@ -183,7 +251,6 @@ class OrderControllerTest {
         when(SecurityUtil.getCurrentUsername()).thenReturn(consumer.getUsername());
         OrderStatueRequestDto dto = new OrderStatueRequestDto("END");
         String requestBody = new ObjectMapper().writeValueAsString(dto);
-
 
         //when
         mockMvc.perform(put("/api/articles/{articleApiId}/order/{orderApiId}", article.getApiId(), savedOrder.getApiId())
