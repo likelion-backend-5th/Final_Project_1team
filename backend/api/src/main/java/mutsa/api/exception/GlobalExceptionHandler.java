@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
 import mutsa.common.exception.ErrorResponse;
+import mutsa.common.exception.InfraException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -88,6 +89,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ErrorResponse> handleBusinessException(final BusinessException e) {
+        log.error("handleBusinessException", e);
+        final ErrorCode errorCode = e.getErrorCode();
+        final ErrorResponse response = ErrorResponse.of(errorCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+    }
+
+    @ExceptionHandler(InfraException.class)
+    protected ResponseEntity<ErrorResponse> handleInfraException(final InfraException e) {
         log.error("handleBusinessException", e);
         final ErrorCode errorCode = e.getErrorCode();
         final ErrorResponse response = ErrorResponse.of(errorCode);
