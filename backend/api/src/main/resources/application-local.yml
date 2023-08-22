@@ -49,6 +49,8 @@ spring:
               - email
               - profile
 
+frontendUrl: http://localhost:8080
+
 # jwt token
 jwt:
   secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
