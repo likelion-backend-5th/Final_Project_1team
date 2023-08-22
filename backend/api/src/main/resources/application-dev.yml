@@ -1,0 +1,46 @@
+#Spring Settings
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/team1_project
+    username: root
+    password: qwer1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database: mysql
+    show-sql: true
+    generate-ddl: true
+    open-in-view: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      naming:
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  data:
+    web:
+      pageable:
+        default-page-size: 25
+        max-page-size: 1000
+        one-indexed-parameters: false
+        page-parameter: page
+        size-parameter: limit
+    redis:
+      host: localhost
+      port: 6379
+
+# jwt token
+jwt:
+  secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+  accessTokenExpire: 8165431
+  refreshTokenExpire: 564657

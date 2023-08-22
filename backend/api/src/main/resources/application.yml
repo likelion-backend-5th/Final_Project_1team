@@ -1,0 +1,33 @@
+server:
+  compression:
+    enabled: true
+  port: 8080
+  tomcat:
+    use-relative-redirects: true
+
+#Spring Settings
+spring:
+  profiles:
+    default: local
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  devtools:
+    livereload:
+      enabled: true
+
+# log level
+logging.level:
+  org.hibernate.SQL: info
+  org.hibernate.type: info
+  org.hibernate.type.descriptor.sql: debug
+
+springdoc:
+  version: openapi_3_0
+  swagger-ui:
+    path: /swagger-ui.html
