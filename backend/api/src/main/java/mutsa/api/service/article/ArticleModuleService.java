@@ -57,6 +57,11 @@ public class ArticleModuleService {
     }
 
     @Transactional
+    public Article saveTest(ArticleCreateRequestDto requestDto) {
+        return articleRepository.save(dtoToEntity(requestDto));
+    }
+
+    @Transactional
     public Article updateTest(ArticleUpdateRequestDto updateDto) {
         Article article = articleRepository.getByApiId(updateDto.getApiId())
                 .orElseThrow(() -> new BusinessException(ARTICLE_NOT_FOUND));

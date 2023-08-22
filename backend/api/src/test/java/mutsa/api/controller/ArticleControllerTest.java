@@ -142,7 +142,7 @@ public class ArticleControllerTest {
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
-                        "api/article/게시글 단일 조회",
+                        "api/articles/게시글 단일 조회",
                         Preprocessors.preprocessRequest(prettyPrint()),
                         Preprocessors.preprocessResponse(prettyPrint())
                 ))
@@ -172,7 +172,7 @@ public class ArticleControllerTest {
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
-                        "api/article/게시글 페이지 조회",
+                        "api/articles/게시글 페이지 조회",
                         Preprocessors.preprocessRequest(prettyPrint()),
                         Preprocessors.preprocessResponse(prettyPrint())
                 ))
@@ -202,7 +202,7 @@ public class ArticleControllerTest {
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
-                        "api/article/게시글 제목 조회",
+                        "api/articles/게시글 제목 조회",
                         Preprocessors.preprocessRequest(prettyPrint()),
                         Preprocessors.preprocessResponse(prettyPrint())
                 ))
@@ -234,7 +234,7 @@ public class ArticleControllerTest {
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
-                        "api/article/게시글 내용 조회",
+                        "api/articles/게시글 내용 조회",
                         Preprocessors.preprocessRequest(prettyPrint()),
                         Preprocessors.preprocessResponse(prettyPrint())
                 ))
@@ -266,7 +266,7 @@ public class ArticleControllerTest {
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
-                        "api/article/게시글 내용 조회",
+                        "api/articles/게시글 유저이름 조회",
                         Preprocessors.preprocessRequest(prettyPrint()),
                         Preprocessors.preprocessResponse(prettyPrint())
                 ))
@@ -311,7 +311,7 @@ public class ArticleControllerTest {
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
-                        "api/article/게시글 등록",
+                        "api/articles/게시글 등록",
                         Preprocessors.preprocessRequest(prettyPrint()),
                         Preprocessors.preprocessResponse(prettyPrint())
                 ))
@@ -344,7 +344,7 @@ public class ArticleControllerTest {
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
-                        "api/article/게시글 수정",
+                        "api/articles/게시글 수정",
                         Preprocessors.preprocessRequest(prettyPrint()),
                         Preprocessors.preprocessResponse(prettyPrint())
                 ))
@@ -368,7 +368,7 @@ public class ArticleControllerTest {
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
-                        "api/article/게시글 삭제",
+                        "api/articles/게시글 삭제",
                         Preprocessors.preprocessRequest(prettyPrint()),
                         Preprocessors.preprocessResponse(prettyPrint())
                 ))
