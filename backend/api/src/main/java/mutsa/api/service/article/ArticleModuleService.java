@@ -41,6 +41,8 @@ public class ArticleModuleService {
 
     @Transactional
     public Article save(ArticleCreateRequestDto requestDto) {
+        articleUtil.isValidUser();
+
         return articleRepository.save(dtoToEntity(requestDto));
     }
 
