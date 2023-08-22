@@ -14,11 +14,20 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link, useNavigate } from 'react-router-dom';
 
-const pages = [['Hello', '/hello'], ['Home', '/home'], ['Blog', '/blog']];
+const pages = [
+  ['Hello', '/hello'],
+  ['Home', '/home'],
+  ['Blog', '/blog'],
+  ['게시글', '/articles'],
+];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 export const Navigation = () => {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
   const navigate = useNavigate();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -38,25 +47,26 @@ export const Navigation = () => {
 
   const handlePageClick = (path: string) => {
     handleCloseNavMenu();
-    navigate(path);// 해당 경로로 페이지 이동
+    navigate(path); // 해당 경로로 페이지 이동
   };
 
-
   return (
-    <AppBar position="static" color='inherit'>
+    <AppBar position="static" color="inherit">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <IconButton sx={{ display: { xs: 'none', md: 'flex' } }}
+          <IconButton
+            sx={{ display: { xs: 'none', md: 'flex' } }}
             component="a"
-            href="/" ><img src="/img/templogo.png" height={23} /></IconButton>
+            href="/">
+            <img src="/img/templogo.png" height={23} />
+          </IconButton>
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-            >
+              onClick={handleOpenNavMenu}>
               <MenuIcon />
             </IconButton>
             <Menu
@@ -76,8 +86,7 @@ export const Navigation = () => {
               sx={{
                 display: { xs: 'block', md: 'none' },
               }}
-              color='black'
-            >
+              color="black">
               {pages.map((page) => (
                 <MenuItem key={page[0]} onClick={handleCloseNavMenu}>
                   <Link to={page[1]} onClick={handleCloseNavMenu}>
@@ -87,7 +96,9 @@ export const Navigation = () => {
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1, color: 'black' }} />
+          <AdbIcon
+            sx={{ display: { xs: 'flex', md: 'none' }, mr: 1, color: 'black' }}
+          />
           <Typography
             variant="h5"
             noWrap
@@ -102,18 +113,15 @@ export const Navigation = () => {
               letterSpacing: '.3rem',
               color: 'black',
               textDecoration: 'none',
-            }}
-          >
+            }}>
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-
             {pages.map((page) => (
               <Button
                 key={page[0]}
                 onClick={() => handlePageClick(page[1])}
-                sx={{ my: 2, color: 'black', display: 'block' }}
-              >
+                sx={{ my: 2, color: 'black', display: 'block' }}>
                 {page[0]}
               </Button>
             ))}
@@ -139,8 +147,7 @@ export const Navigation = () => {
                 horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
+              onClose={handleCloseUserMenu}>
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">{setting}</Typography>
