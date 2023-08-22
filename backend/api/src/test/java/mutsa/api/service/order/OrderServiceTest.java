@@ -3,6 +3,7 @@ package mutsa.api.service.order;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.api.dto.CustomPage;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.api.dto.order.OrderStatueRequestDto;
@@ -81,11 +82,11 @@ class OrderServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when
-        Page<OrderResponseDto> allOrder = orderService.findAllOrder(article.getApiId(), 0, 20, seller.getUsername());
+        CustomPage<OrderResponseDto> allOrder = orderService.findAllOrder(article.getApiId(), 0, 20, seller.getUsername());
 
         //then
         log.info(allOrder.toString());
-        assertThat(allOrder.getTotalElements()).isEqualTo(2);
+        assertThat(allOrder.getPageable().getTotalElements()).isEqualTo(2);
 
     }
 

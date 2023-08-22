@@ -2,6 +2,7 @@ package mutsa.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.api.dto.CustomPage;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.api.dto.order.OrderStatueRequestDto;
@@ -36,11 +37,11 @@ public class OrderController {
      * @return 게시글의 주문 모두 조회(판매자만 가능)
      */
     @GetMapping
-    public ResponseEntity<Page<OrderResponseDto>> getAllOrder(
+    public ResponseEntity<CustomPage<OrderResponseDto>> getAllOrder(
             @PathVariable("articleApiId") String articleApiId,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "limit", defaultValue = "20") Integer limit) {
-        Page<OrderResponseDto> dtos = orderService.findAllOrder(articleApiId, page, limit, SecurityUtil.getCurrentUsername());
+        CustomPage<OrderResponseDto> dtos = orderService.findAllOrder(articleApiId, page, limit, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dtos);
     }
 

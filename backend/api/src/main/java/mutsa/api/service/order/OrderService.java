@@ -1,6 +1,7 @@
 package mutsa.api.service.order;
 
 import lombok.RequiredArgsConstructor;
+import mutsa.api.dto.CustomPage;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.api.dto.order.OrderStatueRequestDto;
@@ -25,11 +26,12 @@ public class OrderService {
         return orderModuleService.findDetailOrder(article, user, orderApiId);
     }
 
-    public Page<OrderResponseDto> findAllOrder(String articleApiId, int page, int limit, String currentUsername) {
+    public CustomPage<OrderResponseDto> findAllOrder(String articleApiId, int page, int limit, String currentUsername) {
         User user = userService.getByUsername(currentUsername);
         Article article = articleModuleService.getByApiId(articleApiId);
 
-        return orderModuleService.findAllOrder(article, user, page, limit);
+        Page<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, user, page, limit);
+        return new CustomPage(allOrder);
     }
 
     public OrderDetailResponseDto saveOrder(String articleApiId, String currentUsername) {

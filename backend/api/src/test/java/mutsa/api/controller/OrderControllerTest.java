@@ -165,9 +165,9 @@ class OrderControllerTest {
         perform.andExpectAll(
                 status().isOk(),
                 content().contentType(MediaType.APPLICATION_JSON),
-                jsonPath("totalElements", equalTo(3)),
-                jsonPath("totalPages", equalTo(1)),
-                jsonPath("numberOfElements", equalTo(3))
+                jsonPath("pageable.totalElements", equalTo(3)),
+                jsonPath("pageable.totalPages", equalTo(1)),
+                jsonPath("pageable.numberOfElements", equalTo(3))
         );
 
     }
