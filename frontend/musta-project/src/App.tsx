@@ -11,7 +11,8 @@ const StyledMain = styled.main`
   height: 100%;
   margin: 0px auto;
   padding: 0px;
-  background-color: rgba(220, 250, 250);
+  //background-color: rgba(220, 250, 250);
+  background-color: rgb(255, 245, 234);
 `;
 
 function App() {

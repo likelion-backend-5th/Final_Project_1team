@@ -133,8 +133,4 @@ public class ArticleService {
     public List<ArticleResponseDto> saveDummyArticles(Integer count) {
         return articleModuleService.saveDummyArticles(count).stream().map(ArticleResponseDto::to).toList();
     }
-
-    public ArticleResponseDto updateTest(ArticleUpdateRequestDto updateDto) {
-        return ArticleResponseDto.to(articleModuleService.updateTest(updateDto));
-    }
 }

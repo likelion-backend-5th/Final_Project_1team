@@ -41,6 +41,8 @@ public class ArticleModuleService {
 
     @Transactional
     public Article save(ArticleCreateRequestDto requestDto) {
+        articleUtil.isValidUser();
+
         return articleRepository.save(dtoToEntity(requestDto));
     }
 
@@ -52,6 +54,11 @@ public class ArticleModuleService {
         article.setDescription(updateDto.getDescription());
 
         return article;
+    }
+
+    @Transactional
+    public Article saveTest(ArticleCreateRequestDto requestDto) {
+        return articleRepository.save(dtoToEntity(requestDto));
     }
 
     @Transactional
