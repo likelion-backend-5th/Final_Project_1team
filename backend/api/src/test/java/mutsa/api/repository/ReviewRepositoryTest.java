@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import jakarta.transaction.Transactional;
 import java.util.Optional;
+import mutsa.api.ApiApplication;
 import mutsa.api.service.article.ArticleModuleService;
 import mutsa.api.service.user.UserModuleService;
 import mutsa.common.domain.models.Status;
@@ -20,8 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
+@SpringBootTest(classes = ApiApplication.class)
+@ActiveProfiles("test")
 @Transactional
 public class ReviewRepositoryTest {
 
