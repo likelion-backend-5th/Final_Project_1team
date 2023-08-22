@@ -6,6 +6,7 @@
 
 package mutsa.api.service.article;
 
+import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.api.dto.article.ArticleCreateRequestDto;
 import mutsa.api.dto.article.ArticleFilterDto;
 import mutsa.api.dto.article.ArticleResponseDto;
@@ -22,6 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -44,7 +49,7 @@ public class ArticleServiceTest {
 
     @BeforeEach
     public void init() {
-        user = User.of("user1", "1234", "user1@gmail.com", null, null, null);
+        user = User.of("ArticleServiceTestUser", "1234", "user1@gmail.com", null, null, null);
 
         user = userRepository.save(user);
 
@@ -58,6 +63,14 @@ public class ArticleServiceTest {
         }
 
         articles = articleRepository.saveAll(articles);
+
+        UserDetails userDetails = CustomPrincipalDetails.of(user, null);
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(
+                userDetails.getUsername(),
+                userDetails.getPassword()
+        ));
     }
 
     @Test
@@ -67,7 +80,7 @@ public class ArticleServiceTest {
 
         requestDto.setTitle("Article1");
         requestDto.setDescription("Article1 Desc");
-        requestDto.setUsername("user1");
+        requestDto.setUsername(user.getUsername());
 
         ArticleResponseDto responseDto = articleService.save(requestDto);
 
@@ -83,11 +96,11 @@ public class ArticleServiceTest {
         ArticleUpdateRequestDto updateDto = new ArticleUpdateRequestDto(
                 "[Updated]Pre Article 1",
                 "[Updated]Pre Article 1 desc",
-                "user1",
+                user.getUsername(),
                 articles.get(0).getApiId()
         );
 
-        ArticleResponseDto responseDto = articleService.updateTest(updateDto);
+        ArticleResponseDto responseDto = articleService.update(updateDto);
 
         assert responseDto != null;
         Assertions.assertEquals(updateDto.getTitle(), responseDto.getTitle());
@@ -98,7 +111,7 @@ public class ArticleServiceTest {
     @Test
     @DisplayName("Article Service 삭제 테스트")
     public void deleteTest() {
-        articleService.deleteByApiId(articles.get(0).getApiId());
+        articleService.delete(articles.get(0).getApiId());
 
         Assertions.assertEquals(
                 Status.DELETED,
@@ -113,10 +126,8 @@ public class ArticleServiceTest {
     @Test
     @DisplayName("Article Service 유저 이름 기반 페이지네이션 테스트")
     public void pageByUsernameTest() {
-        String username = user.getUsername();
-
         Page<ArticleResponseDto> dtos = articleService.getPageByUsername(
-                username,
+                user.getUsername(),
                 Sort.Direction.ASC,
                 ArticleFilterDto.of()
         );
