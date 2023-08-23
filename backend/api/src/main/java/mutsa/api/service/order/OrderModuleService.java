@@ -5,8 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.api.dto.order.OrderStatueRequestDto;
-import mutsa.common.domain.filter.order.OrderConsumerFilter;
-import mutsa.common.domain.filter.order.OrderSellerFilter;
+import mutsa.common.domain.filter.order.OrderFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -67,20 +66,16 @@ public class OrderModuleService {
         orderRepository.delete(getByApiId(orderApiId));
     }
 
-    //판매자의 필터
-    public Page<OrderResponseDto> findByFilterBySeller(User user, OrderSellerFilter orderFilter, String[] sortingProperties, int page, int limit) {
-        if (orderFilter.getArticle() != null) {
-            orderFilter.getArticle().validUser(user); //판매자임을 확인한다.
+    public Page<OrderResponseDto> getOrderByFilter(User user, OrderFilter orderFilter, Pageable pageable) {
+        if (orderFilter.getOrderUserType() == OrderFilter.OrderUserType.SELLER) {
+            return orderRepository.getOrderByFilterBySeller(orderFilter, user,pageable).map(OrderResponseDto::fromEntity);
         }
 
-        Pageable pageable = PageRequest.of(page, limit, Sort.by(sortingProperties));
-        return orderRepository.getOrderByFilterBySeller(orderFilter, pageable).map(OrderResponseDto::fromEntity);
-    }
+        if (orderFilter.getOrderUserType() == OrderFilter.OrderUserType.CONSUMER) {
+            return orderRepository.getOrderByFilterByConsumer(orderFilter, user, pageable).map(OrderResponseDto::fromEntity);
+        }
 
-    //자신이 주문한것을 확인하는 필터
-    public Page<OrderResponseDto> findByFilterByConsumer(User user, OrderConsumerFilter orderFilter, String[] sortingProperties, int page, int limit) {
-        Pageable pageable = PageRequest.of(page, limit, Sort.by(sortingProperties));
-        return orderRepository.getOrderByFilterByConsumer(orderFilter, user, pageable).map(OrderResponseDto::fromEntity);
+        return null;
     }
 
 

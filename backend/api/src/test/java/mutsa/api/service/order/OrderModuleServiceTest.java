@@ -8,7 +8,7 @@ import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.api.dto.order.OrderStatueRequestDto;
 import mutsa.common.domain.filter.order.OrderConsumerFilter;
-import mutsa.common.domain.filter.order.OrderSellerFilter;
+import mutsa.common.domain.filter.order.OrderFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -70,7 +72,7 @@ class OrderModuleServiceTest {
         article2 = Article.builder()
                 .title("Pre Article 2")
                 .description("Pre Article 2 desc")
-                .user(consumer)
+                .user(seller)
                 .build();
 
         article2 = articleRepository.save(article2);
@@ -140,33 +142,38 @@ class OrderModuleServiceTest {
         Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
+        String[] sortingProperties = {"id"};
+        Sort.Direction direction = Sort.Direction.fromString("asc");
+        PageRequest pageable = PageRequest.of(0, 10, direction, sortingProperties);
+        OrderFilter orderFilter = OrderFilter.of("SELLER", OrderStatus.PROGRESS.name(), "");
+
         //when
-        Page<OrderResponseDto> allOrder = orderModuleService.findByFilterBySeller(seller, OrderSellerFilter.of(OrderStatus.PROGRESS, article), new String[]{"id"}, 0, 20);
+        Page<OrderResponseDto> allOrder = orderModuleService.getOrderByFilter(seller, orderFilter, pageable);
 
         //then
         log.info(allOrder.toString());
         assertThat(allOrder.getTotalElements()).isEqualTo(2);
-
-        //excetpion
-        Assertions.assertThatThrownBy(()
-                        -> orderModuleService.findByFilterBySeller(
-                        seller, OrderSellerFilter.of(OrderStatus.PROGRESS, article2), new String[]{"id"}, 0, 20))
-                .isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.ARTICLE_PERMISSION_DENIED.getMessage());
     }
 
     @Test
     void findByFilterBySeller2() {
         //given
-        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
-        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
+        orderRepository.save(Order.of(article, consumer));
+        orderRepository.save(Order.of(article, consumer));
+        orderRepository.save(Order.of(article2, consumer));
+        orderRepository.save(Order.of(article2, consumer));
+
+        String[] sortingProperties = {"id"};
+        Sort.Direction direction = Sort.Direction.fromString("asc");
+        PageRequest pageable = PageRequest.of(0, 10, direction, sortingProperties);
+        OrderFilter orderFilter = OrderFilter.of("SELLER", OrderStatus.PROGRESS.name(), "Article");
 
         //when
-        Page<OrderResponseDto> allOrder = orderModuleService.findByFilterBySeller(seller, OrderSellerFilter.of(OrderStatus.PROGRESS, null), new String[]{"id"}, 0, 20);
+        Page<OrderResponseDto> allOrder = orderModuleService.getOrderByFilter(seller, orderFilter, pageable);
 
         //then
-        log.info(allOrder.toString());
-        assertThat(allOrder.getTotalElements()).isEqualTo(2);
+        log.info(allOrder.getContent().toString());
+        assertThat(allOrder.getTotalElements()).isEqualTo(4);
     }
 
     @Test
@@ -174,9 +181,13 @@ class OrderModuleServiceTest {
         //given
         Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
         Order savedOrder2 = orderRepository.save(Order.of(article, seller));
+        String[] sortingProperties = {"id"};
+        Sort.Direction direction = Sort.Direction.fromString("asc");
+        PageRequest pageable = PageRequest.of(0, 10, direction, sortingProperties);
+        OrderFilter orderFilter = OrderFilter.of("CONSUMER", OrderStatus.PROGRESS.name(), "");
 
         //when
-        Page<OrderResponseDto> allOrder = orderModuleService.findByFilterByConsumer(consumer, OrderConsumerFilter.of(OrderStatus.PROGRESS), new String[]{"id"}, 0, 20);
+        Page<OrderResponseDto> allOrder = orderModuleService.getOrderByFilter(seller, orderFilter, pageable);
 
         //then
         assertThat(allOrder.getTotalElements()).isEqualTo(1);
