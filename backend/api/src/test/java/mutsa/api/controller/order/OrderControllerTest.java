@@ -4,8 +4,6 @@ package mutsa.api.controller.order;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import mutsa.api.dto.order.OrderConsumerFilterDto;
-import mutsa.api.dto.order.OrderSellerFilterDto;
 import mutsa.api.dto.order.OrderStatueRequestDto;
 import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.models.article.Article;
@@ -183,14 +181,13 @@ class OrderControllerTest {
 
         //given
         when(SecurityUtil.getCurrentUsername()).thenReturn(seller.getUsername());
-        OrderSellerFilterDto dto = new OrderSellerFilterDto("", OrderStatus.PROGRESS.name());
-        String requestBody = new ObjectMapper().writeValueAsString(dto);
 
         //when
         ResultActions perform = mockMvc.perform(get("/api/order/sell")
+                        .param("orderStatus","PROGRESS")
                         .param("page", String.valueOf(0))
                         .param("limit", String.valueOf(10))
-                        .content(requestBody)
+
                         .contentType(MediaType.APPLICATION_JSON))
 
                 .andDo(MockMvcResultHandlers.print())
@@ -215,14 +212,12 @@ class OrderControllerTest {
 
         //given
         when(SecurityUtil.getCurrentUsername()).thenReturn(consumer.getUsername());
-        OrderConsumerFilterDto dto = new OrderConsumerFilterDto("PROGRESS");
-        String requestBody = new ObjectMapper().writeValueAsString(dto);
 
         //when
         ResultActions perform = mockMvc.perform(get("/api/order/consume")
+//                        .param("orderStatus","PROGRESS")
                         .param("page", String.valueOf(0))
                         .param("limit", String.valueOf(10))
-                        .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
 
                 .andDo(MockMvcResultHandlers.print())
