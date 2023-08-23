@@ -1,6 +1,6 @@
-import OrderStatusList from '../components/ArticleOrder';
 import { Container, Paper, Typography } from '@mui/material';
 import { styled } from '@mui/system';
+import OrderConsumerItemList from '../../components/order/OrderConsumerItemList';
 
 const StyledContainer = styled(Container)`
   margin-top: 20px;
@@ -10,20 +10,17 @@ const StyledPaper = styled(Paper)`
   padding: 20px;
 `;
 
-const ArticleOrderPage = () => {
-  const articleId = '1'; // Replace with actual post ID
-  const articleName = '강아지 산책';
-
+const OrderConsumePage = () => {
   return (
     <StyledContainer maxWidth="md">
       <StyledPaper>
         <Typography variant="h5" gutterBottom>
-          {articleName} 게시글의 주문 목록입니다
+          나에게 온 주문목록
         </Typography>
-        <OrderStatusList postId={articleId} />
+        <OrderConsumerItemList />
       </StyledPaper>
     </StyledContainer>
   );
 };
 
-export default ArticleOrderPage;
+export default OrderConsumePage;

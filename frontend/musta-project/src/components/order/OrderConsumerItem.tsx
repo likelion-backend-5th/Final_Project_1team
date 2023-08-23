@@ -1,13 +1,12 @@
 import React from 'react';
-import { ListItem, ListItemText, Avatar, Typography, Card, Grid } from '@mui/material';
+import { ListItem, ListItemText, Avatar, Typography, Grid } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorIcon from '@mui/icons-material/Error';
 import PendingIcon from '@mui/icons-material/Pending';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import ClearIcon from '@mui/icons-material/Clear';
 interface OrderItemProps {
-  order: Order;
+  order: OrderConsumer;
 }
 
 const StyledListItem = styled(ListItem)`
@@ -39,30 +38,31 @@ const UserInfoWrapper = styled(Grid)`
   align-items: flex-end;
 `;
 
-const OrderItem: React.FC<OrderItemProps> = ({ order }) => {
+const OrderConsumerItem: React.FC<OrderItemProps> = ({ order }) => {
   const navigate = useNavigate();
 
   const handleItemClick = () => {
-    navigate(`/order/${order.id}`);
+    navigate(`/article/${order.articleApiId}/order/${order.orderApiId}`);
   };
 
   return (
     <StyledListItem onClick={handleItemClick}>
       <UserAvatar alt={order.sellerName} src="/path/to/user-image.jpg" />
       <OrderItemText
-        primary={order.sellerName}
+        primary={order.articleTitle}
+        secondary={order.sellerName}
       />
       <UserInfoWrapper>
         <Typography variant="body2" color="textSecondary">
-         {order.status}
+          {order.orderStatus}
         </Typography>
         <Typography variant="caption" color="textSecondary">
           {order.date}
         </Typography>
       </UserInfoWrapper>
-      {order.status === 'End' ? (
+      {order.orderStatus === 'End' ? (
         <CheckCircleIcon color="primary" />
-      ) : order.status === 'Progress' ? (
+      ) : order.orderStatus === 'Progress' ? (
         <PendingIcon color="secondary" />
       ) : (
         <ClearIcon color="error" />
@@ -71,4 +71,4 @@ const OrderItem: React.FC<OrderItemProps> = ({ order }) => {
   );
 };
 
-export default OrderItem;
+export default OrderConsumerItem;
