@@ -19,8 +19,10 @@ const pages = [
   ['Home', '/home'],
   ['Blog', '/blog'],
   ['게시글', '/articles'],
-  ['ORDERS', '/orders'],
+  ['ORDERS', '/article/qwer/order'], //게시글고 연결 해야함
   ['Review', '/review/review1'], // 임시 링크 Nav
+  ['내가 주문한 목록', '/my/order/consume'],
+  ['내가 판매한 목록', '/my/order/sell']
 ];
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -54,15 +56,15 @@ export const Navigation = () => {
   };
 
   return (
-    <AppBar position="static" color="inherit">
+    <AppBar position="static" color="inherit" elevation={0}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <IconButton
+          {/* <IconButton
             sx={{ display: { xs: 'none', md: 'flex' } }}
             component="a"
             href="/">
             <img src="/img/templogo.png" height={23} />
-          </IconButton>
+          </IconButton> */}
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -99,7 +101,7 @@ export const Navigation = () => {
               ))}
             </Menu>
           </Box>
-          <AdbIcon
+          {/* <AdbIcon
             sx={{ display: { xs: 'flex', md: 'none' }, mr: 1, color: 'black' }}
           />
           <Typography
@@ -118,7 +120,7 @@ export const Navigation = () => {
               textDecoration: 'none',
             }}>
             LOGO
-          </Typography>
+          </Typography> */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
