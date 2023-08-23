@@ -20,6 +20,7 @@ public class ReportModuleService {
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public Report createReport(String username, String reportedApiId, String content) {
         User reporter = userRepository.findByUsername(username).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         User reportedUser = userRepository.findByApiId(reportedApiId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
