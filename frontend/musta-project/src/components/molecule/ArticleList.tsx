@@ -1,24 +1,41 @@
 import { useState } from 'react';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import { isToday, toDate } from '../../util/DateUtil.ts';
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridValueGetterParams,
+} from '@mui/x-data-grid';
+import {
+  getFormattedDate,
+  getFormattedDateTime,
+  getFormattedTime,
+  isToday,
+} from '../../util/DateUtil.ts';
+import { Chip } from '@mui/material';
+import { Article, ArticleStatus } from '../../types/article.ts';
 
 function getDate(params: GridValueGetterParams) {
-  const date: Date = toDate(params.row.createdDate);
-
   if (isToday(params.row.createdDate)) {
-    const H: number = date.getHours();
-    const amPm: string = `${H < 12 ? '오전' : '오후'}`;
-    const M: number = date.getMinutes();
-    return `${
-      (H % 12 == 0 ? '12' : H % 12 < 10 ? '0' : '') +
-      (H % 12 == 0 ? '' : H % 12)
-    }:${(M < 10 ? '0' : '') + M} ${amPm}`;
+    return getFormattedTime(params.row.createdDate);
   }
 
-  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  console.log(getFormattedDateTime(params.row.createdDate));
+
+  return getFormattedDate(params.row.createdDate);
 }
 
 const columns: GridColDef[] = [
+  {
+    field: 'articleStatus',
+    headerName: '글 상태',
+    renderCell: (params: GridRenderCellParams<Article>) => (
+      <Chip
+        label={params.row.articleStatus}
+        color={
+          params.row.articleStatus === ArticleStatus.LIVE ? 'primary' : 'danger'
+        }></Chip>
+    ),
+  },
   { field: 'title', headerName: 'Title', flex: 1 },
   { field: 'username', headerName: 'User', flex: 1 },
   {
