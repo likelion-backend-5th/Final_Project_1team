@@ -5,7 +5,7 @@ interface OrderConsumer {
   articleApiId : string;
   sellerName : string;
   date : string;
-  productName: string;
+  articleTitle: string;
   orderStatus: OrderStatus;
 }
 

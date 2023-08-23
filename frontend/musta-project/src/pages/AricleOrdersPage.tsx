@@ -39,15 +39,13 @@ const ArticleOrderPage: React.FC = () => {
       productName: 'Product Y',
       orderStatus: 'End',
     },
-    // 더 많은 더미 데이터 추가
   ];
 
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'Progress' | 'End' | 'Cancled'>('all');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); // Added state for sorting order
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); 
 
   const filteredOrders = selectedStatus === 'all' ? orders : orders.filter(order => order.orderStatus === selectedStatus);
 
-  // Sort the filteredOrders based on date and sortOrder
   const sortedOrders = [...filteredOrders].sort((a, b) => {
     const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
     return sortOrder === 'asc' ? dateComparison : -dateComparison;
@@ -71,7 +69,6 @@ const ArticleOrderPage: React.FC = () => {
             <MenuItem value="Cancled">Cancled</MenuItem>
           </Select>
           
-          {/* Added Select component for sorting order */}
           <Select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value as typeof sortOrder)}
