@@ -62,6 +62,7 @@ export default function DropDown(props: DropDownProps) {
   };
   const handleClose = () => {
     setAnchorEl(null);
+    //  TODO 파라미터 변경하는 거 추가하기
   };
 
   const elementComp = props.elements.map(function (item) {
@@ -79,7 +80,7 @@ export default function DropDown(props: DropDownProps) {
   });
 
   return (
-    <div>
+    <>
       <Button
         id="demo-customized-button"
         aria-controls={open ? 'demo-customized-menu' : undefined}
@@ -102,6 +103,6 @@ export default function DropDown(props: DropDownProps) {
         onClose={handleClose}>
         {elementComp}
       </StyledMenu>
-    </div>
+    </>
   );
 }

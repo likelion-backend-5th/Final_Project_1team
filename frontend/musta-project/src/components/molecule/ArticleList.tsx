@@ -19,14 +19,13 @@ function getDate(params: GridValueGetterParams) {
 }
 
 const columns: GridColDef[] = [
-  { field: 'title', headerName: 'Title', maxWidth: 500 },
-  { field: 'username', headerName: 'User', maxWidth: 500 },
-  // { field: 'createdDate', headerName: 'Date', maxWidth: 500 },
+  { field: 'title', headerName: 'Title', flex: 1 },
+  { field: 'username', headerName: 'User', flex: 1 },
   {
     field: 'createdDate',
     headerName: 'Date',
-    maxWidth: 500,
     valueGetter: getDate,
+    flex: 1,
   },
 ];
 
@@ -75,7 +74,7 @@ const ArticleList = () => {
   ]);
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       <DataGrid columns={columns} rows={articleArrayList} />
     </div>
   );
