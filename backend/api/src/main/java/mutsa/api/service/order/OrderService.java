@@ -6,14 +6,14 @@ import mutsa.api.dto.CustomPage;
 import mutsa.api.dto.order.*;
 import mutsa.api.service.article.ArticleModuleService;
 import mutsa.api.service.user.UserModuleService;
-import mutsa.common.domain.filter.order.OrderConsumerFilter;
-import mutsa.common.domain.filter.order.OrderSellerFilter;
+import mutsa.common.domain.filter.order.OrderFilter;
 import mutsa.common.domain.models.article.Article;
-import mutsa.common.domain.models.order.OrderStatus;
 import mutsa.common.domain.models.user.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
 @Slf4j
@@ -45,29 +45,15 @@ public class OrderService {
         return orderModuleService.saveOrder(article, user);
     }
 
-    public OrderBySellerResponseListDto findByFilterBySeller(OrderSellerFilterDto orderSellerFilterDto, int page, int limit, String currentUsername) {
-        User user = userService.getByUsername(currentUsername);
-        Article article = null;
-        if (StringUtils.hasText(orderSellerFilterDto.getArticleApiId())) {
-            article = articleModuleService.getByApiId(orderSellerFilterDto.getArticleApiId());
-        }
-
-        log.info("---------------"+article);
-        OrderSellerFilter sellerFilter = OrderSellerFilter.of(OrderStatus.of(orderSellerFilterDto.getOrderStatus()), article);
-        String[] sortingProperties = {"id"};
-
-        CustomPage<OrderResponseDto> orderResponseDtoCustomPage = new CustomPage<>(orderModuleService.findByFilterBySeller(user, sellerFilter, sortingProperties, page, limit));
-        return OrderBySellerResponseListDto.of(orderResponseDtoCustomPage, orderSellerFilterDto);
-    }
-
-    public OrderByConsumerResponseListDto findByFilterByConsumer(OrderConsumerFilterDto orderConsumerFilter, int page, int limit, String currentUsername) {
+    public OrderResponseListDto getOrderPage(OrderFilterDto orderFilterDto, String currentUsername) {
         User user = userService.getByUsername(currentUsername);
 
-        OrderConsumerFilter consumerFilter = OrderConsumerFilter.of(OrderStatus.of(orderConsumerFilter.getOrderStatus()));
-        String[] sortingProperties = {"id"};
+        Pageable pageable = getPageable(orderFilterDto);
+        OrderFilter sellerFilter = OrderFilter.of(orderFilterDto.getUserType(),orderFilterDto.getOrderStatus(),orderFilterDto.getText());
 
-        CustomPage<OrderResponseDto> orderResponseDtoCustomPage = new CustomPage<>(orderModuleService.findByFilterByConsumer(user, consumerFilter, sortingProperties, page, limit));
-        return OrderByConsumerResponseListDto.of(orderResponseDtoCustomPage, consumerFilter);
+        Page<OrderResponseDto> byFilterBySeller = orderModuleService.getOrderByFilter(user, sellerFilter, pageable);
+        CustomPage<OrderResponseDto> orderResponseDtoCustomPage = new CustomPage<>(byFilterBySeller);
+        return OrderResponseListDto.of(orderResponseDtoCustomPage, orderFilterDto);
     }
 
     public OrderDetailResponseDto updateOrderStatus(String articleApiId, String orderApiId, OrderStatueRequestDto orderStatueRequestDto, String currentUsername) {
@@ -82,5 +68,11 @@ public class OrderService {
         Article article = articleModuleService.getByApiId(articleApiId);
 
         orderModuleService.deleteOrder(article, user, orderApiId);
+    }
+
+    private static Pageable getPageable(OrderFilterDto dto) {
+        String[] sortingProperties = {"id"}; // orderSellerFilterDto.getSortingProperties();로 추후에 사용가능
+        Sort.Direction direction = Sort.Direction.fromString(dto.getSortOrder());
+        return PageRequest.of(dto.getPage(), dto.getLimit(), direction, sortingProperties);
     }
 }

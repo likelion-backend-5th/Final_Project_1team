@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface OrderRepository extends JpaRepository<Order, Long>,OrderRepositoryCustom {
+public interface OrderRepository extends JpaRepository<Order, Long>, OrderRepositoryCustom {
     Optional<Order> findByApiId(String uuid);
 
     Page<Order> findByArticle(Article article, Pageable pageable);
