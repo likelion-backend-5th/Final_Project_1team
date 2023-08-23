@@ -66,9 +66,10 @@ const ArticleList = () => {
     let curUrl = new URL(url);
     let curUrlSearchParams = new URLSearchParams(curUrl.search);
 
-    curUrlSearchParams.set('page', String(currentPageNumber + 1));
+    curUrlSearchParams.set('page', String(newPaginationModel.page));
 
     setUrl(`${baseURL}?${curUrlSearchParams}`);
+    setPaginationModel(newPaginationModel);
   };
 
   const fetchData = async () => {
