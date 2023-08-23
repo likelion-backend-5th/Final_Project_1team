@@ -47,6 +47,48 @@ include::{snippets}/api/order/주문 게시글별 조회/http-response.adoc[]
 
 include::{snippets}/api/order/주문 게시글별 조회/curl-request.adoc[]
 
+== 주문 판매자 조회
+
+=== Request
+
+include::{snippets}/api/order/판매자의 필터 조회/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/api/order/판매자의 필터 조회/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/order/판매자의 필터 조회/curl-request.adoc[]
+
+== 주문 구매자 조회
+
+=== Request
+
+include::{snippets}/api/order/구매자의 필터 조회/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/api/order/구매자의 필터 조회/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/order/구매자의 필터 조회/curl-request.adoc[]
+
+== 주문 상태 업데이트
+
+=== Request
+
+include::{snippets}/api/order/주문 싱태 수정/http-request.adoc[]
+=== Response
+
+include::{snippets}/api/order/주문 싱태 수정/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/order/주문 싱태 수정/curl-request.adoc[]
+
+
 == 주문 삭제
 
 === Request
