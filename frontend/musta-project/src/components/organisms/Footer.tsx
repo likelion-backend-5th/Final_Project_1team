@@ -10,8 +10,7 @@ const StyledFooter = styled.footer`
   width: 100%;
 `;
 
-const FooterContent = styled.h3`
-`;
+const FooterContent = styled.h3``;
 
 const Footer = () => {
   return (

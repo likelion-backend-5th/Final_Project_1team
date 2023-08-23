@@ -49,12 +49,12 @@ const StyledMenu = styled((props: MenuProps) => (
 }));
 
 interface DropDownProps {
-  elements: string[];
+  elements: string[][];
 }
 
 export default function DropDown(props: DropDownProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [value, setValue] = React.useState<string>(props.elements[0]);
+  const [value, setValue] = React.useState<string>(props.elements[0][0]);
   const open = Boolean(anchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -62,24 +62,25 @@ export default function DropDown(props: DropDownProps) {
   };
   const handleClose = () => {
     setAnchorEl(null);
+    //  TODO 파라미터 변경하는 거 추가하기
   };
 
-  const elementComp = props.elements.map(function (name, index) {
+  const elementComp = props.elements.map(function (item) {
     return (
       <MenuItem
-        key={index}
+        key={item[1]}
         onClick={() => {
           handleClose();
-          setValue(name);
+          setValue(item[0]);
         }}
         disableRipple>
-        {name}
+        {item[0]}
       </MenuItem>
     );
   });
 
   return (
-    <div>
+    <>
       <Button
         id="demo-customized-button"
         aria-controls={open ? 'demo-customized-menu' : undefined}
@@ -87,7 +88,7 @@ export default function DropDown(props: DropDownProps) {
         aria-expanded={open ? 'true' : undefined}
         variant="contained"
         disableElevation
-        defaultValue={props.elements[0]}
+        defaultValue={props.elements[0][0]}
         onClick={handleClick}
         endIcon={<KeyboardArrowDown />}>
         {value}
@@ -102,6 +103,6 @@ export default function DropDown(props: DropDownProps) {
         onClose={handleClose}>
         {elementComp}
       </StyledMenu>
-    </div>
+    </>
   );
 }
