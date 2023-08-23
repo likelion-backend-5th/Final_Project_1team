@@ -1,9 +1,10 @@
 import Container from '@mui/material/Container';
 import DropDown from '../atoms/DropDown.tsx';
+import ArticleList from '../molecule/ArticleList.tsx';
 
 const filterElements = [
-  ['날짜 내림차순', '1'],
-  ['날짜 오름차순', '2'],
+  ['최신순', '1'],
+  ['오래된순', '2'],
 ];
 
 const Articles = () => {
@@ -11,6 +12,7 @@ const Articles = () => {
     <Container>
       <h3>Articles</h3>
       <DropDown elements={filterElements} />
+      <ArticleList />
     </Container>
   );
 };
