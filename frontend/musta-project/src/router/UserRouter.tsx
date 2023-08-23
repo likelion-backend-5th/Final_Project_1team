@@ -1,11 +1,16 @@
-import Error404Page from "../pages/Error404Page";
-import HelloPage from "../pages/HelloPage";
-import MainPage from "../pages/MainPage";
-import { Route, Routes } from "react-router-dom";
-import { HomePage } from "../pages/HomePage";
-import ArticleOrder from "../components/ArticleOrder";
-import ArticleOrderPage from "../pages/AricleOrders";
+
 import ArticlePage from '../pages/ArticlePage.tsx';
+import ReviewPage from '../pages/reviewPages/ReviewPage.tsx';
+import ReviewEditPage from '../pages/reviewPages/ReviewEditPage.tsx';
+import OrderConsumePage from "../pages/orderPages/OrderConsumePage.tsx";
+import { Routes, Route } from 'react-router-dom';
+import ArticleOrderPage from '../pages/orderPages/AricleOrdersPage.tsx';
+import Error404Page from '../pages/Error404Page.tsx';
+import HelloPage from '../pages/HelloPage.tsx';
+import { HomePage } from '../pages/HomePage.tsx';
+import MainPage from '../pages/MainPage.tsx';
+import OrderDetailPage from '../pages/orderPages/OrderDetailPage.tsx';
+import OrderSellerPage from '../pages/orderPages/OrderSellerPage.tsx';
 
 const UserRouter = () => {
   return (
@@ -21,12 +26,31 @@ const UserRouter = () => {
         element={<HomePage />}
         errorElement={<Error404Page />}
       />
-       <Route
-        path="/orders"
-        element={<ArticleOrderPage />}
+      <Route
+        path="/article/:articleId/order"
+        element={<ArticleOrderPage/>}
         errorElement={<Error404Page />}
       />
       <Route path="/articles" element={<ArticlePage />} />
+        <Route
+            path="/review/:reviewApiId"
+            element={<ReviewPage />}
+            errorElement={<Error404Page />}
+        />
+        <Route
+            path="/review/edit/:reviewApiId"
+            element={<ReviewEditPage />}
+            errorElement={<Error404Page />}
+        />
+      <Route path="/my/order/consume" element={<OrderConsumePage />} />
+      <Route path="/my/order/sell" element={<OrderSellerPage />} />
+
+      <Route
+      path="/article/:articleApiId/order/:orderApiId"
+      element={<OrderDetailPage />}
+      errorElement={<Error404Page />}
+      />
+
     </Routes>
   );
 };
