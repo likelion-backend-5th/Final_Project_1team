@@ -37,7 +37,7 @@ public class ArticleResponseDto {
                 .apiId(entity.getApiId())
                 .status(entity.getStatus())
                 .articleStatus(entity.getArticleStatus())
-                .createdDate(entity.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm")))
+                .createdDate(entity.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
                 .build();
     }
 }
