@@ -28,9 +28,9 @@ export function getFormattedTime(str: string) {
   const H: number = date.getHours();
   const amPm: string = `${H < 12 ? '오전' : '오후'}`;
   const M: number = date.getMinutes();
-  return `${
+  return ` ${amPm} ${
     (H % 12 == 0 ? '12' : H % 12 < 10 ? '0' : '') + (H % 12 == 0 ? '' : H % 12)
-  }:${(M < 10 ? '0' : '') + M} ${amPm}`;
+  }:${(M < 10 ? '0' : '') + M}`;
 }
 
 export function getFormattedDate(str: string) {
