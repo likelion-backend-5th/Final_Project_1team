@@ -1,7 +1,10 @@
 import Container from '@mui/material/Container';
 import DropDown from '../atoms/DropDown.tsx';
 
-const filterElements = ['날짜 내림차순', '날짜 오름차순'];
+const filterElements = [
+  ['날짜 내림차순', '1'],
+  ['날짜 오름차순', '2'],
+];
 
 const Articles = () => {
   return (
