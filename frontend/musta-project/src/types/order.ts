@@ -17,6 +17,15 @@ interface OrderSeller {
   productName: string;
   orderStatus: OrderStatus;
 }
+interface OrderSellerWithArticle {
+  orderApiId : string;
+  articleApiId : string;
+  articleTitle : string;
+  consumerName : string;
+  date : string;
+  productName: string;
+  orderStatus: OrderStatus;
+}
 
 interface OrderDetail {
   orderApiId : string;
@@ -24,7 +33,7 @@ interface OrderDetail {
   sellerName : string;
   consumerName : string;
   date : string;
-  productName: string;
+  articleTitle: string;
   orderStatus: OrderStatus;
 }
 
