@@ -14,13 +14,13 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link, useNavigate } from 'react-router-dom';
 
-
 const pages = [
   ['Hello', '/hello'],
   ['Home', '/home'],
   ['Blog', '/blog'],
   ['게시글', '/articles'],
-  ['ORDRS','/orders'],
+  ['ORDERS', '/orders'],
+  ['Review', '/review/review1'], // 임시 링크 Nav
 ];
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
