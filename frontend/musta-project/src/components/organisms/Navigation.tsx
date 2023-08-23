@@ -11,7 +11,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import { Link, useNavigate } from 'react-router-dom';
 
 const pages = [
@@ -59,12 +58,6 @@ export const Navigation = () => {
     <AppBar position="static" color="inherit" elevation={0}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          {/* <IconButton
-            sx={{ display: { xs: 'none', md: 'flex' } }}
-            component="a"
-            href="/">
-            <img src="/img/templogo.png" height={23} />
-          </IconButton> */}
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -101,26 +94,6 @@ export const Navigation = () => {
               ))}
             </Menu>
           </Box>
-          {/* <AdbIcon
-            sx={{ display: { xs: 'flex', md: 'none' }, mr: 1, color: 'black' }}
-          />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'black',
-              textDecoration: 'none',
-            }}>
-            LOGO
-          </Typography> */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button

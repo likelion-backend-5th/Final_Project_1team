@@ -1,6 +1,6 @@
 import { Container, Paper, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import OrderConsumerItemList from '../components/OrderConsumerItemList';
+import OrderConsumerItemList from '../../components/order/OrderConsumerItemList';
 
 const StyledContainer = styled(Container)`
   margin-top: 20px;

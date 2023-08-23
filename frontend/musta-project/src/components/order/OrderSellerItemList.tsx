@@ -13,10 +13,10 @@ const ordersPerPageOptions = [5, 10, 15, 20];
 const initialPage = 1;
 
 class OrderStore {
-  orders:OrderSellerWithArticle[] = [
+  orders: OrderSellerWithArticle[] = [
     {
-      articleApiId:'qwer',
-      articleTitle : '이거시다!',
+      articleApiId: 'qwer',
+      articleTitle: '이거시다!',
       orderApiId: 'qwer',
       consumerName: 'Consumer X',
       date: '2023-08-21',
@@ -24,8 +24,8 @@ class OrderStore {
       orderStatus: 'Progress',
     },
     {
-      articleApiId:'qwer',
-      articleTitle : '이거시다!',
+      articleApiId: 'qwer',
+      articleTitle: '이거시다!',
       orderApiId: 'zxcv',
       consumerName: 'Consumer Y',
       date: '2023-08-20',
@@ -33,8 +33,8 @@ class OrderStore {
       orderStatus: 'End',
     },
     {
-      articleApiId:'qwer',
-      articleTitle : '이거시다!',
+      articleApiId: 'qwer',
+      articleTitle: '이거시다!',
       orderApiId: 'sdfg',
       consumerName: 'Consumer Z',
       date: '2023-08-19',
@@ -42,8 +42,8 @@ class OrderStore {
       orderStatus: 'Cancled'
     },
     {
-      articleApiId:'qwer',
-      articleTitle : '이거시다2!',
+      articleApiId: 'qwer',
+      articleTitle: '이거시다2!',
       orderApiId: 'cvbn',
       consumerName: 'Consumer W',
       date: '2023-08-18',
@@ -51,8 +51,8 @@ class OrderStore {
       orderStatus: 'Progress',
     },
     {
-      articleApiId:'qwer',
-      articleTitle : '이거시다!',
+      articleApiId: 'qwer',
+      articleTitle: '이거시다!',
       orderApiId: 'tyui',
       consumerName: 'Consumer V',
       date: '2023-08-17',
@@ -60,8 +60,8 @@ class OrderStore {
       orderStatus: 'End',
     },
     {
-      articleApiId:'qwer',
-      articleTitle : '이거시다2!',
+      articleApiId: 'qwer',
+      articleTitle: '이거시다2!',
       orderApiId: 'zxcvlf',
       consumerName: 'Consumer U',
       date: '2023-08-16',
@@ -69,7 +69,7 @@ class OrderStore {
       orderStatus: 'Cancled'
     }
   ];
-  
+
 
   currentPage = initialPage;
   selectedStatus: 'all' | 'Progress' | 'End' | 'Cancled' = 'all';
@@ -100,7 +100,7 @@ class OrderStore {
 
   setOrdersPerPage(perPage: number) {
     this.ordersPerPage = perPage;
-    this.currentPage = initialPage; 
+    this.currentPage = initialPage;
   }
 
   setSortOrder(order: 'asc' | 'desc') {
@@ -119,12 +119,12 @@ const OrderSellerItemList: React.FC = observer(() => {
   const filteredOrders = orderStore.selectedStatus === 'all'
     ? sortedOrders
     : sortedOrders.filter(order => order.orderStatus === orderStore.selectedStatus);
-  
+
   const totalPageCount = Math.ceil(filteredOrders.length / orderStore.ordersPerPage);
   const startIndex = (orderStore.currentPage - 1) * orderStore.ordersPerPage;
   const visibleOrders = filteredOrders.slice(startIndex, startIndex + orderStore.ordersPerPage);
 
-  const handlePageChange = (event: any, newPage: any) => {
+  const handlePageChange = (newPage: any) => {
     orderStore.setCurrentPage(newPage);
   };
 
@@ -168,7 +168,7 @@ const OrderSellerItemList: React.FC = observer(() => {
       </Select>
       <StyledList>
         {visibleOrders.map((order, index) => (
-          <OrderSellerWithArticleItem key={index} order={order} /> 
+          <OrderSellerWithArticleItem key={index} order={order} />
         ))}
       </StyledList>
       <div>

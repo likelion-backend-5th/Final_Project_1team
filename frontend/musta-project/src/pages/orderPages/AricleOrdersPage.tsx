@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Container, List, MenuItem, Paper, Select, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { useParams } from 'react-router-dom';
-import OrderSellerItem from '../components/OrderSellerItem';
+import OrderSellerItem from '../../components/order/OrderSellerItem';
 
 const StyledContainer = styled(Container)`
   margin-top: 20px;
@@ -18,7 +17,7 @@ const StyledList = styled(List)`
 
 const ArticleOrderPage: React.FC = () => {
   // URL에서 articleId 파라미터 값을 가져옴
-  const { articleId } = useParams();
+  // const { articleId } = useParams(); //이후에 articleId기준으로 데이터 불러와서 저장
   const articleName = '강아지 산책';
 
   // 더미 데이터로 주문 목록 생성
@@ -42,7 +41,7 @@ const ArticleOrderPage: React.FC = () => {
   ];
 
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'Progress' | 'End' | 'Cancled'>('all');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); 
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const filteredOrders = selectedStatus === 'all' ? orders : orders.filter(order => order.orderStatus === selectedStatus);
 
@@ -68,7 +67,7 @@ const ArticleOrderPage: React.FC = () => {
             <MenuItem value="End">End</MenuItem>
             <MenuItem value="Cancled">Cancled</MenuItem>
           </Select>
-          
+
           <Select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value as typeof sortOrder)}

@@ -9,7 +9,7 @@ const StyledList = styled(List)`
 export const OrderConsumerItemList = () => {
   const [orders] = useState<OrderConsumer[]>([
     {
-      articleApiId:'qwer',
+      articleApiId: 'qwer',
       orderApiId: 'qwer',
       sellerName: 'Seller A',
       date: '2023-08-21',
@@ -17,7 +17,7 @@ export const OrderConsumerItemList = () => {
       orderStatus: 'Progress',
     },
     {
-      articleApiId:'qwer',
+      articleApiId: 'qwer',
       orderApiId: 'zxcv',
       sellerName: 'Seller B',
       date: '2023-08-20',
@@ -25,7 +25,7 @@ export const OrderConsumerItemList = () => {
       orderStatus: 'End',
     },
     {
-      articleApiId:'qwer',
+      articleApiId: 'qwer',
       orderApiId: 'sdfg',
       sellerName: 'Seller C',
       date: '2023-08-19',
@@ -33,7 +33,7 @@ export const OrderConsumerItemList = () => {
       orderStatus: 'Cancled'
     },
     {
-      articleApiId:'qwer',
+      articleApiId: 'qwer',
       orderApiId: 'cvbn',
       sellerName: 'Seller D',
       date: '2023-08-18',
@@ -41,7 +41,7 @@ export const OrderConsumerItemList = () => {
       orderStatus: 'Progress',
     },
     {
-      articleApiId:'qwer',
+      articleApiId: 'qwer',
       orderApiId: 'tyui',
       sellerName: 'Seller E',
       date: '2023-08-17',
@@ -49,7 +49,7 @@ export const OrderConsumerItemList = () => {
       orderStatus: 'End',
     },
     {
-      articleApiId:'qwer',
+      articleApiId: 'qwer',
       orderApiId: 'zxcvlf',
       sellerName: 'Seller F',
       date: '2023-08-16',
@@ -59,7 +59,7 @@ export const OrderConsumerItemList = () => {
   ]);
 
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'Progress' | 'End' | 'Cancled'>('all');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); 
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const filteredOrders = selectedStatus === 'all' ? orders : orders.filter(order => order.orderStatus === selectedStatus);
 
@@ -78,16 +78,16 @@ export const OrderConsumerItemList = () => {
       </Select>
 
       <Select
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value as typeof sortOrder)}
-          >
-            <MenuItem value="asc">오래된 순</MenuItem>
-            <MenuItem value="desc">최신 순</MenuItem>
-          </Select>
+        value={sortOrder}
+        onChange={(e) => setSortOrder(e.target.value as typeof sortOrder)}
+      >
+        <MenuItem value="asc">오래된 순</MenuItem>
+        <MenuItem value="desc">최신 순</MenuItem>
+      </Select>
 
       <StyledList>
         {filteredOrders.map((order, index) => (
-          <OrderConsumerItem key={index} order={order} /> 
+          <OrderConsumerItem key={index} order={order} />
         ))}
       </StyledList>
     </div>
