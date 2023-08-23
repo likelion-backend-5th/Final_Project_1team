@@ -5,7 +5,7 @@ import mutsa.common.domain.models.report.ReportStatus;
 
 import java.util.List;
 
-public interface ReportCustomRepository {
+public interface ReportRepositoryCustom {
     List<Report> findAllByStatus(ReportStatus status);
 }
 

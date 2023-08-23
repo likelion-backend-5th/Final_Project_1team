@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface ReportRepository extends JpaRepository<Report, Long>, ReportCustomRepository {
+public interface ReportRepository extends JpaRepository<Report, Long>, ReportRepositoryCustom {
     Optional<Report> findByApiId(String apiId);
     List<Report> findByReportedUser(User user);
     List<Report> findByReporter(User user);

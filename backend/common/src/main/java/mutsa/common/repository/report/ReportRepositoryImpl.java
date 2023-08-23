@@ -8,7 +8,7 @@ import java.util.List;
 
 import static mutsa.common.domain.models.report.QReport.report;
 
-public class ReportRepositoryImpl extends QuerydslRepositorySupport implements ReportCustomRepository {
+public class ReportRepositoryImpl extends QuerydslRepositorySupport implements ReportRepositoryCustom {
     public ReportRepositoryImpl() {
         super(Report.class);
     }
