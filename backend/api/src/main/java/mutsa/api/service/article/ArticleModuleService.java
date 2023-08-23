@@ -174,7 +174,7 @@ public class ArticleModuleService {
             requestDto.setDescription("Random Content-" + (i + 1));
             requestDto.setUsername(username);
 
-            articles.add(save(requestDto));
+            articles.add(saveTest(requestDto));
         }
 
         return articles;
