@@ -5,6 +5,7 @@ import mutsa.api.dto.report.ReportRegisterDto;
 import mutsa.api.dto.report.ReportResponseDto;
 import mutsa.api.dto.report.ReportUpdateStatusDto;
 import mutsa.common.domain.models.report.Report;
+import mutsa.common.domain.models.report.ReportStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,6 +23,12 @@ public class ReportService {
 
     public List<ReportResponseDto> getAllReports() {
         return reportModuleService.getAllReports().stream()
+                .map(ReportResponseDto::of)
+                .collect(Collectors.toList());
+    }
+
+    public List<ReportResponseDto> getReportsByStatus(ReportStatus status) {
+        return reportModuleService.getReportsByStatus(status).stream()
                 .map(ReportResponseDto::of)
                 .collect(Collectors.toList());
     }

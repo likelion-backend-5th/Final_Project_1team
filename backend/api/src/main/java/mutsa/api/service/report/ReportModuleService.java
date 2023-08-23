@@ -3,6 +3,7 @@ package mutsa.api.service.report;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.report.ReportUpdateStatusDto;
 import mutsa.common.domain.models.report.Report;
+import mutsa.common.domain.models.report.ReportStatus;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
@@ -30,6 +31,10 @@ public class ReportModuleService {
 
     public List<Report> getAllReports() {
         return reportRepository.findAll();
+    }
+
+    public List<Report> getReportsByStatus(ReportStatus status) {
+        return reportRepository.findAllByStatus(status);
     }
 
     public Report getReportByApiId(String reportApiId) {
