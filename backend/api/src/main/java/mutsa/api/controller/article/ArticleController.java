@@ -4,7 +4,7 @@
  * @since 2023-08-18 AM 9:19
  */
 
-package mutsa.api.controller;
+package mutsa.api.controller.article;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class ArticleController {
     @GetMapping
     public ResponseEntity<Page<ArticleResponseDto>> getArticleList(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "20") Integer size,
+            @RequestParam(value = "size", defaultValue = "10") Integer size,
             @RequestParam(value = "order", defaultValue = "DESC") ArticleOrderDirection direction,
             @RequestParam(value = "articleStatue", defaultValue = "LIVE") ArticleStatus articleState,
             @RequestParam(value = "statue", defaultValue = "ACTIVE") Status status,

@@ -1,25 +1,24 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   DataGrid,
   GridColDef,
+  GridPaginationModel,
   GridRenderCellParams,
   GridValueGetterParams,
 } from '@mui/x-data-grid';
 import {
   getFormattedDate,
-  getFormattedDateTime,
   getFormattedTime,
   isToday,
 } from '../../util/DateUtil.ts';
 import { Chip } from '@mui/material';
-import { Article, ArticleStatus } from '../../types/article.ts';
+import { Article, getChipColorByArticleStatus } from '../../types/article.ts';
+import axios from 'axios';
 
 function getDate(params: GridValueGetterParams) {
   if (isToday(params.row.createdDate)) {
     return getFormattedTime(params.row.createdDate);
   }
-
-  console.log(getFormattedDateTime(params.row.createdDate));
 
   return getFormattedDate(params.row.createdDate);
 }
@@ -31,9 +30,7 @@ const columns: GridColDef[] = [
     renderCell: (params: GridRenderCellParams<Article>) => (
       <Chip
         label={params.row.articleStatus}
-        color={
-          params.row.articleStatus === ArticleStatus.LIVE ? 'primary' : 'danger'
-        }></Chip>
+        color={getChipColorByArticleStatus(params.row.articleStatus)}></Chip>
     ),
   },
   { field: 'title', headerName: 'Title', flex: 1 },
@@ -46,53 +43,68 @@ const columns: GridColDef[] = [
   },
 ];
 
+const PAGE_SIZE: number = 10;
+const baseURL = 'http://localhost:8080/api/articles';
+
 const ArticleList = () => {
-  const [articleArrayList, setArticleArrayList] = useState<Article[]>([
-    {
-      id: '1111',
-      title: 'test-1',
-      description: 'test-1',
-      username: 'user1',
-      thumbnail: '',
-      status: 'ACTIVE',
-      articleStatus: 'LIVE',
-      createdDate: '2023-08-23 24:10:00',
-    },
-    {
-      id: '2222',
-      title: 'test-2',
-      description: 'test-2',
-      username: 'user1',
-      thumbnail: '',
-      status: 'ACTIVE',
-      articleStatus: 'LIVE',
-      createdDate: '2023-08-23 00:20:00',
-    },
-    {
-      id: '3333',
-      title: 'test-3',
-      description: 'test-3',
-      username: 'user2',
-      thumbnail: '',
-      status: 'ACTIVE',
-      articleStatus: 'LIVE',
-      createdDate: '2023-08-23 00:30:00',
-    },
-    {
-      id: '4444',
-      title: 'test-4',
-      description: 'test-4',
-      username: 'user2',
-      thumbnail: '',
-      status: 'ACTIVE',
-      articleStatus: 'LIVE',
-      createdDate: '2023-08-21 00:30:00',
-    },
-  ]);
+  const [articleArrayList, setArticleArrayList] = useState<Article[]>([]);
+  const [currentPageNumber, setCurrentPageNumber] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [curPageItemCount, setCurPageItemCount] = useState(10);
+  const [totalElements, setTotalElements] = useState(100);
+  const [limit, setLimits] = useState(20);
+  const [loading, setLoading] = useState(true);
+  const [url, setUrl] = useState(baseURL);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: PAGE_SIZE,
+  });
+
+  const handlePaginationModelChange = (
+    newPaginationModel: GridPaginationModel
+  ) => {
+    let curUrl = new URL(url);
+    let curUrlSearchParams = new URLSearchParams(curUrl.search);
+
+    curUrlSearchParams.set('page', String(currentPageNumber + 1));
+
+    setUrl(`${baseURL}?${curUrlSearchParams}`);
+  };
+
+  const fetchData = async () => {
+    const response = axios.get(url);
+
+    response.then((data) => {
+      setArticleArrayList(data.data.content);
+      setCurrentPageNumber(data.data.number + 1);
+      setTotalPages(data.data.totalPages);
+      setCurPageItemCount(data.data.numberOfElements);
+      setLimits(data.data.size);
+      setTotalElements(data.data.totalElements);
+      setLoading(false);
+    });
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    fetchData();
+  }, [url]);
 
   return (
     <div style={{ width: '100%' }}>
-      <DataGrid columns={columns} rows={articleArrayList} />
+      <DataGrid
+        keepNonExistentRowsSelected
+        onRowClick={() => console.log('clicked')}
+        columns={columns}
+        rows={articleArrayList}
+        getRowId={(row) => row.apiId}
+        pageSizeOptions={[curPageItemCount]}
+        rowCount={totalElements}
+        loading={loading}
+        paginationMode="server"
+        paginationModel={paginationModel}
+        onPaginationModelChange={handlePaginationModelChange}
+      />
     </div>
   );
 };

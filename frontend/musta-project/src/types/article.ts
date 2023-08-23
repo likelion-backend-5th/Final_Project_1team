@@ -1,14 +1,17 @@
-export const Status = {
-  ACTIVE: 'ACTIVE',
-  DELETED: 'DELETED',
-} as const;
-type Status = (typeof Status)[keyof typeof Status];
+export type Status = 'ACTIVE' | 'DELETED';
+export type ArticleStatus = 'LIVE' | 'EXPIRED';
 
-export const ArticleStatus = {
-  LIVE: 'LIVE',
-  EXPIRED: 'EXPIRED',
-};
-type ArticleStatus = (typeof ArticleStatus)[keyof typeof ArticleStatus];
+export function getChipColorByArticleStatus(articleStatus: ArticleStatus) {
+  if (articleStatus === 'LIVE') {
+    return 'primary';
+  }
+
+  if (articleStatus === 'EXPIRED') {
+    return 'warning';
+  }
+
+  return 'secondary';
+}
 
 export interface Article {
   id: string;
@@ -19,4 +22,11 @@ export interface Article {
   status: Status;
   articleStatus: ArticleStatus;
   createdDate: string;
+}
+
+export interface ArticlePaginationData {
+  currentPage: number;
+  totalPage: number;
+  currentPageItemCount: number;
+  contents: Article[];
 }
