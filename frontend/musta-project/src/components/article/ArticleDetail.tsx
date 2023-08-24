@@ -1,4 +1,5 @@
 import {
+  Backdrop,
   Button,
   Card,
   CardActions,
@@ -6,6 +7,9 @@ import {
   CardMedia,
   Chip,
   Skeleton,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -16,7 +20,7 @@ import {
 } from '../../types/article.ts';
 import axios from 'axios';
 import { styled } from '@mui/material/styles';
-import { Flag, ShoppingCart } from '@mui/icons-material';
+import { Edit, Flag, Share, ShoppingCart, Sms } from '@mui/icons-material';
 
 const baseUrl = 'http://localhost:8080/api/articles/';
 
@@ -27,8 +31,10 @@ function getArticleApiId() {
 
 const StyledArticleDetail = styled('div')({
   display: 'flex',
-  justifyContent: 'center',
+  flexDirection: 'column', // Align content in column
+  alignItems: 'center', // Center content horizontally
   padding: '20px',
+  position: 'relative', // Make it relative
 });
 
 const StyledCard = styled(Card)({
@@ -55,6 +61,19 @@ const StyledCardActions = styled(CardActions)({
   padding: '10px 0',
 });
 
+const StyledSpeedDial = styled(SpeedDial)({
+  position: 'absolute',
+  bottom: '16px',
+  right: '16px',
+});
+
+const actions = [
+  { icon: <ShoppingCart color="primary" />, name: '주문하기' },
+  { icon: <Sms color="primary" />, name: '채팅하기' },
+  { icon: <Flag color="primary" />, name: '신고하기' },
+  { icon: <Share color="primary" />, name: '공유하기' },
+];
+
 export function ArticleDetail() {
   const [url, setURL] = useState(baseUrl + getArticleApiId());
   const [article, setAritcle] = useState<ArticleImpl>({
@@ -68,6 +87,9 @@ export function ArticleDetail() {
     createdDate: '1970-01-01 12:00:00',
   });
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const fetchData = async () => {
     try {
@@ -106,56 +128,56 @@ export function ArticleDetail() {
             image="https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com"
           />
           <StyledCardContent>
-            <Typography gutterBottom variant="h4" component="div">
-              {article.title}
-            </Typography>
             <Box
               sx={{
-                display: 'flex',
+                display: 'inline-block',
                 flexDirection: 'column',
-                alignItems: 'flex-start',
+                alignItems: 'start',
+                alignContent: 'start',
               }}>
               <Chip
                 size="small"
                 label={article.articleStatus}
                 color={getChipColorByArticleStatus(article.articleStatus)}
               />
-              <Typography variant="h6">{article.username}</Typography>
+              <Typography gutterBottom variant="h4" component="div">
+                {article.title}
+              </Typography>
             </Box>
             <Box
               sx={{
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                flexDirection: 'column',
+                alignItems: 'center', // Center content horizontally
+                marginBottom: '16px', // Add some spacing
               }}>
-              <Typography gutterBottom variant="body2">
-                {article.createdDate}
-              </Typography>
-              <Box>
-                <Button
-                  sx={{ mx: 2 }}
-                  size="medium"
-                  variant="outlined"
-                  color="success"
-                  startIcon={<ShoppingCart />}>
-                  주문하기
-                </Button>
-                <Button
-                  size="medium"
-                  variant="outlined"
-                  color="warning"
-                  startIcon={<Flag />}>
-                  신고하기
-                </Button>
-              </Box>
+              <Typography variant="h6">{article.username}</Typography>
+              <Typography variant="body2">{article.createdDate}</Typography>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: '16px', // Add spacing from the chip
+              }}>
+              <StyledSpeedDial
+                ariaLabel="SpeedDial openIcon example"
+                icon={<SpeedDialIcon openIcon={<Edit />} />}
+                onOpen={handleOpen}
+                onClose={handleClose}
+                open={open}>
+                {actions.map((action) => (
+                  <SpeedDialAction
+                    key={action.name}
+                    icon={action.icon}
+                    onClick={handleClose}
+                  />
+                ))}
+              </StyledSpeedDial>
             </Box>
             <Typography paragraph>{article.description}</Typography>
           </StyledCardContent>
-          <StyledCardActions>
-            <Button size="large" startIcon={<ShoppingCart />}>
-              주문하기
-            </Button>
-          </StyledCardActions>
         </StyledCard>
       )}
     </StyledArticleDetail>
