@@ -18,7 +18,7 @@ export const OrderConsumerItemList = () => {
   }, []);
 
   
-  const [selectedStatus, setSelectedStatus] = useState<'all' | 'Progress' | 'End' | 'Cancled'>('all');
+  const [selectedStatus, setSelectedStatus] = useState<'all' | 'PROGRESS' | 'END' | 'CANCLED'>('all');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const filteredOrders = selectedStatus === 'all' ? orders : orders.filter(order => order.orderStatus === selectedStatus);

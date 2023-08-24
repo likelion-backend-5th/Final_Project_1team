@@ -1,4 +1,4 @@
-import {GET, POST, PUT} from "./fetch-auth-action";
+import { GET, POST, PUT } from "./fetch-auth-action";
 
 const createTokenHeader = (token: string) => {
     return {
@@ -58,13 +58,13 @@ export const signupActionHandler = (
     nickname: string
 ) => {
     const URL = "user/auth/signup";
-    const signupObjcect = {username, password, passwordCheck, nickname};
+    const signupObjcect = { username, password, passwordCheck, nickname };
     return POST(URL, signupObjcect, {});
 };
 
 export const loginActionHandler = (username: string, password: string) => {
     const URL = "user/auth/login";
-    const loginObject = {username, password};
+    const loginObject = { username, password };
     return POST(URL, loginObject, {});
 };
 
@@ -78,39 +78,67 @@ export const logoutActionHandler = () => {
     localStorage.removeItem("expirationTime");
 };
 
-export const replyComment = (
+export const getArticleOrderHandler = (
     token: string,
-    itemId: number,
-    commentId: number,
-    reply: string
+    articleApiId: string,
+    pageParam: number | undefined,
+    limitParam: number | undefined
 ) => {
-    const url = '/items/' + itemId + '/comments/' + commentId + '/reply';
-    const replyCommentObject = {reply}
-    return PUT(url, replyCommentObject, createTokenHeader(token));
-}
+    const queryParams: Record<string, string> = {};
 
+    if (pageParam !== undefined) {
+        queryParams.pageParam = pageParam.toString();
+    }
 
-export const addNegotiation = (
+    if (limitParam !== undefined) {
+        queryParams.limitParam = limitParam.toString();
+    }
+
+    const queryString = getQueryString(queryParams);
+
+    const URL = `/api/articles/${articleApiId}/order?${queryString}`;
+    return GET(URL, createTokenHeader(token));
+};
+
+export const getSellOrderHandler = (
     token: string,
-    itemId: number,
-    suggestedPrice: string
+    orderStatus: OrderStatus | undefined,
+    searchText: string | undefined,
+    sortOrder: string | undefined,
+    page: number | undefined,
+    limit: number | undefined
 ) => {
-    const url = '/items/' + itemId + '/proposal';
-    const addNegotiationObject = {suggestedPrice}
-    return POST(url, addNegotiationObject, createTokenHeader(token));
-}
+    const queryParams: Record<string, string> = {};
 
-export const getItemProposalHandler = (
-    token: string,
-    itemId: string | undefined
-) => {
-    const url = '/items/' + itemId + '/proposal';
-    return GET(url, createTokenHeader(token));
-}
+    if (orderStatus !== undefined) {
+        queryParams.orderStatus = orderStatus;
+    }
 
-export const getChatroomHandler = (
-    token: string,
-) => {
-    const url = '/chat/rooms'
-    return GET(url, createTokenHeader(token));
+    if (searchText !== undefined) {
+        queryParams.searchText = searchText;
+    }
+
+    if (sortOrder !== undefined) {
+        queryParams.sortOrder = sortOrder;
+    }
+
+    if (page !== undefined) {
+        queryParams.page = page.toString();
+    }
+
+    if (limit !== undefined) {
+        queryParams.limit = limit.toString();
+    }
+    const queryString = getQueryString(queryParams);
+
+    const URL = `/api/order/sell?${queryString}`;
+    return GET(URL, createTokenHeader(token));
+};
+
+function getQueryString(queryParams: Record<string, string>) {
+    // queryParams 객체를 사용하여 URL 파라미터 문자열 생성
+    const queryString = Object.keys(queryParams)
+        .map(key => `${key}=${queryParams[key]}`)
+        .join('&');
+    return queryString;
 }

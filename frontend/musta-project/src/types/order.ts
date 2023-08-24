@@ -1,4 +1,4 @@
-type OrderStatus = 'Progress' | 'End' | 'Cancled';
+type OrderStatus = 'PROGRESS' | 'END' | 'CANCLED';
 
 
 interface OrderResponse {
@@ -31,11 +31,16 @@ interface OrderResponseDto {
   };
 }
 
-interface OrderConsumerFilter {
+interface OrderFilter {
   orderStatus : string; //주문 상태
   text : string; //게시글의 제목, 구매자의 이름
   sortOrder : string;
   userType : string;
   page : number;
   limit : number; 
+}
+
+interface OrderFilterResponseDto {
+  orderResponseDtos: OrderResponseDto;
+  orderFilter: OrderFilter;
 }

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { List, Select, MenuItem, Pagination } from '@mui/material';
 import { styled } from '@mui/system';
 import { observer } from 'mobx-react';
 import { makeObservable, observable, action } from 'mobx';
 import OrderSellerWithArticleItem from './OrderSellerItemWithArticle';
-import generateDummyData from '../../types/orderdummy';
+import { getSellOrderHandler } from '../../store/auth-action';
 
 const StyledList = styled(List)`
   margin-top: 20px;
@@ -15,40 +15,43 @@ const initialPage = 1;
 
 class OrderStore {
 
-  orders: OrderResponse[] = [];
-
-  initializeOrders() {
-    const initialOrders = generateDummyData(25);
-    this.orders = observable(initialOrders);
-  }
-
+  orderFilterResponse: OrderFilterResponseDto | null = null;
+  loading = false;
   currentPage = initialPage;
-  selectedStatus: 'all' | 'Progress' | 'End' | 'Cancled' = 'all';
+  selectedStatus: 'all' | 'PROGRESS' | 'END' | 'CANCLED' = 'all';
   ordersPerPage = ordersPerPageOptions[0];
   sortOrder: 'asc' | 'desc' = 'desc';
 
   constructor() {
-    this.initializeOrders();
-
     makeObservable(this, {
       currentPage: observable,
       selectedStatus: observable,
       ordersPerPage: observable,
       sortOrder: observable,
-      orders: observable,
+      orderFilterResponse: observable,
+      loading: observable,
       setCurrentPage: action,
       setSelectedStatus: action,
       setOrdersPerPage: action,
       setSortOrder: action,
-      initializeOrders: action
+      setLoading: action,
+      setOrderFilterResponse: action
     });
+  }
+
+  setOrderFilterResponse(response: OrderFilterResponseDto) {
+    this.orderFilterResponse = response;
+  }
+
+  setLoading(flag: boolean) {
+    this.loading = flag;
   }
 
   setCurrentPage(page: number) {
     this.currentPage = page;
   }
 
-  setSelectedStatus(status: 'all' | 'Progress' | 'End' | 'Cancled') {
+  setSelectedStatus(status: 'all' | 'PROGRESS' | 'END' | 'CANCLED') {
     this.selectedStatus = status;
     this.currentPage = initialPage;
   }
@@ -65,24 +68,51 @@ class OrderStore {
 
 const orderStore = new OrderStore();
 
+const fetchData = (newPage: number) => {
+  orderStore.setLoading(true);
+  const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0'
+  getSellOrderHandler(
+    token,
+    undefined,
+    undefined,
+    undefined,
+    newPage-1,
+    orderStore.ordersPerPage
+  ).then((response) => {
+    if (response != null) {
+      console.log("내가 판매한 주문목록을 불러옴");
+      console.log(response.data);
+      orderStore.setOrderFilterResponse(response.data);
+    }
+    orderStore.setLoading(false);
+  });
+};
+
+
 const OrderSellerItemList: React.FC = observer(() => {
-  const sortedOrders = [...orderStore.orders].sort((a, b) => {
+  useEffect(() => {
+    fetchData(initialPage);
+  }, []);
+
+  const orders:OrderResponse[] = orderStore.orderFilterResponse?.orderResponseDtos.content || [];
+  const sortedOrders = orders.slice().sort((a, b) => {
     const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
     return orderStore.sortOrder === 'asc' ? dateComparison : -dateComparison;
   });
+
 
   const filteredOrders = orderStore.selectedStatus === 'all'
     ? sortedOrders
     : sortedOrders.filter(order => order.orderStatus === orderStore.selectedStatus);
 
-  const totalPageCount = Math.ceil(filteredOrders.length / orderStore.ordersPerPage);
+  const totalPageCount = orderStore.orderFilterResponse?.orderResponseDtos.pageable.totalPages;
   const startIndex = (orderStore.currentPage - 1) * orderStore.ordersPerPage;
-  const visibleOrders = filteredOrders.slice(startIndex, startIndex + orderStore.ordersPerPage);
 
-  const handlePageChange = (newPage: any) => {
+  const handlePageChange = (event: React.ChangeEvent<unknown>, newPage: number) => {
     orderStore.setCurrentPage(newPage);
+    fetchData(newPage);
   };
-
+  
   const handleOrdersPerPageChange = (event: any) => {
     const newPerPage = event.target.value;
     orderStore.setOrdersPerPage(newPerPage);
@@ -122,7 +152,7 @@ const OrderSellerItemList: React.FC = observer(() => {
         <MenuItem value="desc">Descending</MenuItem>
       </Select>
       <StyledList>
-        {visibleOrders.map((order, index) => (
+        {filteredOrders.map((order, index) => (
           <OrderSellerWithArticleItem key={index} order={order} />
         ))}
       </StyledList>

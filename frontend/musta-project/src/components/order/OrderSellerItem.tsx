@@ -59,9 +59,9 @@ const OrderSellerItem: React.FC<OrderItemProps> = ({ order }) => {
           {order.date}
         </Typography>
       </UserInfoWrapper>
-      {order.orderStatus === 'End' ? (
+      {order.orderStatus === 'END' ? (
         <CheckCircleIcon color="primary" />
-      ) : order.orderStatus === 'Progress' ? (
+      ) : order.orderStatus === 'PROGRESS' ? (
         <PendingIcon color="secondary" />
       ) : (
         <ClearIcon color="error" />
