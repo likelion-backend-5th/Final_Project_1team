@@ -33,6 +33,7 @@ public enum ErrorCode {
 
     // report
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "REPORT_NOT_FOUND", "해당 신고를 찾을 수 없습니다."),
+    REPORT_INVALID_RESOURCE_TYPE(HttpStatus.BAD_REQUEST.value(), "REPORT_INVALID_RESOURCE_TYPE", "신고할 수 없는 타입의 기능입니다."),
 
     // review
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "REVIEW_NOT_FOUND", "해당 리뷰를 찾을 수 없습니다."),
