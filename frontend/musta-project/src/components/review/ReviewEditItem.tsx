@@ -9,11 +9,6 @@ const ContentsDiv = styled('div')`
   align: left;
 `;
 
-const RatingDiv = styled('div')`
-  max-width: 300px;
-  text-align: center;
-`;
-
 const ReviewEditItem = ({ review }: any) => {
   const [editReview, setEditReview] = useState(review);
   const navigate = useNavigate();
@@ -38,15 +33,16 @@ const ReviewEditItem = ({ review }: any) => {
     console.log('수정된 별점: ', editReview.point);
   };
 
-  const handleCancle = () => {
-    // 리다이렉트 방식 더 찾아보기
-    navigate(`/review/${review.apiId}`);
+  const handleCancel = () => {
+    navigate(-1);
   };
 
   return (
     <>
       <Typography align="left" variant="h5" gutterBottom>
-        <h3 style={{ margin: 'auto' }}>{review.username}님의 리뷰 수정</h3>
+        <div>
+          <h3 style={{ margin: 'auto' }}>{review.username}님의 리뷰 수정</h3>
+        </div>
         <ContentsDiv>
           <Container maxWidth="md">
             <Box mt={4}>
@@ -66,7 +62,7 @@ const ReviewEditItem = ({ review }: any) => {
                 name="simple-controlled"
                 value={editReview.point}
                 sx={{ marginTop: 2 }}
-                onChange={(event, newValue) => handleRatingChange(newValue)}
+                onChange={(_event, newValue) => handleRatingChange(newValue)}
               />
               <div style={{ textAlign: 'right' }}>
                 <Button
@@ -81,7 +77,7 @@ const ReviewEditItem = ({ review }: any) => {
                   variant="outlined"
                   color="error"
                   startIcon={<CancelIcon />}
-                  onClick={() => handleCancle()}>
+                  onClick={handleCancel}>
                   취소
                 </Button>
               </div>
