@@ -1,7 +1,15 @@
-import { Button, Rating, Typography, styled } from '@mui/material';
+import {
+  Box,
+  Button,
+  IconButton,
+  Rating,
+  Typography,
+  styled,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import React, { useState } from 'react';
+import ReportIcon from '@mui/icons-material/Report';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const ContentsDiv = styled('div')`
@@ -48,6 +56,11 @@ const ReviewItem = ({ reviewApiId }: any) => {
     });
   };
 
+  const handleReportClick = () => {
+    // 여기에 신고 기능 연결하시면 됩니다
+    console.log('버튼이 클릭되었습니다.');
+  };
+
   // const deleteHandler = () => {};
 
   return (
@@ -55,23 +68,31 @@ const ReviewItem = ({ reviewApiId }: any) => {
       {review ? (
         <>
           <Typography align="left" variant="h5" gutterBottom>
-            <h3 style={{ margin: 'auto' }}>{review[0].username}님의 리뷰</h3>
+            <div>
+              <h3 style={{ margin: 'auto' }}>{review[0].username}님의 리뷰</h3>
+            </div>
             <br></br>
             <ContentsDiv>
-              <div style={{ marginRight: '2%' }}>
+              <div style={{ marginRight: '2%', textAlign: 'center' }}>
                 <img
                   style={{ maxWidth: '400px' }}
                   src="/img/favicon.png"
                   title="예시 이미지"
                   alt="no Image"></img>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                  <Box flex="1">
+                    <Rating name="read-only" value={review[0].point} readOnly />
+                  </Box>
+                  {/* 신고 버튼 */}
+                  <IconButton onClick={handleReportClick} color="error">
+                    <ReportIcon />
+                  </IconButton>
+                </Box>
               </div>
               <div>
                 <h5>{review[0].content}</h5>
               </div>
             </ContentsDiv>
-            <RatingDiv>
-              <Rating name="read-only" value={review[0].point} readOnly />
-            </RatingDiv>
             <div style={{ textAlign: 'right' }}>
               {userHandler() && (
                 <>

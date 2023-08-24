@@ -38,7 +38,8 @@ const OrderDetailPage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleReviewClick = () => {
-    navigate(`/`); //여기에 리뷰 작성 폼 연결하시면 됩니다
+    // 임시 URL
+    navigate(`/review/create`); //여기에 리뷰 작성 폼 연결하시면 됩니다
   };
 
 

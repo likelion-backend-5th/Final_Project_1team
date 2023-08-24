@@ -13,6 +13,7 @@ import OrderSellerPage from '../pages/orderPages/OrderSellerPage.tsx';
 import { ArticleDetail } from '../components/article/ArticleDetail.tsx';
 import ReportList from '../pages/report/ReportList.tsx';
 import ReportDetail from '../pages/report/ReportDetail.tsx';
+import ReviewCreatePage from '../pages/reviewPages/ReviewCreatePage.tsx';
 
 const UserRouter = () => {
   return (
@@ -31,6 +32,11 @@ const UserRouter = () => {
       <Route
         path="/article/:articleId/order"
         element={<ArticleOrderPage />}
+        errorElement={<Error404Page />}
+      />
+      <Route
+        path="/review/create"
+        element={<ReviewCreatePage />}
         errorElement={<Error404Page />}
       />
       <Route

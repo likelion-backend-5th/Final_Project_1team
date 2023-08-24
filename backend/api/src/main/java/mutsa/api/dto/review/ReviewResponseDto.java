@@ -1,5 +1,6 @@
 package mutsa.api.dto.review;
 
+import java.time.format.DateTimeFormatter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,7 @@ public class ReviewResponseDto {
     private String content;
     private Integer point;
     private String username;
+    private String createdAt;
     private ReviewStatus reviewStatus;
 
     public static ReviewResponseDto fromEntity(Review review) {
@@ -22,6 +24,7 @@ public class ReviewResponseDto {
             .content(review.getContent())
             .point(review.getPoint())
             .username(review.getUser().getUsername())
+            .createdAt(review.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
             .reviewStatus(review.getReviewStatus())
             .build();
     }
@@ -31,9 +34,10 @@ public class ReviewResponseDto {
         return "ReviewResponseDto{" +
             "apiId='" + apiId + '\'' +
             ", content='" + content + '\'' +
-            ", point=" + point +
+            ", point=" + point + '\'' +
             ", username='" + username + '\'' +
-            ", reviewStatus=" + reviewStatus +
+            ", reviewStatus=" + reviewStatus + '\'' +
+            ", createdAt=" + createdAt +
             '}';
     }
 }
