@@ -129,7 +129,7 @@ public class ArticleModuleService {
             String orderProperties,
             ArticleFilter articleFilter
     ) {
-        Pageable pageable = PageRequest.of(Math.max(0, pageNum - 1), size, direction, orderProperties);
+        Pageable pageable = PageRequest.of(Math.max(0, pageNum), size, direction, orderProperties);
 
         return articleRepository.getPageByUsername(
                 username,
@@ -140,7 +140,7 @@ public class ArticleModuleService {
 
     @Transactional(readOnly = true)
     public Page<Article> getPage(int pageNum, int size, Sort.Direction direction, String orderProperties, ArticleFilter articleFilter) {
-        Pageable pageable = PageRequest.of(Math.max(0, pageNum - 1), size, direction, orderProperties);
+        Pageable pageable = PageRequest.of(Math.max(0, pageNum), size, direction, orderProperties);
 
         return articleRepository.getPage(articleFilter, pageable);
     }

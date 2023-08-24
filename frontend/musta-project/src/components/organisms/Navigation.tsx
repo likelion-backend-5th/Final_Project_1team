@@ -17,7 +17,7 @@ const pages = [
   ['Hello', '/hello'],
   ['Home', '/home'],
   ['Blog', '/blog'],
-  ['게시글', '/articles'],
+  ['게시글', '/article'],
   ['ORDERS', '/article/qwer/order'], //게시글고 연결 해야함
   ['Review', '/review/review1'], // 임시 링크 Nav
   ['내가 주문한 목록', '/my/order/consume'],

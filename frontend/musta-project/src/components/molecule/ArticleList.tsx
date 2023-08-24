@@ -14,6 +14,7 @@ import {
 import { Chip } from '@mui/material';
 import { Article, getChipColorByArticleStatus } from '../../types/article.ts';
 import axios from 'axios';
+import { ArticleDetail } from './ArticleDetail.tsx';
 
 function getDate(params: GridValueGetterParams) {
   if (isToday(params.row.createdDate)) {
@@ -66,9 +67,10 @@ const ArticleList = () => {
     let curUrl = new URL(url);
     let curUrlSearchParams = new URLSearchParams(curUrl.search);
 
-    curUrlSearchParams.set('page', String(currentPageNumber + 1));
+    curUrlSearchParams.set('page', String(newPaginationModel.page));
 
     setUrl(`${baseURL}?${curUrlSearchParams}`);
+    setPaginationModel(newPaginationModel);
   };
 
   const fetchData = async () => {
@@ -105,6 +107,9 @@ const ArticleList = () => {
         paginationModel={paginationModel}
         onPaginationModelChange={handlePaginationModelChange}
       />
+      <a href="/article/detail/317b6154-d900-41dc-bd39-2fb0e76efa47">
+        detail sample page
+      </a>
     </div>
   );
 };
