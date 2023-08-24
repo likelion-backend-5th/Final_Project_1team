@@ -135,6 +135,41 @@ export const getSellOrderHandler = (
     return GET(URL, createTokenHeader(token));
 };
 
+export const getConsumerOrderHandler = (
+    token: string,
+    orderStatus: OrderStatus | undefined,
+    searchText: string | undefined,
+    sortOrder: string | undefined,
+    page: number | undefined,
+    limit: number | undefined
+) => {
+    const queryParams: Record<string, string> = {};
+
+    if (orderStatus !== undefined) {
+        queryParams.orderStatus = orderStatus;
+    }
+
+    if (searchText !== undefined) {
+        queryParams.searchText = searchText;
+    }
+
+    if (sortOrder !== undefined) {
+        queryParams.sortOrder = sortOrder;
+    }
+
+    if (page !== undefined) {
+        queryParams.page = page.toString();
+    }
+
+    if (limit !== undefined) {
+        queryParams.limit = limit.toString();
+    }
+    const queryString = getQueryString(queryParams);
+
+    const URL = `/api/order/consume?${queryString}`;
+    return GET(URL, createTokenHeader(token));
+};
+
 function getQueryString(queryParams: Record<string, string>) {
     // queryParams 객체를 사용하여 URL 파라미터 문자열 생성
     const queryString = Object.keys(queryParams)
