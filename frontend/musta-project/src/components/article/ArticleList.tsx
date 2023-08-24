@@ -1,27 +1,33 @@
 import { SetStateAction, useEffect, useState } from 'react';
-import { Article } from '../../types/article.ts';
+import { Article, ArticleImpl, ofArticleImpl } from '../../types/article.ts';
 import axios from 'axios';
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import { AlbumCard } from '../molecule/AlbumCard.tsx';
 import { Pagination, Skeleton } from '@mui/material';
-import { GridPaginationModel } from '@mui/x-data-grid';
+import { useNavigate } from 'react-router-dom';
 
 const PAGE_SIZE: number = 12; // 4x3 열을 위해 12로 변경
 const baseURL = `http://localhost:8080/api/articles`;
 
 export const ArticleList = () => {
-  const [articleArrayList, setArticleArrayList] = useState<Article[]>([]);
+  const [articleArrayList, setArticleArrayList] = useState<ArticleImple[]>([]);
   const [loading, setLoading] = useState(true);
   const [url, setUrl] = useState(`${baseURL}?size=${PAGE_SIZE}`);
   const [curPageNumber, setCurPageNumber] = useState(1);
   const [totalPageNumber, setTotalPageNumber] = useState(10);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     const response = axios.get(url);
 
     response.then((data) => {
-      setArticleArrayList(data.data.content);
+      const group: ArticleImpl[] = [];
+
+      data.data.content.forEach((item) => {
+        group.push(ofArticleImpl(item));
+      });
+
+      setArticleArrayList(group);
       setCurPageNumber(data.data.number + 1);
       setTotalPageNumber(data.data.totalPages);
       setTimeout(() => setLoading(false), 2000);
@@ -44,9 +50,10 @@ export const ArticleList = () => {
         if (index < articleArrayList.length) {
           row.push(
             <AlbumCard
-              key={index}
+              key={articleArrayList[index].id}
               article={articleArrayList[index]}
               style={{ margin: '10px', width: '100%' }} // 간격과 카드 크기 조정
+              detail={articleArrayList[index].id}
             />
           );
         } else {
@@ -73,6 +80,7 @@ export const ArticleList = () => {
     const curUrlSearchParams = new URLSearchParams(curUrl.search);
 
     curUrlSearchParams.set('page', String(Number(value) - 1));
+    window.scrollTo(0, 0);
 
     setUrl(`${baseURL}?${curUrlSearchParams}`);
   };

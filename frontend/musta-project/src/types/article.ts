@@ -34,17 +34,21 @@ export class ArticleImpl implements Article {
     public status: Status,
     public articleStatus: ArticleStatus,
     public createdDate: string
-  ) {
-    // this.id = id;
-    // this.title = title;
-    // this.description = description;
-    // this.username = username;
-    // this.thumbnail = thumbnail;
-    // this.status = status;
-    // this.articleStatus = articleStatus;
-    // this.createdDate = createdDate;
-  }
+  ) {}
 }
+
+export const ofArticleImpl = (dto) => {
+  return new ArticleImpl(
+    dto.apiId,
+    dto.title,
+    dto.description,
+    dto.username,
+    dto.thumbnail,
+    dto.status,
+    dto.articleStatus,
+    dto.createdDate
+  );
+};
 
 export interface ArticlePaginationData {
   currentPage: number;
