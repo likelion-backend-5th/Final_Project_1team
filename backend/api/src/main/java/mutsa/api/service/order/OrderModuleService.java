@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderResponseDto;
-import mutsa.api.dto.order.OrderStatueRequestDto;
+import mutsa.api.dto.order.OrderStatusRequestDto;
 import mutsa.common.domain.filter.order.OrderFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
@@ -49,12 +49,12 @@ public class OrderModuleService {
     }
 
     @Transactional
-    public OrderDetailResponseDto updateOrderStatus(Article article, User user, OrderStatueRequestDto orderStatueRequestDto, String orderApiId) {
+    public OrderDetailResponseDto updateOrderStatus(Article article, User user, OrderStatusRequestDto orderStatusRequestDto, String orderApiId) {
         Order order = getByApiId(orderApiId);
         order.validArticleId(article);
         order.validSellerOrConsumerId(user); //판매자와 구매자만 상태를 변경할 수 있다.
 
-        order.setOrderStatus(OrderStatus.of(orderStatueRequestDto.getOrderStatus()));
+        order.setOrderStatus(OrderStatus.of(orderStatusRequestDto.getOrderStatus()));
         return OrderDetailResponseDto.fromEntity(order);
     }
 

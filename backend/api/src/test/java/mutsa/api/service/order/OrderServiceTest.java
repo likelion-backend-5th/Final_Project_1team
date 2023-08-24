@@ -7,7 +7,7 @@ import mutsa.api.dto.CustomPage;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderFilterDto;
 import mutsa.api.dto.order.OrderResponseDto;
-import mutsa.api.dto.order.OrderStatueRequestDto;
+import mutsa.api.dto.order.OrderStatusRequestDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -80,7 +80,7 @@ class OrderServiceTest {
 
         //then
         assertThat(detailOrder.getArticleApiId()).isEqualTo(savedOrder.getArticle().getApiId());
-        assertThat(detailOrder.getUsername()).isEqualTo(savedOrder.getUser().getUsername());
+        assertThat(detailOrder.getConsumerName()).isEqualTo(savedOrder.getUser().getUsername());
     }
 
     @Test
@@ -106,7 +106,7 @@ class OrderServiceTest {
         OrderDetailResponseDto orderDetailResponseDto = orderService.saveOrder(article.getApiId(), seller.getUsername());
 
         //then
-        assertThat(orderDetailResponseDto.getUsername()).isEqualTo(seller.getUsername());
+        assertThat(orderDetailResponseDto.getConsumerName()).isEqualTo(seller.getUsername());
     }
 
     @Test
@@ -163,7 +163,7 @@ class OrderServiceTest {
         entityManager.clear();
 
         //when
-        orderService.updateOrderStatus(article.getApiId(), savedOrder.getApiId(), new OrderStatueRequestDto("END"), consumer.getUsername());
+        orderService.updateOrderStatus(article.getApiId(), savedOrder.getApiId(), new OrderStatusRequestDto("END"), consumer.getUsername());
         entityManager.flush();
         entityManager.clear();
 

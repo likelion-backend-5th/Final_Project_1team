@@ -79,15 +79,15 @@ public class OrderController {
     /**
      * @param articleApiId
      * @param orderApiId
-     * @param orderStatueRequestDto
+     * @param orderStatusRequestDto
      * @return 주문 수정
      */
     @PutMapping("articles/{articleApiId}/order/{orderApiId}")
     public ResponseEntity<OrderDetailResponseDto> updateOrderStatus(
             @PathVariable("articleApiId") String articleApiId,
             @PathVariable("orderApiId") String orderApiId,
-            @RequestBody OrderStatueRequestDto orderStatueRequestDto) {
-        OrderDetailResponseDto dto = orderService.updateOrderStatus(articleApiId, orderApiId, orderStatueRequestDto, SecurityUtil.getCurrentUsername());
+            @RequestBody OrderStatusRequestDto orderStatusRequestDto) {
+        OrderDetailResponseDto dto = orderService.updateOrderStatus(articleApiId, orderApiId, orderStatusRequestDto, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dto);
     }
 

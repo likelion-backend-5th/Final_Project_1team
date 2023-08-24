@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Getter
 public class OrderFilterDto {
     private String orderStatus; //주문 상태

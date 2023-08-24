@@ -2,14 +2,14 @@ package mutsa.api.dto.order;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
 
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
 public class OrderResponseDto {
     private String orderApiId;

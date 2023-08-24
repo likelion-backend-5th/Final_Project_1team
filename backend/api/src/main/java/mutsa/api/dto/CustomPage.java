@@ -1,13 +1,15 @@
 package mutsa.api.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.domain.Page;
 
 import java.io.Serializable;
 import java.util.List;
 
-@Data
+@ToString
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CustomPage<T> implements Serializable {
     private List<T> content;
     private CustomPageable pageable;
@@ -19,7 +21,7 @@ public class CustomPage<T> implements Serializable {
                 , page.getTotalPages(), page.getNumberOfElements());
     }
 
-    @Data
+    @Getter
     @AllArgsConstructor
     public class CustomPageable {
         private int pageNumber;
