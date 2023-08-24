@@ -9,13 +9,17 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.user.Authority;
 import mutsa.common.domain.models.user.Member;
 import mutsa.common.domain.models.user.Role;
 import mutsa.common.domain.models.user.RoleStatus;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.domain.models.user.UserRole;
+import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.member.MemberRepository;
+import mutsa.common.repository.order.OrderRepository;
 import mutsa.common.repository.user.AuthorityRepository;
 import mutsa.common.repository.user.RoleRepository;
 import mutsa.common.repository.user.UserRepository;
@@ -34,6 +38,8 @@ public class BootstrapDataLoader {
     private final AuthorityRepository authorityRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ArticleRepository articleRepository;
+    private final OrderRepository orderRepository;
 
     public void createAdminUser() {
         createRoleAuthority();
@@ -164,5 +170,47 @@ public class BootstrapDataLoader {
 
     private Role saveRole(RoleStatus roleStatus) {
         return roleRepository.save(Role.of(roleStatus));
+    }
+
+    public void createAricleOrder() {
+        User user1 = User.of(
+                "user1",
+                bCryptPasswordEncoder.encode("test"),
+                "auser1@gmail.com",
+                null,
+                null,
+                null
+        );
+        user1 = userRepository.save(user1);
+
+        User user2 = User.of(
+                "user2",
+                bCryptPasswordEncoder.encode("test"),
+                "user2@gmail.com",
+                null,
+                null,
+                null
+        );
+        user2 = userRepository.save(user2);
+
+        List<Article> articles = new ArrayList<>();
+
+        for (int i = 0; i < 20; i++) {
+            Article article = Article.builder()
+                    .title("title-" + (i + 1))
+                    .description("desc-" + (i + 1))
+                    .user(i % 2 == 0 ? user1 : user2)
+                    .build();
+
+            articles.add(article);
+        }
+
+        articles = articleRepository.saveAll(articles);
+
+        List<Order> orders = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            orders.add(orderRepository.save(Order.of(articles.get(i), i % 2 == 0 ? user1 : user2)));
+        }
+        orders = orderRepository.saveAll(orders);
     }
 }
