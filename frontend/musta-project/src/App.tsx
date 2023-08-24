@@ -4,6 +4,8 @@ import { Navigation } from './components/organisms/Navigation';
 import UserRouter from './router/UserRouter';
 import './App.css';
 import { styled } from 'styled-components';
+import { Provider } from 'mobx-react';
+import useStores from './hook/useStores';
 
 const StyledMain = styled.main`
   display: block;
@@ -16,14 +18,18 @@ const StyledMain = styled.main`
 `;
 
 function App() {
+  const useStore = useStores();
   return (
-    <StyledMain>
-      <Header />
-      <Navigation />
-      {/* 권한별 라우터 정의 필요 */}
-      <UserRouter />
-      <Footer />
-    </StyledMain>
+    <Provider {...useStore}>
+      <StyledMain>
+        <></>
+        <Header />
+        <Navigation />
+        {/* 권한별 라우터 정의 필요 */}
+        <UserRouter />
+        <Footer />
+      </StyledMain>
+    </Provider>
   );
 }
 
