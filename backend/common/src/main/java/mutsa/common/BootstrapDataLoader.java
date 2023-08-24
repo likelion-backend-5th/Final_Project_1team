@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
+import mutsa.common.domain.models.review.Review;
 import mutsa.common.domain.models.user.Authority;
 import mutsa.common.domain.models.user.Member;
 import mutsa.common.domain.models.user.Role;
@@ -20,6 +21,7 @@ import mutsa.common.domain.models.user.UserRole;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.member.MemberRepository;
 import mutsa.common.repository.order.OrderRepository;
+import mutsa.common.repository.review.ReviewRepository;
 import mutsa.common.repository.user.AuthorityRepository;
 import mutsa.common.repository.user.RoleRepository;
 import mutsa.common.repository.user.UserRepository;
@@ -40,6 +42,7 @@ public class BootstrapDataLoader {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ArticleRepository articleRepository;
     private final OrderRepository orderRepository;
+    private final ReviewRepository reviewRepository;
 
     public void createAdminUser() {
         createRoleAuthority();
@@ -212,5 +215,14 @@ public class BootstrapDataLoader {
             orders.add(orderRepository.save(Order.of(articles.get(i), i % 2 == 0 ? user1 : user2)));
         }
         orders = orderRepository.saveAll(orders);
+
+        List<Review> reviews = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            reviews.add(reviewRepository.save(Review.of(i % 2 == 0 ? user1 : user2, articles.get(i), "testContent" + (i+1), (int)(Math.random()*5+1))));
+        }
+        for (int i = 0; i < 6; i++) {
+            reviews.add(reviewRepository.save(Review.of(user1, articles.get(0), "testContent" + (i+1), (int)(Math.random()*5+1))));
+        }
+        reviews = reviewRepository.saveAll(reviews);
     }
 }

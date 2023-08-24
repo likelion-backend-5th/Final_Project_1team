@@ -14,6 +14,7 @@ import { ArticleDetail } from '../components/article/ArticleDetail.tsx';
 import ReportList from '../pages/report/ReportList.tsx';
 import ReportDetail from '../pages/report/ReportDetail.tsx';
 import ReviewCreatePage from '../pages/reviewPages/ReviewCreatePage.tsx';
+import ReviewListPage from '../pages/reviewPages/ReviewListPage.tsx';
 
 const UserRouter = () => {
   return (
@@ -35,7 +36,7 @@ const UserRouter = () => {
         errorElement={<Error404Page />}
       />
       <Route
-        path="/review/create"
+        path="/article/:articleApiId/order/:orderApiId/review"
         element={<ReviewCreatePage />}
         errorElement={<Error404Page />}
       />
@@ -49,6 +50,7 @@ const UserRouter = () => {
         element={<ReviewEditPage />}
         errorElement={<Error404Page />}
       />
+      <Route path="/review-list/test" element={<ReviewListPage />} />
       <Route path="/my/order/consume" element={<OrderConsumePage />} />
       <Route path="/my/order/sell" element={<OrderSellerPage />} />
 
