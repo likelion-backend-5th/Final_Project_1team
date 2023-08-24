@@ -170,6 +170,15 @@ export const getConsumerOrderHandler = (
     return GET(URL, createTokenHeader(token));
 };
 
+export const getOrderHandler = (
+    token: string,
+    articleApiId: string | undefined,
+    orderApiId: string | undefined,
+) => {
+    const URL = `/api/articles/${articleApiId}/order/${orderApiId}`;
+    return GET(URL, createTokenHeader(token));
+};
+
 function getQueryString(queryParams: Record<string, string>) {
     // queryParams 객체를 사용하여 URL 파라미터 문자열 생성
     const queryString = Object.keys(queryParams)
