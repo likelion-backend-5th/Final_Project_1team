@@ -1,21 +1,27 @@
 package mutsa.common;
 
 import jakarta.persistence.EntityNotFoundException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.user.Authority;
 import mutsa.common.domain.models.user.Member;
 import mutsa.common.domain.models.user.Role;
 import mutsa.common.domain.models.user.RoleStatus;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.domain.models.user.UserRole;
+import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.member.MemberRepository;
+import mutsa.common.repository.order.OrderRepository;
 import mutsa.common.repository.user.AuthorityRepository;
 import mutsa.common.repository.user.RoleRepository;
 import mutsa.common.repository.user.UserRepository;
@@ -32,8 +38,10 @@ public class BootstrapDataLoader {
     private final MemberRepository memberRepository;
     private final UserRoleRepository userRoleRepository;
     private final AuthorityRepository authorityRepository;
+    private final ArticleRepository articleRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final OrderRepository orderRepository;
 
     public void createAdminUser() {
         createRoleAuthority();
@@ -95,17 +103,17 @@ public class BootstrapDataLoader {
 
         userRole.getAuthorities().clear();
         userRole.addAuthorities(createAuthority, updateAuthority, deleteAuthority, readAuthority,
-            createArticle, updateArticle, readArticle, deleteArticle,
-            createReport, updateReport, deleteReport, readReport,
-            createOrder, updateOrder, deleteOrder, readOrder,
-            createReview, updateReview, deleteReview, readReview);
+                createArticle, updateArticle, readArticle, deleteArticle,
+                createReport, updateReport, deleteReport, readReport,
+                createOrder, updateOrder, deleteOrder, readOrder,
+                createReview, updateReview, deleteReview, readReview);
 
         adminRole.getAuthorities().clear();
         adminRole.addAuthorities(createAuthority, updateAuthority, deleteAuthority, readAuthority,
-            createArticle, updateArticle, readArticle, deleteArticle,
-            createReport, updateReport, deleteReport, readReport,
-            createOrder, updateOrder, deleteOrder, readOrder,
-            createReview, updateReview, deleteReview, readReview);
+                createArticle, updateArticle, readArticle, deleteArticle,
+                createReport, updateReport, deleteReport, readReport,
+                createOrder, updateOrder, deleteOrder, readOrder,
+                createReview, updateReview, deleteReview, readReview);
 
         roleRepository.saveAll(Arrays.asList(userRole, adminRole));
     }
@@ -119,23 +127,23 @@ public class BootstrapDataLoader {
 
         RoleStatus role = (RoleStatus) attributes.get("role");
         HashMap<String, Object> necessaryAttributes = createNecessaryAttributes(apiId, login,
-            email, imageUrl);
+                email, imageUrl);
 
         String username = login;
         Optional<User> userOptional = userRepository.findByUsername(username);
         User user = signUpOrUpdateUser(login, email, imageUrl, username, password, userOptional,
-            necessaryAttributes, role);
+                necessaryAttributes, role);
     }
 
     private User signUpOrUpdateUser(String login, String email, String imageUrl, String username, String password,
-        Optional<User> userOptional, Map<String, Object> necessaryAttributes, RoleStatus roleEnum) {
+                                    Optional<User> userOptional, Map<String, Object> necessaryAttributes, RoleStatus roleEnum) {
         User user;
         //회원가입
         if (userOptional.isEmpty()) {
             Member member = Member.of(login);
             memberRepository.save(member);
             Role role = roleRepository.findByValue(roleEnum).orElseThrow(() ->
-                new EntityNotFoundException(roleEnum + "에 해당하는 Role이 없습니다."));
+                    new EntityNotFoundException(roleEnum + "에 해당하는 Role이 없습니다."));
             user = User.of(username, bCryptPasswordEncoder.encode(password), email, login, imageUrl, member);
             UserRole userRole = UserRole.of(user, role);
 
@@ -150,7 +158,7 @@ public class BootstrapDataLoader {
     }
 
     private HashMap<String, Object> createNecessaryAttributes(String apiId, String login,
-        String email, String imageUrl) {
+                                                              String email, String imageUrl) {
         HashMap<String, Object> necessaryAttributes = new HashMap<>();
         necessaryAttributes.put("id", apiId);
         necessaryAttributes.put("login", login);
@@ -158,11 +166,54 @@ public class BootstrapDataLoader {
         necessaryAttributes.put("image_url", imageUrl);
         return necessaryAttributes;
     }
+
     private Authority saveAuthority(String name) {
         return authorityRepository.save(Authority.of(name));
     }
 
     private Role saveRole(RoleStatus roleStatus) {
         return roleRepository.save(Role.of(roleStatus));
+    }
+
+    public void createAricleOrder() {
+        User user1 = User.of(
+                "ArticleControllerTestUser1",
+                bCryptPasswordEncoder.encode("test"),
+                "articlecontrollertestuser1@gmail.com",
+                null,
+                null,
+                null
+        );
+        user1 = userRepository.save(user1);
+
+        User user2 = User.of(
+                "ArticleControllerTestUser2",
+                bCryptPasswordEncoder.encode("test"),
+                "articlecontrollertestuser2@gmail.com",
+                null,
+                null,
+                null
+        );
+        user2 = userRepository.save(user2);
+
+       List<Article> articles = new ArrayList<>();
+
+        for (int i = 0; i < 20; i++) {
+            Article article = Article.builder()
+                    .title("title-" + (i + 1))
+                    .description("desc-" + (i + 1))
+                    .user(i % 2 == 0 ? user1 : user2)
+                    .build();
+
+            articles.add(article);
+        }
+
+        articles = articleRepository.saveAll(articles);
+
+        List<Order> orders = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            orders.add(orderRepository.save(Order.of(articles.get(i), i % 2 == 0 ? user1 : user2)));
+        }
+        orders = orderRepository.saveAll(orders);
     }
 }
