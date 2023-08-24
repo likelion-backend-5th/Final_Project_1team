@@ -174,9 +174,9 @@ public class BootstrapDataLoader {
 
     public void createAricleOrder() {
         User user1 = User.of(
-                "ArticleControllerTestUser1",
+                "user1",
                 bCryptPasswordEncoder.encode("test"),
-                "articlecontrollertestuser1@gmail.com",
+                "auser1@gmail.com",
                 null,
                 null,
                 null
@@ -184,9 +184,9 @@ public class BootstrapDataLoader {
         user1 = userRepository.save(user1);
 
         User user2 = User.of(
-                "ArticleControllerTestUser2",
+                "user2",
                 bCryptPasswordEncoder.encode("test"),
-                "articlecontrollertestuser2@gmail.com",
+                "user2@gmail.com",
                 null,
                 null,
                 null
