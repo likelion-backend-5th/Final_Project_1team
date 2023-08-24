@@ -3,14 +3,14 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Paper, Typography, Grid, Chip, FormControl, FormControlLabel, FormGroup } from '@mui/material';
 
-const fetchOrderDetail = async (orderApiId: string): Promise<OrderDetail> => {
+const fetchOrderDetail = async (orderApiId: string): Promise<OrderResponse> => {
   // 여기서 실제 API 호출을 구현, 주문 상세 보기 데이터 가져오기
   return {
     articleApiId: 'qwerty',
     orderApiId: 'qwer',
     sellerName: 'Seller A',
     consumerName: 'Consumer X',
-    date: '2023-08-21',
+    date: '2023-08-21 20:',
     orderStatus: 'Progress',
     articleTitle: '이거시다!',
   };
@@ -29,7 +29,7 @@ const BoldLabel = styled(Typography)`
 
 const OrderDetailPage: React.FC = () => {
   const { orderApiId } = useParams();
-  const [orderDetail, setOrderDetail] = useState<OrderDetail | null>(null);
+  const [orderDetail, setOrderDetail] = useState<OrderResponse | null>(null);
 
   useEffect(() => {
     const fetchOrderDetailData = async () => {

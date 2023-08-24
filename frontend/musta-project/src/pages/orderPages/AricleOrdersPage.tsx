@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, List, MenuItem, Paper, Select, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import OrderSellerItem from '../../components/order/OrderSellerItem';
+import generateDummyData from '../../types/orderdummy';
 
 const StyledContainer = styled(Container)`
   margin-top: 20px;
@@ -21,24 +22,13 @@ const ArticleOrderPage: React.FC = () => {
   const articleName = '강아지 산책';
 
   // 더미 데이터로 주문 목록 생성
-  const orders: OrderSeller[] = [
-    {
-      articleApiId: 'qwer',
-      orderApiId: 'qwer',
-      consumerName: 'Consumer X',
-      date: '2023-08-21',
-      productName: 'Product X',
-      orderStatus: 'Progress',
-    },
-    {
-      articleApiId: 'qwer',
-      orderApiId: 'zxcv',
-      consumerName: 'Consumer Y',
-      date: '2023-08-20',
-      productName: 'Product Y',
-      orderStatus: 'End',
-    },
-  ];
+  const [orders, setOrders] = useState<OrderResponse[]>([]);
+
+  useEffect(() => {
+    // 컴포넌트가 처음 마운트될 때만 더미 데이터를 생성하여 orders 상태를 초기화
+    const initialOrders = generateDummyData(25);
+    setOrders(initialOrders);
+  }, []);
 
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'Progress' | 'End' | 'Cancled'>('all');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');

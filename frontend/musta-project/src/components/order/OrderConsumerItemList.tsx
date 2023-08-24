@@ -1,68 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { List, Select, MenuItem } from '@mui/material';
 import { styled } from '@mui/system';
 import OrderConsumerItem from './OrderConsumerItem';
+import generateDummyData from '../../types/orderdummy';
 
 const StyledList = styled(List)`
   margin-top: 20px;
 `;
 export const OrderConsumerItemList = () => {
-  const [orders] = useState<OrderConsumer[]>([
-    {
-      articleApiId: 'qwer',
-      orderApiId: 'qwer',
-      sellerName: 'Seller A',
-      date: '2023-08-21',
-      articleTitle: 'Product X',
-      orderStatus: 'Progress',
-    },
-    {
-      articleApiId: 'qwer',
-      orderApiId: 'zxcv',
-      sellerName: 'Seller B',
-      date: '2023-08-20',
-      articleTitle: 'Product Y',
-      orderStatus: 'End',
-    },
-    {
-      articleApiId: 'qwer',
-      orderApiId: 'sdfg',
-      sellerName: 'Seller C',
-      date: '2023-08-19',
-      articleTitle: 'Product Z',
-      orderStatus: 'Cancled'
-    },
-    {
-      articleApiId: 'qwer',
-      orderApiId: 'cvbn',
-      sellerName: 'Seller D',
-      date: '2023-08-18',
-      articleTitle: 'Product W',
-      orderStatus: 'Progress',
-    },
-    {
-      articleApiId: 'qwer',
-      orderApiId: 'tyui',
-      sellerName: 'Seller E',
-      date: '2023-08-17',
-      articleTitle: 'Product V',
-      orderStatus: 'End',
-    },
-    {
-      articleApiId: 'qwer',
-      orderApiId: 'zxcvlf',
-      sellerName: 'Seller F',
-      date: '2023-08-16',
-      articleTitle: 'Product U',
-      orderStatus: 'Cancled'
-    },
-  ]);
+  // 더미 데이터로 주문 목록 생성
+  const [orders, setOrders] = useState<OrderResponse[]>([]);
 
+  useEffect(() => {
+    // 컴포넌트가 처음 마운트될 때만 더미 데이터를 생성하여 orders 상태를 초기화
+    const initialOrders = generateDummyData(25);
+    setOrders(initialOrders);
+  }, []);
+
+  
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'Progress' | 'End' | 'Cancled'>('all');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const filteredOrders = selectedStatus === 'all' ? orders : orders.filter(order => order.orderStatus === selectedStatus);
 
+  const sortedOrders = [...filteredOrders].sort((a, b) => {
+    const dateComparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+    return sortOrder === 'asc' ? dateComparison : -dateComparison;
+  });
 
 
   return (
@@ -86,7 +50,7 @@ export const OrderConsumerItemList = () => {
       </Select>
 
       <StyledList>
-        {filteredOrders.map((order, index) => (
+        {sortedOrders.map((order, index) => (
           <OrderConsumerItem key={index} order={order} />
         ))}
       </StyledList>

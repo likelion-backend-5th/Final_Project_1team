@@ -6,7 +6,7 @@ import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import ClearIcon from '@mui/icons-material/Clear';
 interface OrderItemProps {
-  order: OrderConsumer;
+  order: OrderResponse;
 }
 
 const StyledListItem = styled(ListItem)`

@@ -4,6 +4,7 @@ import { styled } from '@mui/system';
 import { observer } from 'mobx-react';
 import { makeObservable, observable, action } from 'mobx';
 import OrderSellerWithArticleItem from './OrderSellerItemWithArticle';
+import generateDummyData from '../../types/orderdummy';
 
 const StyledList = styled(List)`
   margin-top: 20px;
@@ -13,63 +14,13 @@ const ordersPerPageOptions = [5, 10, 15, 20];
 const initialPage = 1;
 
 class OrderStore {
-  orders: OrderSellerWithArticle[] = [
-    {
-      articleApiId: 'qwer',
-      articleTitle: '이거시다!',
-      orderApiId: 'qwer',
-      consumerName: 'Consumer X',
-      date: '2023-08-21',
-      productName: 'Product X',
-      orderStatus: 'Progress',
-    },
-    {
-      articleApiId: 'qwer',
-      articleTitle: '이거시다!',
-      orderApiId: 'zxcv',
-      consumerName: 'Consumer Y',
-      date: '2023-08-20',
-      productName: 'Product Y',
-      orderStatus: 'End',
-    },
-    {
-      articleApiId: 'qwer',
-      articleTitle: '이거시다!',
-      orderApiId: 'sdfg',
-      consumerName: 'Consumer Z',
-      date: '2023-08-19',
-      productName: 'Product Z',
-      orderStatus: 'Cancled'
-    },
-    {
-      articleApiId: 'qwer',
-      articleTitle: '이거시다2!',
-      orderApiId: 'cvbn',
-      consumerName: 'Consumer W',
-      date: '2023-08-18',
-      productName: 'Product W',
-      orderStatus: 'Progress',
-    },
-    {
-      articleApiId: 'qwer',
-      articleTitle: '이거시다!',
-      orderApiId: 'tyui',
-      consumerName: 'Consumer V',
-      date: '2023-08-17',
-      productName: 'Product V',
-      orderStatus: 'End',
-    },
-    {
-      articleApiId: 'qwer',
-      articleTitle: '이거시다2!',
-      orderApiId: 'zxcvlf',
-      consumerName: 'Consumer U',
-      date: '2023-08-16',
-      productName: 'Product U',
-      orderStatus: 'Cancled'
-    }
-  ];
 
+  orders: OrderResponse[] = [];
+
+  initializeOrders() {
+    const initialOrders = generateDummyData(25);
+    this.orders = observable(initialOrders);
+  }
 
   currentPage = initialPage;
   selectedStatus: 'all' | 'Progress' | 'End' | 'Cancled' = 'all';
@@ -77,15 +28,19 @@ class OrderStore {
   sortOrder: 'asc' | 'desc' = 'desc';
 
   constructor() {
+    this.initializeOrders();
+
     makeObservable(this, {
       currentPage: observable,
       selectedStatus: observable,
       ordersPerPage: observable,
       sortOrder: observable,
+      orders: observable,
       setCurrentPage: action,
       setSelectedStatus: action,
       setOrdersPerPage: action,
       setSortOrder: action,
+      initializeOrders: action
     });
   }
 
