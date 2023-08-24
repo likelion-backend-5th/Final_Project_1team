@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 public class ReportService {
     private final ReportModuleService reportModuleService;
 
-    public ReportResponseDto createReport(String username, String reportedApiId, ReportRegisterDto requestDto) {
-        Report report = reportModuleService.createReport(username, reportedApiId, requestDto.getContent());
+    public ReportResponseDto createReport(String username, ReportRegisterDto requestDto) {
+        Report report = reportModuleService.createReport(username, requestDto.getResourceType(), requestDto.getResourceApiId(), requestDto.getContent());
         return ReportResponseDto.of(report);
     }
 

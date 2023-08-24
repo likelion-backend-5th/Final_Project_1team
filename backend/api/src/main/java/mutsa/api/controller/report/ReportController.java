@@ -22,11 +22,11 @@ public class ReportController {
     private final ReportService reportService;
 
     // 신고 등록
-    @PostMapping("/{reportedApiId}")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ReportResponseDto> registerReport(@PathVariable String reportedApiId, @RequestBody ReportRegisterDto requestDto) {
+    public ResponseEntity<ReportResponseDto> registerReport(@RequestBody ReportRegisterDto requestDto) {
         String username = SecurityUtil.getCurrentUsername();
-        return ResponseEntity.ok(reportService.createReport(username, reportedApiId, requestDto));
+        return ResponseEntity.ok(reportService.createReport(username, requestDto));
     }
 
     // 모든 신고 조회 (관리자용)

@@ -38,3 +38,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### api 문서 파일 ###
+/api/src/main/resources/static/docs/

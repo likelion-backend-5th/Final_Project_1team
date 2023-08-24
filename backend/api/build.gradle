@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.2'
     id 'org.hibernate.orm' version '6.2.6.Final'
     id "org.asciidoctor.jvm.convert" version "3.3.2"
+    id 'jacoco'
 }
 
 group = 'mutsa'
@@ -120,11 +121,21 @@ asciidoctor.doFirst {
 task copyDocument(type: Copy) {
     dependsOn asciidoctor
     from file("build/docs/asciidoc")
-    into file("/docs")
+    into file("src/main/resources/static/docs")
 }
 
 // build 의 의존작업 명시
 build {
     dependsOn copyDocument
+}
+
+
+test {
+    outputs.dir snippetsDir
+    finalizedBy jacocoTestReport // 테스트 종료후 항상 리포트 생성
+}
+
+jacocoTestReport {
+    dependsOn test // 리포트 생성을 위해서는 test가 먼저 완료되어야 함
 }
 

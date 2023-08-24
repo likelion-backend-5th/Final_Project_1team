@@ -43,19 +43,25 @@ public class OrderController {
     }
 
     @GetMapping("order/sell")
-    public ResponseEntity<OrderBySellerResponseListDto> getOrderBySellerFilter(
-            @RequestBody OrderSellerFilterDto orderSellerFilterDto,
+    public ResponseEntity<OrderResponseListDto> getOrderBySellerFilter(
+            @RequestParam(name = "orderStatus", required = false) String orderStatus,
+            @RequestParam(value = "searchText", required = false) String searchText,
+            @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "limit", defaultValue = "20") Integer limit) {
-        return ResponseEntity.ok(orderService.findByFilterBySeller(orderSellerFilterDto, page, limit, SecurityUtil.getCurrentUsername()));
+        OrderFilterDto orderFilterDto = new OrderFilterDto(orderStatus, searchText, sortOrder,"SELLER", page, limit);
+        return ResponseEntity.ok(orderService.getOrderPage(orderFilterDto, SecurityUtil.getCurrentUsername()));
     }
 
     @GetMapping("order/consume")
-    public ResponseEntity<OrderByConsumerResponseListDto> getOrderByConsumerFilter(
-            @RequestBody OrderConsumerFilterDto orderConsumerFilterDto,
+    public ResponseEntity<OrderResponseListDto> getOrderByConsumerFilter(
+            @RequestParam(name = "orderStatus", required = false) String orderStatus,
+            @RequestParam(value = "searchText", required = false) String searchText,
+            @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "limit", defaultValue = "20") Integer limit) {
-        return ResponseEntity.ok(orderService.findByFilterByConsumer(orderConsumerFilterDto, page, limit, SecurityUtil.getCurrentUsername()));
+        OrderFilterDto orderFilterDto = new OrderFilterDto(orderStatus, searchText, sortOrder,"CONSUMER", page, limit);
+        return ResponseEntity.ok(orderService.getOrderPage(orderFilterDto, SecurityUtil.getCurrentUsername()));
     }
 
 
@@ -73,15 +79,15 @@ public class OrderController {
     /**
      * @param articleApiId
      * @param orderApiId
-     * @param orderStatueRequestDto
+     * @param orderStatusRequestDto
      * @return 주문 수정
      */
     @PutMapping("articles/{articleApiId}/order/{orderApiId}")
     public ResponseEntity<OrderDetailResponseDto> updateOrderStatus(
             @PathVariable("articleApiId") String articleApiId,
             @PathVariable("orderApiId") String orderApiId,
-            @RequestBody OrderStatueRequestDto orderStatueRequestDto) {
-        OrderDetailResponseDto dto = orderService.updateOrderStatus(articleApiId, orderApiId, orderStatueRequestDto, SecurityUtil.getCurrentUsername());
+            @RequestBody OrderStatusRequestDto orderStatusRequestDto) {
+        OrderDetailResponseDto dto = orderService.updateOrderStatus(articleApiId, orderApiId, orderStatusRequestDto, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dto);
     }
 

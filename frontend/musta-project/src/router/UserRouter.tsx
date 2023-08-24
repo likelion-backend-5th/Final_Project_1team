@@ -11,6 +11,8 @@ import MainPage from '../pages/MainPage.tsx';
 import OrderDetailPage from '../pages/orderPages/OrderDetailPage.tsx';
 import OrderSellerPage from '../pages/orderPages/OrderSellerPage.tsx';
 import { ArticleDetail } from '../components/molecule/ArticleDetail.tsx';
+import ReportList from '../pages/report/ReportList.tsx';
+import ReportDetail from '../pages/report/ReportDetail.tsx';
 
 const UserRouter = () => {
   return (
@@ -31,7 +33,6 @@ const UserRouter = () => {
         element={<ArticleOrderPage />}
         errorElement={<Error404Page />}
       />
-      <Route path="/article" element={<ArticlePage />} />
       <Route
         path="/review/:reviewApiId"
         element={<ReviewPage />}
@@ -54,7 +55,12 @@ const UserRouter = () => {
       <Route
         path={`/article/detail/:articleApiId`}
         element={<ArticleDetail />}
+        errorElement={<Error404Page />}
       />
+      <Route path="/articles" element={<ArticlePage />} />
+
+      <Route path="/reports" element={<ReportList />} />
+      <Route path="/report/:reportApiId" element={<ReportDetail />} />
     </Routes>
   );
 };

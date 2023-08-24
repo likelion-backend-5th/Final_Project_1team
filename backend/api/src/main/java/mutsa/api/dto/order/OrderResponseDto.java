@@ -2,25 +2,33 @@ package mutsa.api.dto.order;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
 
-@Data
-@AllArgsConstructor
+import java.time.LocalDateTime;
+
+@Getter
 @NoArgsConstructor
 public class OrderResponseDto {
-    private String apiId;
+    private String orderApiId;
+    private String articleApiId;
+    private String articleTitle;
+    private String consumerName;
+    private String sellerName;
+    private LocalDateTime date;
     private OrderStatus orderStatus;
-    private Long articleId;// UUID로 수정
-    private Long userId; //유저 이름이나 UUID로 수정
 
     public static OrderResponseDto fromEntity(Order order) {
         OrderResponseDto orderResponseDto = new OrderResponseDto();
-        orderResponseDto.apiId = order.getApiId();
+        orderResponseDto.orderApiId = order.getApiId();
+        orderResponseDto.articleApiId = order.getArticle().getApiId();
+        orderResponseDto.articleTitle = order.getArticle().getTitle();
+        orderResponseDto.consumerName = order.getUser().getUsername();
+        orderResponseDto.sellerName = order.getArticle().getUser().getUsername();
+        orderResponseDto.date = order.getCreatedAt();
         orderResponseDto.orderStatus = order.getOrderStatus();
-        orderResponseDto.userId = orderResponseDto.getUserId();
-        orderResponseDto.articleId = orderResponseDto.getArticleId();
 
         return orderResponseDto;
     }
