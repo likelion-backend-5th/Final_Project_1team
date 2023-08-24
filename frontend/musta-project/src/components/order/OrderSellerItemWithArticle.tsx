@@ -6,7 +6,7 @@ import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import ClearIcon from '@mui/icons-material/Clear';
 interface OrderItemProps {
-  order: OrderSellerWithArticle;
+  order: OrderResponse;
 }
 
 const StyledListItem = styled(ListItem)`
@@ -60,9 +60,9 @@ const OrderSellerWithArticleItem: React.FC<OrderItemProps> = ({ order }) => {
           {order.date}
         </Typography>
       </UserInfoWrapper>
-      {order.orderStatus === 'End' ? (
+      {order.orderStatus === 'END' ? (
         <CheckCircleIcon color="primary" />
-      ) : order.orderStatus === 'Progress' ? (
+      ) : order.orderStatus === 'PROGRESS' ? (
         <PendingIcon color="secondary" />
       ) : (
         <ClearIcon color="error" />

@@ -1,13 +1,11 @@
 package mutsa.api.dto.order;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @NoArgsConstructor
@@ -19,7 +17,7 @@ public class OrderDetailResponseDto {
     private String articleThumbnail;
     private String consumerName;
     private String sellerName;
-    private LocalDateTime date;
+    private String date;
     private OrderStatus orderStatus;
 
     public static OrderDetailResponseDto fromEntity(Order order) {
@@ -27,11 +25,11 @@ public class OrderDetailResponseDto {
         orderDetailResponseDto.orderApiId = order.getApiId();
         orderDetailResponseDto.articleApiId = order.getArticle().getApiId();
         orderDetailResponseDto.articleTitle = order.getArticle().getTitle();
-        orderDetailResponseDto.articleDescription=order.getArticle().getDescription();
+        orderDetailResponseDto.articleDescription = order.getArticle().getDescription();
         orderDetailResponseDto.articleThumbnail = order.getArticle().getThumbnail();
         orderDetailResponseDto.consumerName = order.getUser().getUsername();
         orderDetailResponseDto.sellerName = order.getArticle().getUser().getUsername();
-        orderDetailResponseDto.date = order.getCreatedAt();
+        orderDetailResponseDto.date = order.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
         orderDetailResponseDto.orderStatus = order.getOrderStatus();
         return orderDetailResponseDto;
     }
