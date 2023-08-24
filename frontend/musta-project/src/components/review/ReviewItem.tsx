@@ -9,51 +9,64 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import ReportIcon from '@mui/icons-material/Report';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Review } from '../../types/review';
 
 const ContentsDiv = styled('div')`
   display: flex;
 `;
 
-const RatingDiv = styled('div')`
-  max-width: 400px;
-  text-align: center;
-`;
-
 const ReviewItem = ({ reviewApiId }: any) => {
-  // 현재 로그인 되어있는 계정의 username 더미
-  const [username, setUsername] = useState('김감자');
-
   const navigate = useNavigate();
 
+  // 현재 로그인 되어있는 계정의 username 더미
+  const [username, setUsername] = useState('김감자');
   // 더미 데이터
   const [review, setReview] = useState([
     {
-      apiId: 'review1',
-      content:
-        '미안하다 이거 보여주려고 어그로끌었다.. 나루토 사스케 싸움수준 ㄹㅇ실화냐? 진짜 세계관최강자들의 싸움이다.. 그찐따같던 나루토가 맞나? 진짜 나루토는 전설이다..',
-      point: 4,
       username: '김감자',
-      reviewStatus: 'UPLOAD',
     },
   ]);
+
+  const [detailReview, setDetailReview] = useState<Review>();
+  const token =
+    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0';
+
+  useEffect(() => {
+    // 리뷰 조회를 위한 API 호출
+    axios
+      .get(`/api/review/${reviewApiId}`, {
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      })
+      .then((response) => {
+        setDetailReview(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching review:', error);
+      });
+  }, [reviewApiId, token]);
 
   const userHandler = () => {
     if (review[0].username == username) return true;
     return false;
   };
 
-  const editHandler = ({ review }: any) => {
-    navigate(`/review/edit/${reviewApiId}`, {
-      state: {
-        apiId: `${review[0].apiId}`,
-        content: `${review[0].content}`,
-        point: `${review[0].point}`,
-        username: `${review[0].username}`,
-        reviewStatus: `${review[0].reviewStatus}`,
-      },
-    });
+  const editHandler = () => {
+    if (detailReview) {
+      navigate(`/review/edit/${detailReview.apiId}`, {
+        state: {
+          apiId: `${detailReview.apiId}`,
+          content: `${detailReview.content}`,
+          point: `${detailReview.point}`,
+          username: `${detailReview.username}`,
+          reviewStatus: `${detailReview.reviewStatus}`,
+        },
+      });
+    }
   };
 
   const handleReportClick = () => {
@@ -61,15 +74,34 @@ const ReviewItem = ({ reviewApiId }: any) => {
     console.log('버튼이 클릭되었습니다.');
   };
 
-  // const deleteHandler = () => {};
+  const deleteHandler = async () => {
+    if (detailReview) {
+      axios
+        .delete(`/api/review/${detailReview.apiId}`, {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        })
+        .then(() => {
+          console.log('리뷰가 삭제되었습니다.');
+          // 삭제 후 이동할 페이지 지정 ex) 게시글로 다시 돌아가기
+          // navigate('/review-list');
+        })
+        .catch((error) => {
+          console.error('Error deleting review:', error);
+        });
+    }
+  };
 
   return (
     <div>
-      {review ? (
+      {detailReview ? (
         <>
           <Typography align="left" variant="h5" gutterBottom>
             <div>
-              <h3 style={{ margin: 'auto' }}>{review[0].username}님의 리뷰</h3>
+              <h3 style={{ margin: 'auto' }}>
+                {detailReview.username}님의 리뷰
+              </h3>
             </div>
             <br></br>
             <ContentsDiv>
@@ -81,7 +113,11 @@ const ReviewItem = ({ reviewApiId }: any) => {
                   alt="no Image"></img>
                 <Box display="flex" justifyContent="center" alignItems="center">
                   <Box flex="1">
-                    <Rating name="read-only" value={review[0].point} readOnly />
+                    <Rating
+                      name="read-only"
+                      value={detailReview.point}
+                      readOnly
+                    />
                   </Box>
                   {/* 신고 버튼 */}
                   <IconButton onClick={handleReportClick} color="error">
@@ -90,7 +126,7 @@ const ReviewItem = ({ reviewApiId }: any) => {
                 </Box>
               </div>
               <div>
-                <h5>{review[0].content}</h5>
+                <h5>{detailReview.content}</h5>
               </div>
             </ContentsDiv>
             <div style={{ textAlign: 'right' }}>
@@ -101,13 +137,14 @@ const ReviewItem = ({ reviewApiId }: any) => {
                     variant="outlined"
                     color="warning"
                     startIcon={<EditIcon />}
-                    onClick={() => editHandler({ review })}>
+                    onClick={editHandler}>
                     수정
                   </Button>
                   <Button
                     variant="outlined"
                     color="error"
-                    startIcon={<DeleteIcon />}>
+                    startIcon={<DeleteIcon />}
+                    onClick={deleteHandler}>
                     삭제
                   </Button>
                 </>
