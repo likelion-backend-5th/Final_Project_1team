@@ -56,11 +56,11 @@ public class OrderService {
         return OrderResponseListDto.of(orderResponseDtoCustomPage, orderFilterDto);
     }
 
-    public OrderDetailResponseDto updateOrderStatus(String articleApiId, String orderApiId, OrderStatueRequestDto orderStatueRequestDto, String currentUsername) {
+    public OrderDetailResponseDto updateOrderStatus(String articleApiId, String orderApiId, OrderStatusRequestDto orderStatusRequestDto, String currentUsername) {
         User user = userService.getByUsername(currentUsername);
         Article article = articleModuleService.getByApiId(articleApiId);
 
-        return orderModuleService.updateOrderStatus(article, user, orderStatueRequestDto, orderApiId);
+        return orderModuleService.updateOrderStatus(article, user, orderStatusRequestDto, orderApiId);
     }
 
     public void deleteOrder(String articleApiId, String orderApiId, String currentUsername) {

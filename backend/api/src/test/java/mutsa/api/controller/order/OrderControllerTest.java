@@ -4,7 +4,7 @@ package mutsa.api.controller.order;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import mutsa.api.dto.order.OrderStatueRequestDto;
+import mutsa.api.dto.order.OrderStatusRequestDto;
 import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
@@ -108,7 +108,7 @@ class OrderControllerTest {
                 .andExpectAll(
                         status().is2xxSuccessful(),
                         jsonPath("orderStatus").value(OrderStatus.PROGRESS.name()),
-                        jsonPath("username").value(consumer.getUsername()),
+                        jsonPath("consumerName").value(consumer.getUsername()),
                         content().contentType(MediaType.APPLICATION_JSON)
                 );
 
@@ -135,8 +135,8 @@ class OrderControllerTest {
 
                 .andExpectAll(
                         status().is2xxSuccessful(),
-                        jsonPath("apiId").value(savedOrder1.getApiId()),
-                        jsonPath("username").value(consumer.getUsername()),
+                        jsonPath("orderApiId").value(savedOrder1.getApiId()),
+                        jsonPath("consumerName").value(consumer.getUsername()),
                         content().contentType(MediaType.APPLICATION_JSON)
                 );
     }
@@ -244,7 +244,7 @@ class OrderControllerTest {
 
         //given
         when(SecurityUtil.getCurrentUsername()).thenReturn(consumer.getUsername());
-        OrderStatueRequestDto dto = new OrderStatueRequestDto("END");
+        OrderStatusRequestDto dto = new OrderStatusRequestDto("END");
         String requestBody = new ObjectMapper().writeValueAsString(dto);
 
         //when
