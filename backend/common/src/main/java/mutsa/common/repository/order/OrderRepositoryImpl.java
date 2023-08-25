@@ -1,5 +1,6 @@
 package mutsa.common.repository.order;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import mutsa.common.customRepository.Querydsl4RepositorySupport;
@@ -31,8 +32,10 @@ public class OrderRepositoryImpl extends Querydsl4RepositorySupport implements O
                         containsArticleTitle(orderFilter.getText()),
                         eqArticleUserId(user));
 
-        List<Order> orders = this.getQuerydsl().applyPagination(pageable, query).fetch();
-        return new PageImpl<>(orders, pageable, query.fetch().size());
+        // 사용자가 요청한 pageable 정보를 적용하여 페이징된 결과를 가져옴
+        QueryResults<Order> queryResults = this.getQuerydsl().applyPagination(pageable, query).fetchResults();
+
+        return new PageImpl<>(queryResults.getResults(), pageable, queryResults.getTotal());
     }
 
     @Override
@@ -41,9 +44,14 @@ public class OrderRepositoryImpl extends Querydsl4RepositorySupport implements O
                 .where(
                         eqUsersId(user),
                         eqOrderStatus(orderFilter.getOrderStatus()));
-        List<Order> orders = this.getQuerydsl().applyPagination(pageable, query).fetch();
-        return new PageImpl<>(orders, pageable, query.fetch().size());
+
+        // 사용자가 요청한 pageable 정보를 적용하여 페이징된 결과를 가져옴
+        QueryResults<Order> queryResults = this.getQuerydsl().applyPagination(pageable, query).fetchResults();
+
+        // 가져온 페이징된 결과와 pageable 정보를 사용하여 Page 객체를 생성하여 반환
+        return new PageImpl<>(queryResults.getResults(), pageable, queryResults.getTotal());
     }
+
 
     private BooleanExpression eqArticleUserId(User user) {
         if (user == null) {

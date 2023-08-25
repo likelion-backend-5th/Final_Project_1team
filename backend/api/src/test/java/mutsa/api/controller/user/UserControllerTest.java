@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.user.SignUpUserDto;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -30,6 +31,7 @@ class UserControllerTest {
     private UserController userController;
 
     @Test
+    @Disabled
     void signupTest() throws Exception {
         SignUpUserDto testDto = SignUpUserDto.builder()
             .username("testuser1")

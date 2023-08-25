@@ -28,6 +28,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -157,10 +159,13 @@ class OrderModuleServiceTest {
     @Test
     void findByFilterBySeller2() {
         //given
-        orderRepository.save(Order.of(article, consumer));
-        orderRepository.save(Order.of(article, consumer));
-        orderRepository.save(Order.of(article2, consumer));
-        orderRepository.save(Order.of(article2, consumer));
+        List<Order> dummy = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            dummy.add(Order.of(article, consumer));
+            dummy.add(Order.of(article2, consumer));
+        }
+        orderRepository.saveAll(dummy);
+
 
         String[] sortingProperties = {"id"};
         Sort.Direction direction = Sort.Direction.fromString("asc");
@@ -172,24 +177,29 @@ class OrderModuleServiceTest {
 
         //then
         log.info(allOrder.getContent().toString());
-        assertThat(allOrder.getTotalElements()).isEqualTo(4);
+        assertThat(allOrder.getTotalElements()).isEqualTo(20);
     }
 
     @Test
     void findByFilterByConsumer() {
         //given
-        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
-        Order savedOrder2 = orderRepository.save(Order.of(article, seller));
+        List<Order> dummy = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            dummy.add(Order.of(article, consumer));
+        }
+        dummy.add(Order.of(article, seller));
+        orderRepository.saveAll(dummy);
+
         String[] sortingProperties = {"id"};
         Sort.Direction direction = Sort.Direction.fromString("asc");
         PageRequest pageable = PageRequest.of(0, 10, direction, sortingProperties);
         OrderFilter orderFilter = OrderFilter.of("CONSUMER", OrderStatus.PROGRESS.name(), "");
 
         //when
-        Page<OrderResponseDto> allOrder = orderModuleService.getOrderByFilter(seller, orderFilter, pageable);
+        Page<OrderResponseDto> allOrder = orderModuleService.getOrderByFilter(consumer, orderFilter, pageable);
 
         //then
-        assertThat(allOrder.getTotalElements()).isEqualTo(1);
+        assertThat(allOrder.getTotalElements()).isEqualTo(20);
     }
 
     @Test
