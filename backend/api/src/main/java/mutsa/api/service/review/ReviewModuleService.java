@@ -53,15 +53,20 @@ public class ReviewModuleService {
     }
 
     // 전체 리뷰 조회 (모든 유저 접근 가능)
-    public Page<ReviewResponseDto> findAllReview(Article article, int pageNum, int pageSize) {
-        // 생성 날짜 내림차순 정렬 후 수정 날짜 내림차순 정렬 -> 갱신순으로 출력하기 위한 정렬방식 정의
-        Sort sortByCreatedAt = Sort.by("createdAt").descending();
+    public Page<ReviewResponseDto> findAllReview(Article article, int pageNum, int pageSize, String sortType) {
 
-        Sort sortByModifiedAt = Sort.by("modifiedAt").descending();
+        Pageable pageable = switch (sortType) {
+            case "descByDate" ->
+                PageRequest.of(pageNum - 1, pageSize, Sort.by("createdAt").descending());
+            case "ascByDate" ->
+                PageRequest.of(pageNum - 1, pageSize, Sort.by("createdAt").ascending());
+            case "descByPoint" ->
+                PageRequest.of(pageNum - 1, pageSize, Sort.by("point").descending());
+            case "ascByPoint" ->
+                PageRequest.of(pageNum - 1, pageSize, Sort.by("point").ascending());
+            default -> PageRequest.of(pageNum - 1, pageSize);
+        };
 
-        Sort sortByCreatedAtAndModifiedAt = sortByCreatedAt.and(sortByModifiedAt);
-
-        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sortByCreatedAtAndModifiedAt);
         Page<Review> reviewPage = reviewRepository.findByArticle(article, pageable);
 
         return reviewPage.map(ReviewResponseDto::fromEntity);

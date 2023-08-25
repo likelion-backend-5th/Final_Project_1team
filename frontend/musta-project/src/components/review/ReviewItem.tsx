@@ -22,13 +22,7 @@ const ReviewItem = ({ reviewApiId }: any) => {
   const navigate = useNavigate();
 
   // 현재 로그인 되어있는 계정의 username 더미
-  const [username, setUsername] = useState('김감자');
-  // 더미 데이터
-  const [review, setReview] = useState([
-    {
-      username: '김감자',
-    },
-  ]);
+  const [username, setUsername] = useState('ArticleControllerTestUser1');
 
   const [detailReview, setDetailReview] = useState<Review>();
   const token =
@@ -51,8 +45,10 @@ const ReviewItem = ({ reviewApiId }: any) => {
   }, [reviewApiId, token]);
 
   const userHandler = () => {
-    if (review[0].username == username) return true;
-    return false;
+    if (detailReview) {
+      if (detailReview.username == username) return true;
+      return false;
+    }
   };
 
   const editHandler = () => {
@@ -84,8 +80,8 @@ const ReviewItem = ({ reviewApiId }: any) => {
         })
         .then(() => {
           console.log('리뷰가 삭제되었습니다.');
-          // 삭제 후 이동할 페이지 지정 ex) 게시글로 다시 돌아가기
-          // navigate('/review-list');
+          alert('리뷰가 성공적으로 삭제되었습니다.');
+          navigate(-1);
         })
         .catch((error) => {
           console.error('Error deleting review:', error);

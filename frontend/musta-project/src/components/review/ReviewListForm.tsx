@@ -5,6 +5,7 @@ import {
   MenuItem,
   Pagination,
   SelectChangeEvent,
+  styled,
 } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import ReviewItemList from './ReviewItemList';
@@ -12,28 +13,34 @@ import { useEffect, useState } from 'react';
 import { Review } from '../../types/review';
 import axios from 'axios';
 
+const StyledSelect = styled(Select)`
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+`;
+
 const ReviewListForm = () => {
-  // URl에서 articleApiId 받음
-  // 서버와 통신,
-  // const params: any = useParams();
-  // const articleApiId: any = params.articleApiId;
-  const articleApiId: any = '8afe8b21-27a4-4dc4-ada6-f830d10a0c1f';
+  const params: any = useParams();
+  const articleApiId: any = params.articleApiId;
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [sortType, setSortType] = useState('descByDate'); // 초기값: 최신순
+
   const [totalItems, setTotalItems] = useState(0);
 
-  const [reviews, setReviews] = useState<Review[]>();
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
-    fetchReviews(currentPage, itemsPerPage);
-  }, [currentPage, itemsPerPage]);
+    fetchReviews(currentPage, itemsPerPage, sortType);
+  }, [currentPage, sortType]);
 
-  const fetchReviews = (page: number, limit: number) => {
+  const fetchReviews = (page: number, limit: number, sort: string) => {
     axios
       .get(`/api/article/${articleApiId}/review`, {
         params: {
           page,
           limit,
+          sort,
         },
       })
       .then((response) => {
@@ -45,31 +52,15 @@ const ReviewListForm = () => {
       });
   };
 
-  const [sortData, setSortData] = useState('descByDate'); // 초기값: 최신순
+  const reviewItems = reviews.map((review, index) => (
+    <ReviewItemList key={index} review={review} />
+  ));
 
-  let sortedReviews: Review[] = [];
-
-  if (reviews && reviews.length > 0) {
-    sortedReviews = reviews.slice().sort((a, b) => {
-      if (sortData === 'descByDate') {
-        const dateComparison =
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-        return -dateComparison;
-      } else if (sortData === 'ascByDate') {
-        const dateComparison =
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-        return dateComparison;
-      } else if (sortData === 'descByPoint') {
-        return b.point - a.point;
-      } else {
-        return a.point - b.point;
-      }
-    });
-  }
-
-  const handleSortDataChange = (event: any) => {
+  const handleSortTypeChange = (event: any) => {
     const selectedSort = event.target.value;
-    setSortData(selectedSort);
+    setSortType(selectedSort);
+    // sortType이 변경되면 데이터를 다시 불러옴
+    fetchReviews(currentPage, itemsPerPage, selectedSort);
   };
 
   // 페이지 변경 핸들러
@@ -81,39 +72,38 @@ const ReviewListForm = () => {
   const handleItemsPerPageChange = (event: SelectChangeEvent<number>) => {
     const newItemsPerPage = event.target.value as number;
     setItemsPerPage(newItemsPerPage);
-    fetchReviews(currentPage, newItemsPerPage);
+    setCurrentPage(1);
+    fetchReviews(1, newItemsPerPage, sortType);
   };
 
   return (
     <List>
       <Typography variant="h5" gutterBottom>
-        리뷰
+        Review
       </Typography>
       <List style={{ textAlign: 'left' }}>
-        <Select size="small" value={sortData} onChange={handleSortDataChange}>
+        <StyledSelect
+          size="small"
+          value={sortType}
+          onChange={handleSortTypeChange}>
           <MenuItem value="descByDate">최신순</MenuItem>
           <MenuItem value="ascByDate">오래된 순</MenuItem>
           <MenuItem value="descByPoint">높은 별점 순</MenuItem>
           <MenuItem value="ascByPoint">낮은 별점 순</MenuItem>
-        </Select>
+        </StyledSelect>
         <Select
           size="small"
           value={itemsPerPage}
           onChange={handleItemsPerPageChange}>
           <MenuItem value={5}>5개씩</MenuItem>
           <MenuItem value={10}>10개씩</MenuItem>
-          {/* 다른 원하는 아이템 개수도 추가할 수 있음 */}
         </Select>
       </List>
-      <List>
-        {sortedReviews.map((review, index) => (
-          <ReviewItemList key={index} review={review} />
-        ))}
-      </List>
+      <List>{reviewItems}</List>
       <Pagination
         count={Math.ceil(totalItems / itemsPerPage)}
         page={currentPage}
-        onChange={(event, newPage) => handlePageChange(newPage)}
+        onChange={(_event, newPage) => handlePageChange(newPage)}
       />
     </List>
   );
