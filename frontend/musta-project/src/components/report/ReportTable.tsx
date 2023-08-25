@@ -1,6 +1,7 @@
 import React from 'react';
 import { Report } from '../../types/report';
-import { statusToKorean } from '../../util/statusHelpers.ts';
+import { statusToKorean } from '../../util/statusHelpers';
+import StatusBadge from './StatusBadge';
 import { Table, TableBody, TableCell, TableRow, Paper } from '@mui/material';
 
 const ReportTable: React.FC<{ report: Report }> = ({ report }) => {
@@ -46,7 +47,11 @@ const ReportTable: React.FC<{ report: Report }> = ({ report }) => {
               sx={{ fontWeight: 'bold' }}>
               상태
             </TableCell>
-            <TableCell>{statusToKorean(report.status)}</TableCell>
+            <TableCell>
+              <StatusBadge status={report.status}>
+                {statusToKorean(report.status)}
+              </StatusBadge>
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>
