@@ -7,10 +7,12 @@ import {
   Typography,
 } from '@mui/material';
 import { Article, getChipColorByArticleStatus } from '../../types/article.ts';
+import { useNavigate } from 'react-router-dom';
 
 type AlbumCardProps = {
   article: Article;
   style: { margin: string; width: string };
+  detail: string;
 };
 
 // const theme = createTheme({
@@ -21,9 +23,14 @@ type AlbumCardProps = {
 
 export const AlbumCard = (props: AlbumCardProps) => {
   const { article, style } = props;
+  const navigate = useNavigate();
 
   return (
-    <Card sx={{ maxWidth: style.width, margin: style.margin }}>
+    <Card
+      sx={{ maxWidth: style.width, margin: style.margin }}
+      onClick={() => {
+        navigate(`/article/detail/${props.detail}`, { replace: false });
+      }}>
       <CardActionArea>
         <CardMedia
           component="img"
