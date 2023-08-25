@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import ReportIcon from '@mui/icons-material/Report';
 import { statusToKorean } from '../../util/statusHelpers';
+import StatusBadge from '../../components/report/StatusBadge';
 
 const StyledListItem = styled(ListItem)({
   margin: '7px 0',
@@ -90,9 +91,9 @@ const ReportList: React.FC = () => {
                     </Typography>
                   </Grid>
                   <Grid item>
-                    <Typography variant="body2" color="black">
+                    <StatusBadge status={report.status}>
                       {statusToKorean(report.status)}
-                    </Typography>
+                    </StatusBadge>
                   </Grid>
                 </Grid>
               </StyledListItem>

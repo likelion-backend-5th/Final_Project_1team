@@ -15,6 +15,7 @@ import ReportList from '../pages/report/ReportList.tsx';
 import ReportDetail from '../pages/report/ReportDetail.tsx';
 import ReviewCreatePage from '../pages/reviewPages/ReviewCreatePage.tsx';
 import ReviewListPage from '../pages/reviewPages/ReviewListPage.tsx';
+import ReportRegister from '../components/report/ReportRegister.tsx';
 
 const UserRouter = () => {
   return (
@@ -69,6 +70,10 @@ const UserRouter = () => {
 
       <Route path="/reports" element={<ReportList />} />
       <Route path="/report/:reportApiId" element={<ReportDetail />} />
+      <Route
+        path="/report/:resourceType/:resourceApiId"
+        element={<ReportRegister />}
+      />
     </Routes>
   );
 };
