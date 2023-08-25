@@ -21,6 +21,7 @@ import {
 import axios from 'axios';
 import { styled } from '@mui/material/styles';
 import { Edit, Flag, Share, ShoppingCart, Sms } from '@mui/icons-material';
+import ReviewListForm from '../review/ReviewListForm.tsx';
 
 const baseUrl = 'http://localhost:8080/api/articles/';
 
@@ -178,6 +179,7 @@ export function ArticleDetail() {
             </Box>
             <Typography paragraph>{article.description}</Typography>
           </StyledCardContent>
+          <ReviewListForm />
         </StyledCard>
       )}
     </StyledArticleDetail>

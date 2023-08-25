@@ -226,7 +226,7 @@ public class BootstrapDataLoader {
         for (int i = 0; i < 6; i++) {
             reviews.add(reviewRepository.save(Review.of(i % 2 == 0 ? user1 : user2, articles.get(i), "testContent" + (i + 1), (int) (Math.random() * 5 + 1))));
         }
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 11; i++) {
             reviews.add(reviewRepository.save(Review.of(user1, articles.get(0), "testContent" + (i + 1), (int) (Math.random() * 5 + 1))));
         }
         reviews = reviewRepository.saveAll(reviews);
