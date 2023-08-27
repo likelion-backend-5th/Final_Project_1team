@@ -5,10 +5,14 @@ import OrderConsumerItem from './OrderConsumerItem';
 import { action, makeObservable, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { getConsumerOrderHandler } from '../../store/auth-action';
-import SearchInput from '../atoms/SearchInput';
 
 const StyledList = styled(List)`
   margin-top: 20px;
+`;
+const PaginationContainer = styled('div')`
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 `;
 
 const ordersPerPageOptions = [5, 10, 15, 20];
@@ -176,23 +180,27 @@ const OrderConsumerItemList: React.FC = observer(() => {
         value={orderStore.searchInput}
         onChange={handleChange}
       />
-       <Button variant="contained" onClick={handleSearch}>
+      <Button variant="contained" onClick={handleSearch}>
         Search
       </Button>
 
 
       <StyledList>
-        {orders.map((order, index) => (
-          <OrderConsumerItem key={index} order={order} />
-        ))}
+        {orders.length === 0 ? (
+          <p>아직 판매된 아이템이 없습니다(검색정보가 없습니다)</p>
+        ) : (
+          orders.map((order, index) => (
+            <OrderConsumerItem key={index} order={order} />
+          ))
+        )}
       </StyledList>
-      <div>
+      <PaginationContainer>
         <Pagination
           count={totalPageCount}
           page={orderStore.currentPage}
           onChange={handlePageChange}
         />
-      </div>
+      </PaginationContainer>
     </div>
   );
 });

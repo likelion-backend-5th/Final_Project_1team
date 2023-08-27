@@ -204,7 +204,7 @@ public class BootstrapDataLoader {
 
         List<Article> articles = new ArrayList<>();
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 50; i++) {
             Article article = Article.builder()
                     .title("title-" + (i + 1))
                     .description("desc-" + (i + 1))
@@ -217,8 +217,8 @@ public class BootstrapDataLoader {
         articles = articleRepository.saveAll(articles);
 
         List<Order> orders = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            orders.add(orderRepository.save(Order.of(articles.get(i), i % 2 == 0 ? user1 : user2)));
+        for (int i = 0; i < 50; i++) {
+            orders.add(orderRepository.save(Order.of(articles.get(i), i % 2 == 0 ? user2 : user1)));
         }
         orders = orderRepository.saveAll(orders);
 

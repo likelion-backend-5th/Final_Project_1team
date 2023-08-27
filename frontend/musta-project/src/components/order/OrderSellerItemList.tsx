@@ -9,6 +9,11 @@ import { getSellOrderHandler } from '../../store/auth-action';
 const StyledList = styled(List)`
   margin-top: 20px;
 `;
+const PaginationContainer = styled('div')`
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+`;
 
 const ordersPerPageOptions = [5, 10, 15, 20];
 const initialPage = 1;
@@ -19,7 +24,7 @@ class OrderStore {
   loading = false;
   currentPage = initialPage;
   selectedStatus: 'all' | 'PROGRESS' | 'END' | 'CANCLE' = 'all';
-  ordersPerPage = ordersPerPageOptions[0];
+  ordersPerPage = ordersPerPageOptions[1];
   sortOrder: 'asc' | 'desc' = 'desc';
   searchInput = '';
 
@@ -178,17 +183,21 @@ const OrderSellerItemList: React.FC = observer(() => {
       </Button>
 
       <StyledList>
-        {orders.map((order, index) => (
-          <OrderSellerWithArticleItem key={index} order={order} />
-        ))}
+         {orders.length === 0 ? (
+            <p>아직 판매된 아이템이 없습니다(검색정보가 없습니다)</p>
+          ) : (
+            orders.map((order, index) => (
+              <OrderSellerWithArticleItem key={index} order={order} />
+            ))
+          )}
       </StyledList>
-      <div>
+      <PaginationContainer>
         <Pagination
           count={totalPageCount}
           page={orderStore.currentPage}
           onChange={handlePageChange}
         />
-      </div>
+      </PaginationContainer>
     </div>
   );
 });
