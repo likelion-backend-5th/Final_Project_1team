@@ -78,20 +78,36 @@ export const logoutActionHandler = () => {
     localStorage.removeItem("expirationTime");
 };
 
+export const getArticleHandler = (token: string, articleApiId : any) => {
+    const URL = `/api/articles/${articleApiId}`;
+    return GET(URL, createTokenHeader(token));
+};
+
+
 export const getArticleOrderHandler = (
     token: string,
-    articleApiId: string,
-    pageParam: number | undefined,
-    limitParam: number | undefined
+    articleApiId: string|undefined,
+    orderStatus: string | undefined,
+    sortOrder: string | undefined,
+    page: number | undefined,
+    limit: number | undefined
 ) => {
     const queryParams: Record<string, string> = {};
 
-    if (pageParam !== undefined) {
-        queryParams.pageParam = pageParam.toString();
+    if (page !== undefined) {
+        queryParams.page = page.toString();
     }
 
-    if (limitParam !== undefined) {
-        queryParams.limitParam = limitParam.toString();
+    if (limit !== undefined) {
+        queryParams.limit = limit.toString();
+    }
+
+    if(orderStatus!==undefined) {
+        queryParams.orderStatus = orderStatus;
+    }
+
+    if(sortOrder!==undefined) {
+        queryParams.sortOrder = sortOrder;
     }
 
     const queryString = getQueryString(queryParams);

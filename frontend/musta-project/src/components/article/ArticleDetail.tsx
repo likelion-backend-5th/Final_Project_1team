@@ -20,8 +20,9 @@ import {
 } from '../../types/article.ts';
 import axios from 'axios';
 import { styled } from '@mui/material/styles';
-import { Edit, Flag, Share, ShoppingCart, Sms } from '@mui/icons-material';
+import { Api, Edit, Flag, Share, ShoppingCart, Sms } from '@mui/icons-material';
 import ReviewListForm from '../review/ReviewListForm.tsx';
+import { useNavigate } from 'react-router-dom';
 
 const baseUrl = 'http://localhost:8080/api/articles/';
 
@@ -113,6 +114,12 @@ export function ArticleDetail() {
     }
   };
 
+  const navigate = useNavigate();
+  const handleOrderClick = () => {
+    const id = getArticleApiId();
+    navigate(`/article/${id}/order`); 
+  };
+
   useEffect(() => {
     fetchData();
   }, [url]);
@@ -179,6 +186,12 @@ export function ArticleDetail() {
             </Box>
             <Typography paragraph>{article.description}</Typography>
           </StyledCardContent>
+
+
+          <Button variant="contained" color="primary" onClick={handleOrderClick}>
+            해당 게시글의 주문 확인
+          </Button>
+
           <ReviewListForm />
         </StyledCard>
       )}
