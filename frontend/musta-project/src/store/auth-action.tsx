@@ -102,7 +102,7 @@ export const getArticleOrderHandler = (
 
 export const getSellOrderHandler = (
     token: string,
-    orderStatus: OrderStatus | undefined,
+    orderStatus: string | undefined,
     searchText: string | undefined,
     sortOrder: string | undefined,
     page: number | undefined,
