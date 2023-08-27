@@ -137,7 +137,7 @@ export const getSellOrderHandler = (
 
 export const getConsumerOrderHandler = (
     token: string,
-    orderStatus: OrderStatus | undefined,
+    orderStatus: string | undefined,
     searchText: string | undefined,
     sortOrder: string | undefined,
     page: number | undefined,

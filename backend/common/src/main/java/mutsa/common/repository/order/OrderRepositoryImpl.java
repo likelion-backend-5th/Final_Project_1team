@@ -43,6 +43,7 @@ public class OrderRepositoryImpl extends Querydsl4RepositorySupport implements O
         JPAQuery<Order> query = selectFrom(order)
                 .where(
                         eqUsersId(user),
+                        containsArticleTitle(orderFilter.getText()),
                         eqOrderStatus(orderFilter.getOrderStatus()));
 
         // 사용자가 요청한 pageable 정보를 적용하여 페이징된 결과를 가져옴
