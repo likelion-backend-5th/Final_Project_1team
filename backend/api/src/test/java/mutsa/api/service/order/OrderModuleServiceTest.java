@@ -114,7 +114,8 @@ class OrderModuleServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when
-        Page<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, seller, 0, 20);
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Page<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, seller, null, pageable);
 
         //then
         log.info(allOrder.toString());
@@ -128,11 +129,12 @@ class OrderModuleServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when, then
-        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, consumer, 0, 20))
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, consumer, null, pageable))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.ARTICLE_PERMISSION_DENIED.getMessage());
 
-        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, other, 0, 20))
+        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, other, null, pageable))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.ARTICLE_PERMISSION_DENIED.getMessage());
     }

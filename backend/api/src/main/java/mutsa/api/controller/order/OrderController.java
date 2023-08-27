@@ -36,9 +36,11 @@ public class OrderController {
     @GetMapping("articles/{articleApiId}/order")
     public ResponseEntity<CustomPage<OrderResponseDto>> getAllOrder(
             @PathVariable("articleApiId") String articleApiId,
+            @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder,
+            @RequestParam(name = "orderStatus", required = false) String orderStatus,
             @RequestParam(name = "page", defaultValue = "0") Integer page,
             @RequestParam(name = "limit", defaultValue = "20") Integer limit) {
-        CustomPage<OrderResponseDto> dtos = orderService.findAllOrder(articleApiId, page, limit, SecurityUtil.getCurrentUsername());
+        CustomPage<OrderResponseDto> dtos = orderService.findAllOrder(articleApiId, sortOrder, orderStatus, page, limit, SecurityUtil.getCurrentUsername());
         return ResponseEntity.ok(dtos);
     }
 

@@ -31,7 +31,6 @@ class UserControllerTest {
     private UserController userController;
 
     @Test
-    @Disabled
     void signupTest() throws Exception {
         SignUpUserDto testDto = SignUpUserDto.builder()
             .username("testuser1")
