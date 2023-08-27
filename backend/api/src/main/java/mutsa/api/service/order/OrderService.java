@@ -30,11 +30,12 @@ public class OrderService {
         return orderModuleService.findDetailOrder(article, user, orderApiId);
     }
 
-    public CustomPage<OrderResponseDto> findAllOrder(String articleApiId, int page, int limit, String currentUsername) {
+    public CustomPage<OrderResponseDto> findAllOrder(String articleApiId, String sortOrder, String orderStatus, int page, int limit, String currentUsername) {
         User user = userService.getByUsername(currentUsername);
         Article article = articleModuleService.getByApiId(articleApiId);
 
-        Page<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, user, page, limit);
+        Pageable pageable = PageRequest.of(page, limit, Sort.Direction.fromString(sortOrder), "id");
+        Page<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, user, orderStatus, pageable);
         return new CustomPage(allOrder);
     }
 
@@ -49,7 +50,7 @@ public class OrderService {
         User user = userService.getByUsername(currentUsername);
 
         Pageable pageable = getPageable(orderFilterDto);
-        OrderFilter sellerFilter = OrderFilter.of(orderFilterDto.getUserType(),orderFilterDto.getOrderStatus(),orderFilterDto.getText());
+        OrderFilter sellerFilter = OrderFilter.of(orderFilterDto.getUserType(), orderFilterDto.getOrderStatus(), orderFilterDto.getText());
 
         Page<OrderResponseDto> byFilterBySeller = orderModuleService.getOrderByFilter(user, sellerFilter, pageable);
         CustomPage<OrderResponseDto> orderResponseDtoCustomPage = new CustomPage<>(byFilterBySeller);

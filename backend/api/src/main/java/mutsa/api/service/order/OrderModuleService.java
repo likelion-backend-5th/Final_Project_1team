@@ -13,9 +13,7 @@ import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.repository.order.OrderRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,11 +34,12 @@ public class OrderModuleService {
         return OrderDetailResponseDto.fromEntity(order);
     }
 
-    public Page<OrderResponseDto> findAllOrder(Article article, User user, int page, int limit) {
+    public Page<OrderResponseDto> findAllOrder(Article article, User user, String orderStatus, Pageable pageable) {
         article.validUser(user); //판매자만 확인할 수 있는지
-
-        Pageable pageable = PageRequest.of(page, limit, Sort.by("id"));
-        return orderRepository.findByArticle(article, pageable).map(OrderResponseDto::fromEntity);
+        if (orderStatus == null) {
+            return orderRepository.findByArticle(article, pageable).map(OrderResponseDto::fromEntity);
+        }
+        return orderRepository.findByArticleAndOrderStatus(article, pageable, OrderStatus.of(orderStatus)).map(OrderResponseDto::fromEntity);
     }
 
     @Transactional
@@ -68,7 +67,7 @@ public class OrderModuleService {
 
     public Page<OrderResponseDto> getOrderByFilter(User user, OrderFilter orderFilter, Pageable pageable) {
         if (orderFilter.getOrderUserType() == OrderFilter.OrderUserType.SELLER) {
-            return orderRepository.getOrderByFilterBySeller(orderFilter, user,pageable).map(OrderResponseDto::fromEntity);
+            return orderRepository.getOrderByFilterBySeller(orderFilter, user, pageable).map(OrderResponseDto::fromEntity);
         }
 
         if (orderFilter.getOrderUserType() == OrderFilter.OrderUserType.CONSUMER) {
