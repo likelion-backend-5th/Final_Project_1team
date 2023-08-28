@@ -1,23 +1,23 @@
 import Container from '@mui/material/Container';
-import DropDown from '../atoms/DropDown.tsx';
 import ArticleList from './ArticleList.tsx';
 import Box from '@mui/material/Box';
-import { Typography } from '@mui/material';
-import SearchInput from '../atoms/SearchInput.tsx';
-import SearchInputMui from '../atoms/SearchInputMui.tsx';
-
-const filterElements = [
-  ['최신순', '1'],
-  ['오래된순', '2'],
-];
+import SearchInputMui from './SearchInputMui.tsx';
+import Button from '@mui/material/Button';
+import { AddBox } from '@mui/icons-material';
 
 const Articles = () => {
   return (
     <Container>
       <h3>Articles</h3>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <DropDown elements={filterElements} />
-        {/*<SearchInput />*/}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginX: '10px',
+        }}>
+        <Button variant="contained" startIcon={<AddBox />} href="/article/post">
+          글쓰기
+        </Button>
         <SearchInputMui />
       </Box>
       <ArticleList />

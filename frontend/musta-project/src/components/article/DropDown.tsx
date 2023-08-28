@@ -1,6 +1,6 @@
 import { alpha, MenuProps, styled } from '@mui/material';
 import Menu from '@mui/material/Menu';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import { KeyboardArrowDown } from '@mui/icons-material';
@@ -54,15 +54,19 @@ interface DropDownProps {
 
 export default function DropDown(props: DropDownProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [value, setValue] = React.useState<string>(props.elements[0][0]);
+  const [value, setValue] = React.useState<string>(props.elements[0][2]);
+  const [buttonText, setButtonText] = React.useState<string>(
+    props.elements[0][0]
+  );
   const open = Boolean(anchorEl);
+
+  useEffect(() => {}, [value]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
-    //  TODO 파라미터 변경하는 거 추가하기
   };
 
   const elementComp = props.elements.map(function (item) {
@@ -71,7 +75,8 @@ export default function DropDown(props: DropDownProps) {
         key={item[1]}
         onClick={() => {
           handleClose();
-          setValue(item[0]);
+          setValue(item[2]);
+          setButtonText(item[0]);
         }}
         disableRipple>
         {item[0]}
@@ -91,7 +96,7 @@ export default function DropDown(props: DropDownProps) {
         defaultValue={props.elements[0][0]}
         onClick={handleClick}
         endIcon={<KeyboardArrowDown />}>
-        {value}
+        {buttonText}
       </Button>
       <StyledMenu
         id="demo-customized-menu"

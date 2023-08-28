@@ -20,7 +20,5 @@ public class ArticleUpdateRequestDto {
     @NotBlank
     private String description;
     @NotBlank
-    private String username;
-    @NotBlank
     private String apiId;
 }

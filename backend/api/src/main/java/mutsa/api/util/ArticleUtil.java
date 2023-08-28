@@ -33,7 +33,7 @@ public class ArticleUtil {
         }
     }
 
-    private User getUserFromSecurityContext() {
+    public User getUserFromSecurityContext() {
         return userRepository.findByUsername(SecurityUtil.getCurrentUsername())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
@@ -50,11 +50,6 @@ public class ArticleUtil {
         //  현재 로그인 한 유저가 어드민 권한일 경우 인증 통과
         if (curUser.hasRole(RoleStatus.ROLE_ADMIN)) {
             return article;
-        }
-
-        //  현재 로그인 한 유저가 요청을 보낸 유저와 같을 경우 통과
-        if (!curUser.getUsername().equals(requestDto.getUsername())) {
-            throw new BusinessException(ErrorCode.ARTICLE_USER_NOT_MATCH);
         }
 
         //  게시글을 작성한 유저일 경우 통과

@@ -22,6 +22,7 @@ import axios from 'axios';
 import { styled } from '@mui/material/styles';
 import { Edit, Flag, Share, ShoppingCart, Sms } from '@mui/icons-material';
 import ReviewListForm from '../review/ReviewListForm.tsx';
+import { loadingTime } from '../../util/loadingUtil.ts';
 
 const baseUrl = 'http://localhost:8080/api/articles/';
 
@@ -106,7 +107,8 @@ export function ArticleDetail() {
         articleStatus: data.articleStatus,
         createdDate: data.createdDate,
       });
-      setTimeout(() => setLoading(false), 1500);
+      //  TODO DEBUG용
+      setTimeout(() => setLoading(false), loadingTime);
     } catch (error) {
       console.error('Error fetching data:', error);
       setLoading(false);
