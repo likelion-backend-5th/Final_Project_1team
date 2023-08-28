@@ -1,10 +1,12 @@
 import { SetStateAction, useEffect, useState } from 'react';
-import { Article, ArticleImpl, ofArticleImpl } from '../../types/article.ts';
+import { ArticleImpl, ofArticleImpl } from '../../types/article.ts';
 import axios from 'axios';
 import Box from '@mui/material/Box';
-import { AlbumCard } from '../molecule/AlbumCard.tsx';
+import { AlbumCard } from './AlbumCard.tsx';
 import { Pagination, Skeleton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { loadingTime } from '../../util/loadingUtil.ts';
+import { getUrlSearchParams, setQuery } from '../../util/urlUtil.ts';
 
 const PAGE_SIZE: number = 12; // 4x3 열을 위해 12로 변경
 const baseURL = `http://localhost:8080/api/articles`;
@@ -30,7 +32,8 @@ export const ArticleList = () => {
       setArticleArrayList(group);
       setCurPageNumber(data.data.number + 1);
       setTotalPageNumber(data.data.totalPages);
-      setTimeout(() => setLoading(false), 2000);
+      //  TODO DEBUG용
+      setTimeout(() => setLoading(false), loadingTime);
     });
   };
 
@@ -76,20 +79,22 @@ export const ArticleList = () => {
 
   const onPageChange = (_event: any, value: SetStateAction<number>) => {
     setCurPageNumber(value);
-    const curUrl = new URL(url);
-    const curUrlSearchParams = new URLSearchParams(curUrl.search);
-
-    curUrlSearchParams.set('page', String(Number(value) - 1));
     window.scrollTo(0, 0);
 
-    setUrl(`${baseURL}?${curUrlSearchParams}`);
+    setUrl(
+      `${baseURL}?${setQuery(
+        getUrlSearchParams(url),
+        'page',
+        String(Number(value) - 1)
+      )}`
+    );
   };
 
   return (
     <>
       <Box display="flex" justifyContent="center">
         {loading ? (
-          <Skeleton variant="rounded" width={1100} height={550} />
+          <Skeleton variant="rounded" width={1080} height={550} />
         ) : (
           <Box>{createAlbumRows()}</Box>
         )}

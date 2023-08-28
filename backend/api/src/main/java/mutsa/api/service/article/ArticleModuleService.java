@@ -43,7 +43,10 @@ public class ArticleModuleService {
     public Article save(ArticleCreateRequestDto requestDto) {
         articleUtil.isValidUser();
 
-        return articleRepository.save(dtoToEntity(requestDto));
+        Article entity = dtoToEntity(requestDto);
+        entity.setUser(articleUtil.getUserFromSecurityContext());
+
+        return articleRepository.save(entity);
     }
 
     @Transactional
@@ -76,9 +79,6 @@ public class ArticleModuleService {
         return Article.builder()
                 .title(requestDto.getTitle())
                 .description(requestDto.getDescription())
-                .user(userRepository.findByUsername(requestDto.getUsername())
-                              .orElseThrow(() -> new BusinessException(USER_NOT_FOUND))
-                )
                 .build();
     }
 
@@ -172,7 +172,6 @@ public class ArticleModuleService {
             requestDto = new ArticleCreateRequestDto();
             requestDto.setTitle("Article-" + (i+1));
             requestDto.setDescription("Random Content-" + (i + 1));
-            requestDto.setUsername(username);
 
             articles.add(saveTest(requestDto));
         }

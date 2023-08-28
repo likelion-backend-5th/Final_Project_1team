@@ -301,7 +301,6 @@ public class ArticleControllerTest {
         ArticleCreateRequestDto articleCreateRequestDto = new ArticleCreateRequestDto();
         articleCreateRequestDto.setTitle("test Article");
         articleCreateRequestDto.setDescription("test Desc");
-        articleCreateRequestDto.setUsername(user1.getUsername());
 
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
@@ -333,7 +332,6 @@ public class ArticleControllerTest {
         ArticleUpdateRequestDto articleUpdateRequestDto = new ArticleUpdateRequestDto();
         articleUpdateRequestDto.setTitle("test Article");
         articleUpdateRequestDto.setDescription("test Desc");
-        articleUpdateRequestDto.setUsername(user1.getUsername());
         articleUpdateRequestDto.setApiId(articles.get(0).getApiId());
 
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());

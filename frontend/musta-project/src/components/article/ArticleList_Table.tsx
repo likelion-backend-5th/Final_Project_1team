@@ -10,7 +10,7 @@ import {
   getFormattedDate,
   getFormattedTime,
   isToday,
-} from '../../util/DateUtil.ts';
+} from '../../util/dateUtil.ts';
 import { Chip } from '@mui/material';
 import { Article, getChipColorByArticleStatus } from '../../types/article.ts';
 import axios from 'axios';

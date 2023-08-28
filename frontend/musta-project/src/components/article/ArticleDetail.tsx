@@ -22,6 +22,7 @@ import axios from 'axios';
 import { styled } from '@mui/material/styles';
 import { Api, Edit, Flag, Share, ShoppingCart, Sms } from '@mui/icons-material';
 import ReviewListForm from '../review/ReviewListForm.tsx';
+import { loadingTime } from '../../util/loadingUtil.ts';
 import { useNavigate } from 'react-router-dom';
 
 const baseUrl = 'http://localhost:8080/api/articles/';
@@ -107,7 +108,8 @@ export function ArticleDetail() {
         articleStatus: data.articleStatus,
         createdDate: data.createdDate,
       });
-      setTimeout(() => setLoading(false), 1500);
+      //  TODO DEBUG용
+      setTimeout(() => setLoading(false), loadingTime);
     } catch (error) {
       console.error('Error fetching data:', error);
       setLoading(false);
@@ -117,7 +119,7 @@ export function ArticleDetail() {
   const navigate = useNavigate();
   const handleOrderClick = () => {
     const id = getArticleApiId();
-    navigate(`/article/${id}/order`); 
+    navigate(`/article/${id}/order`);
   };
 
   useEffect(() => {
@@ -187,8 +189,10 @@ export function ArticleDetail() {
             <Typography paragraph>{article.description}</Typography>
           </StyledCardContent>
 
-
-          <Button variant="contained" color="primary" onClick={handleOrderClick}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOrderClick}>
             해당 게시글의 주문 확인
           </Button>
 

@@ -18,6 +18,4 @@ public class ArticleCreateRequestDto {
     private String title;
     @NotBlank
     private String description;
-    @NotBlank
-    private String username;
 }
