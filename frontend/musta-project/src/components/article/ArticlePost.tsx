@@ -103,6 +103,19 @@ export function ArticlePost() {
   return (
     <StyledArticleDetail>
       <StyledCard>
+        <Box sx={{ marginBottom: '20px' }}>
+          <Collapse in={alertOpen}>
+            <Stack>
+              <Alert
+                severity="error"
+                onClose={() => {
+                  setAlertOpen(false);
+                }}>
+                이미지 갯수는 최대 5개까지만 가능합니다.
+              </Alert>
+            </Stack>
+          </Collapse>
+        </Box>
         <Box>
           <StyledTextField
             id="article-title"
@@ -172,19 +185,6 @@ export function ArticlePost() {
             sx={{ marginTop: '15px' }}>
             게시글 작성
           </Button>
-        </Box>
-        <Box sx={{ marginTop: '20px' }}>
-          <Collapse in={alertOpen}>
-            <Stack>
-              <Alert
-                severity="error"
-                onClose={() => {
-                  setAlertOpen(false);
-                }}>
-                이미지 갯수는 최대 5개까지만 가능합니다.
-              </Alert>
-            </Stack>
-          </Collapse>
         </Box>
       </StyledCard>
     </StyledArticleDetail>

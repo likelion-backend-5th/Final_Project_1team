@@ -97,4 +97,16 @@ public class Order extends BaseEntity implements Serializable {
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", apiId='" + apiId + '\'' +
+                ", orderStatus=" + orderStatus +
+                ", article=" + article.getApiId() +
+                ", user=" + user.getApiId() +
+                ", status=" + status +
+                '}';
+    }
 }

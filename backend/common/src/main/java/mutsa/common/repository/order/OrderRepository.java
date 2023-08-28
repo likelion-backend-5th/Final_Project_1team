@@ -2,6 +2,7 @@ package mutsa.common.repository.order;
 
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
+import mutsa.common.domain.models.order.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +14,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, OrderReposi
     Optional<Order> findByApiId(String uuid);
 
     Page<Order> findByArticle(Article article, Pageable pageable);
+    Page<Order> findByArticleAndOrderStatus(Article article, Pageable pageable, OrderStatus orderStatus);
 
     @Query(value = "select * from `order` where order_id = ?1", nativeQuery = true)
     Optional<Order> findByWithDelete(Long id); //soft delete 확인용
