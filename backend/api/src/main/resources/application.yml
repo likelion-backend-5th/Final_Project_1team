@@ -28,6 +28,8 @@ logging.level:
   org.hibernate.type.descriptor.sql: debug
 
 springdoc:
-  version: openapi_3_0
+  version: v1
+  api-docs:
+    path: /api-docs
   swagger-ui:
-    path: /swagger-ui.html
+    path: /index.html
