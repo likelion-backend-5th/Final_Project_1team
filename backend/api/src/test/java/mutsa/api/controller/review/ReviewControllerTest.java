@@ -1,4 +1,4 @@
-package mutsa.api.controller;
+package mutsa.api.controller.review;
 
 
 import static org.assertj.core.api.Assertions.assertThat;

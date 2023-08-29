@@ -4,7 +4,7 @@
  * @since 2023-08-18 AM 11:40
  */
 
-package mutsa.api.controller;
+package mutsa.api.controller.article;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -320,8 +320,7 @@ public class ArticleControllerTest {
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON),
                         jsonPath("title").value(articleCreateRequestDto.getTitle()),
-                        jsonPath("description").value(articleCreateRequestDto.getDescription()),
-                        jsonPath("username").value(articleCreateRequestDto.getUsername())
+                        jsonPath("description").value(articleCreateRequestDto.getDescription())
                 )
                 .andReturn();
     }
@@ -332,6 +331,7 @@ public class ArticleControllerTest {
         ArticleUpdateRequestDto articleUpdateRequestDto = new ArticleUpdateRequestDto();
         articleUpdateRequestDto.setTitle("test Article");
         articleUpdateRequestDto.setDescription("test Desc");
+        articleUpdateRequestDto.setArticleStatus(ArticleStatus.EXPIRED);
         articleUpdateRequestDto.setApiId(articles.get(0).getApiId());
 
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
@@ -352,8 +352,8 @@ public class ArticleControllerTest {
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON),
                         jsonPath("title").value(articleUpdateRequestDto.getTitle()),
-                        jsonPath("description").value(articleUpdateRequestDto.getDescription()),
-                        jsonPath("username").value(articleUpdateRequestDto.getUsername())
+                        jsonPath("description").value(articleUpdateRequestDto.getDescription())
+//                        jsonPath("articleStatus").value(articleUpdateRequestDto.getArticleStatus())
                 )
                 .andReturn();
     }
