@@ -40,10 +40,10 @@ public class ReviewService {
     }
 
     // 전체 리뷰 조회 (모든 유저 접근 가능)
-    public Page<ReviewResponseDto> findAllReview(String articleApiId, int pageNum, int pageSize) {
+    public Page<ReviewResponseDto> findAllReview(String articleApiId, int pageNum, int pageSize, String sortType) {
         Article article = articleModuleService.getByApiId(articleApiId);
 
-        return reviewModuleService.findAllReview(article, pageNum, pageSize);
+        return reviewModuleService.findAllReview(article, pageNum, pageSize, sortType);
     }
 
     // 리뷰 수정

@@ -143,7 +143,7 @@ public class ReviewModuleServiceTest {
         reviewRepository.save(Review.of(reviewer2, article, "content2", 2));
 
         // when
-        Page<ReviewResponseDto> allReviews = reviewModuleService.findAllReview(article, 1, 20);
+        Page<ReviewResponseDto> allReviews = reviewModuleService.findAllReview(article, 1, 20, "descByDate");
 
         // then
         log.info(allReviews.getContent().toString());

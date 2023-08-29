@@ -43,7 +43,7 @@ class OrderServiceTest {
     private EntityManager entityManager;
 
     private User seller, consumer;
-    private Article article,article2;
+    private Article article, article2;
 
     @BeforeEach
     public void init() {
@@ -90,7 +90,7 @@ class OrderServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when
-        CustomPage<OrderResponseDto> allOrder = orderService.findAllOrder(article.getApiId(), 0, 20, seller.getUsername());
+        CustomPage<OrderResponseDto> allOrder = orderService.findAllOrder(article.getApiId(), "asc", null, 0, 20, seller.getUsername());
 
         //then
         log.info(allOrder.toString());

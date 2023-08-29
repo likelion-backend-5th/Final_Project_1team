@@ -80,14 +80,12 @@ public class ArticleServiceTest {
 
         requestDto.setTitle("Article1");
         requestDto.setDescription("Article1 Desc");
-        requestDto.setUsername(user.getUsername());
 
         ArticleResponseDto responseDto = articleService.save(requestDto);
 
         assert responseDto != null;
         Assertions.assertEquals(requestDto.getTitle(), responseDto.getTitle());
         Assertions.assertEquals(requestDto.getDescription(), responseDto.getDescription());
-        Assertions.assertEquals(requestDto.getUsername(), responseDto.getUsername());
     }
 
     @Test
@@ -96,7 +94,6 @@ public class ArticleServiceTest {
         ArticleUpdateRequestDto updateDto = new ArticleUpdateRequestDto(
                 "[Updated]Pre Article 1",
                 "[Updated]Pre Article 1 desc",
-                user.getUsername(),
                 articles.get(0).getApiId()
         );
 
@@ -105,7 +102,6 @@ public class ArticleServiceTest {
         assert responseDto != null;
         Assertions.assertEquals(updateDto.getTitle(), responseDto.getTitle());
         Assertions.assertEquals(updateDto.getDescription(), responseDto.getDescription());
-        Assertions.assertEquals(updateDto.getUsername(), responseDto.getUsername());
     }
 
     @Test

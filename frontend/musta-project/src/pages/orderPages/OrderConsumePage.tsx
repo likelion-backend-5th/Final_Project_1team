@@ -1,5 +1,5 @@
-import { Container, Paper, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import {Container, Paper, Typography} from '@mui/material';
+import {styled} from '@mui/system';
 import OrderConsumerItemList from '../../components/order/OrderConsumerItemList';
 
 const StyledContainer = styled(Container)`
@@ -15,7 +15,7 @@ const OrderConsumePage = () => {
     <StyledContainer maxWidth="md">
       <StyledPaper>
         <Typography variant="h5" gutterBottom>
-          나에게 온 주문목록
+          내가 구매한 목록
         </Typography>
         <OrderConsumerItemList />
       </StyledPaper>

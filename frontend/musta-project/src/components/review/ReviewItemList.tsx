@@ -53,7 +53,7 @@ const ReviewItemList = ({ review }: any) => {
 
   return (
     <StyledListItem onClick={handleItemClick}>
-      <div>
+      <div style={{ width: '100%' }}>
         <StyledBox>
           <UserAvatar alt={review.username} src="/path/to/user-image.jpg" />
           <ReviewItemText primary={review.username} />

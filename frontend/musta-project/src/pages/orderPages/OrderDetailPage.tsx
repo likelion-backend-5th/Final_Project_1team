@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { Paper, Typography, Grid, Chip, FormControl, FormControlLabel, FormGroup, Button } from '@mui/material';
+import {Typography, Grid, Chip, Button, Card, CardContent } from '@mui/material';
 import { getOrderHandler } from '../../store/auth-action';
+import { getFormattedDate, getFormattedTime } from '../../util/DateUtil';
 
-const StyledPaper = styled(Paper)`
-  padding: 16px;
-  margin: 16px;
+
+
+const StyledCard = styled(Card)`
+margin-bottom : 3px,
+  borderRadius:  8px,
 `;
 
-const BoldLabel = styled(Typography)`
-  font-weight: bold;
-  font-size: 2rem;
-  color: #3f51b5;
-`;
+
+const Label = styled(Typography)({
+  fontWeight: 'bold',
+  marginBottom: '8px',
+});
+
+const Value = styled(Typography)({
+  marginBottom: '16px',
+});
 
 const OrderDetailPage: React.FC = () => {
   Navigate
@@ -39,7 +46,7 @@ const OrderDetailPage: React.FC = () => {
 
   const handleReviewClick = () => {
     // 임시 URL
-    navigate(`/review/create`); //여기에 리뷰 작성 폼 연결하시면 됩니다
+    navigate(`/article/${articleApiId}/order/${orderApiId}/review`); //여기에 리뷰 작성 폼 연결하시면 됩니다
   };
 
 
@@ -47,64 +54,39 @@ const OrderDetailPage: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  return (
-    <StyledPaper elevation={3}>
-      <Typography variant="h4">Order Detail</Typography>
-      <FormControl component="fieldset">
-        <FormGroup>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <FormControlLabel
-                control={<Typography>{orderDetail.orderApiId}</Typography>}
-                label={<BoldLabel variant="subtitle1">주문 번호</BoldLabel>}
-                labelPlacement="top"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControlLabel
-                control={<Typography>{orderDetail.sellerName}</Typography>}
-                label={<BoldLabel variant="subtitle1">판매자 이름 </BoldLabel>}
-                labelPlacement="top"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControlLabel
-                control={<Typography>{orderDetail.consumerName}</Typography>}
-                label={<BoldLabel variant="subtitle1">주문자 이름</BoldLabel>}
-                labelPlacement="top"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControlLabel
-                control={<Typography>{orderDetail.date}</Typography>}
-                label={<BoldLabel variant="subtitle1">주문 날짜</BoldLabel>}
-                labelPlacement="top"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControlLabel
-                control={<Typography>{orderDetail.articleTitle}</Typography>}
-                label={<BoldLabel variant="subtitle1">게시글 제목</BoldLabel>}
-                labelPlacement="top"
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControlLabel
-                control={<Chip label={orderDetail.orderStatus} color="primary" />}
-                label={<BoldLabel variant="subtitle1">주문 상태</BoldLabel>}
-                labelPlacement="top"
-              />
-            </Grid>
-          </Grid>
-        </FormGroup>
-      </FormControl>
+  const s = getFormattedDate(orderDetail.date) + getFormattedTime(orderDetail.date);
 
-      {orderDetail.orderStatus === 'END' && (
-        <Button variant="outlined" color="primary" onClick={handleReviewClick}>
-          리뷰 작성하기
-        </Button>
-      )}
-    </StyledPaper>
+  return (
+    <StyledCard elevation={3}>
+      <CardContent>
+        <Typography variant="h4">{orderDetail.articleTitle} </Typography>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={12}>
+            <Label variant="subtitle1">주문 번호</Label>
+            <Value>{orderDetail.orderApiId}</Value>
+            <Value>
+              <Chip label={orderDetail.orderStatus} color="primary" />
+            </Value>
+            <Value>{s}</Value>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Label variant="subtitle1">판매자 이름</Label>
+            <Value>{orderDetail.sellerName}</Value>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Label variant="subtitle1">주문자 이름</Label>
+            <Value>{orderDetail.consumerName}</Value>
+          </Grid>
+        </Grid>
+
+        {orderDetail.orderStatus === 'END' && (
+          <Button variant="contained" color="primary" onClick={handleReviewClick}>
+            리뷰 작성하기
+          </Button>
+        )}
+      </CardContent>
+    </StyledCard>
   );
 };
 

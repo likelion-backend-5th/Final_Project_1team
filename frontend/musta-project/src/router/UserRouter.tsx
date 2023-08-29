@@ -14,6 +14,9 @@ import { ArticleDetail } from '../components/article/ArticleDetail.tsx';
 import ReportList from '../pages/report/ReportList.tsx';
 import ReportDetail from '../pages/report/ReportDetail.tsx';
 import ReviewCreatePage from '../pages/reviewPages/ReviewCreatePage.tsx';
+import ReviewListPage from '../pages/reviewPages/ReviewListPage.tsx';
+import ReportRegister from '../components/report/ReportRegister.tsx';
+import { ArticlePost } from '../components/article/ArticlePost.tsx';
 
 const UserRouter = () => {
   return (
@@ -34,7 +37,7 @@ const UserRouter = () => {
         errorElement={<Error404Page />}
       />
       <Route
-        path="/review/create"
+        path="/article/:articleApiId/order/:orderApiId/review"
         element={<ReviewCreatePage />}
         errorElement={<Error404Page />}
       />
@@ -48,6 +51,7 @@ const UserRouter = () => {
         element={<ReviewEditPage />}
         errorElement={<Error404Page />}
       />
+      <Route path="/review-list/test" element={<ReviewListPage />} />
       <Route path="/my/order/consume" element={<OrderConsumePage />} />
       <Route path="/my/order/sell" element={<OrderSellerPage />} />
 
@@ -63,9 +67,14 @@ const UserRouter = () => {
         errorElement={<Error404Page />}
       />
       <Route path="/article" element={<ArticlePage />} />
+      <Route path="/article/post" element={<ArticlePost />} />
 
       <Route path="/reports" element={<ReportList />} />
       <Route path="/report/:reportApiId" element={<ReportDetail />} />
+      <Route
+        path="/report/:resourceType/:resourceApiId"
+        element={<ReportRegister />}
+      />
     </Routes>
   );
 };

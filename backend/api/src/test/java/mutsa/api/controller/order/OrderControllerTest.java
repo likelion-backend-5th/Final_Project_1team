@@ -28,6 +28,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mockStatic;
@@ -166,6 +169,8 @@ class OrderControllerTest {
                 status().isOk(),
                 content().contentType(MediaType.APPLICATION_JSON),
                 jsonPath("pageable.totalElements", equalTo(3)),
+                jsonPath("pageable.pageNumber", equalTo(0)),
+                jsonPath("pageable.pageSize", equalTo(10)),
                 jsonPath("pageable.totalPages", equalTo(1)),
                 jsonPath("pageable.numberOfElements", equalTo(3))
         );
@@ -175,16 +180,18 @@ class OrderControllerTest {
 
     @Test
     void testGetOrderBySellerFilter() throws Exception {
-        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
-        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
-        Order savedOrder3 = orderRepository.save(Order.of(article, consumer));
+        List<Order> dummy = new ArrayList<>();
+        for (int i = 0; i < 25; i++) {
+            dummy.add(Order.of(article, consumer));
+        }
+        orderRepository.saveAll(dummy);
 
         //given
         when(SecurityUtil.getCurrentUsername()).thenReturn(seller.getUsername());
 
         //when
         ResultActions perform = mockMvc.perform(get("/api/order/sell")
-                        .param("orderStatus","PROGRESS")
+                        .param("orderStatus", "PROGRESS")
                         .param("page", String.valueOf(0))
                         .param("limit", String.valueOf(10))
 
@@ -198,17 +205,21 @@ class OrderControllerTest {
         perform.andExpectAll(
                 status().isOk(),
                 content().contentType(MediaType.APPLICATION_JSON),
-                jsonPath("orderResponseDtos.pageable.totalElements", equalTo(3)),
-                jsonPath("orderResponseDtos.pageable.totalPages", equalTo(1)),
-                jsonPath("orderResponseDtos.pageable.numberOfElements", equalTo(3))
+                jsonPath("orderResponseDtos.pageable.totalElements", equalTo(25)),
+                jsonPath("orderResponseDtos.pageable.pageNumber", equalTo(0)),
+                jsonPath("orderResponseDtos.pageable.pageSize", equalTo(10)),
+                jsonPath("orderResponseDtos.pageable.totalPages", equalTo(3)),
+                jsonPath("orderResponseDtos.pageable.numberOfElements", equalTo(10))
         );
     }
 
     @Test
     void testGetOrderByConsumerFilter() throws Exception {
-        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
-        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
-        Order savedOrder3 = orderRepository.save(Order.of(article, consumer));
+        List<Order> dummy = new ArrayList<>();
+        for (int i = 0; i < 25; i++) {
+            dummy.add(Order.of(article, consumer));
+        }
+        orderRepository.saveAll(dummy);
 
         //given
         when(SecurityUtil.getCurrentUsername()).thenReturn(consumer.getUsername());
@@ -216,7 +227,7 @@ class OrderControllerTest {
         //when
         ResultActions perform = mockMvc.perform(get("/api/order/consume")
 //                        .param("orderStatus","PROGRESS")
-                        .param("page", String.valueOf(0))
+                        .param("page", String.valueOf(2))
                         .param("limit", String.valueOf(10))
                         .contentType(MediaType.APPLICATION_JSON))
 
@@ -228,9 +239,11 @@ class OrderControllerTest {
         perform.andExpectAll(
                 status().isOk(),
                 content().contentType(MediaType.APPLICATION_JSON),
-                jsonPath("orderResponseDtos.pageable.totalElements", equalTo(3)),
-                jsonPath("orderResponseDtos.pageable.totalPages", equalTo(1)),
-                jsonPath("orderResponseDtos.pageable.numberOfElements", equalTo(3))
+                jsonPath("orderResponseDtos.pageable.totalElements", equalTo(25)),
+                jsonPath("orderResponseDtos.pageable.pageNumber", equalTo(2)),
+                jsonPath("orderResponseDtos.pageable.pageSize", equalTo(10)),
+                jsonPath("orderResponseDtos.pageable.totalPages", equalTo(3)),
+                jsonPath("orderResponseDtos.pageable.numberOfElements", equalTo(5))
         );
     }
 

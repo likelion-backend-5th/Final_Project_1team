@@ -121,7 +121,7 @@ public class ReviewServiceTest {
         reviewRepository.save(Review.of(reviewer4, article, "content4", 4));
 
         // when
-        Page<ReviewResponseDto> allReviews = reviewService.findAllReview(article.getApiId(), 1, 20);
+        Page<ReviewResponseDto> allReviews = reviewService.findAllReview(article.getApiId(), 1, 20, "descByDate");
 
         // then
         log.info(allReviews.getContent().toString());

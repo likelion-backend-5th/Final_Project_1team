@@ -18,5 +18,6 @@ public class BootstrapCommandLineRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         bootStrapDataLoader.createAdminUser();
         bootStrapDataLoader.createAricleOrder();
+        bootStrapDataLoader.createReport();
     }
 }
