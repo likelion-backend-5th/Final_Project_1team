@@ -3,13 +3,13 @@ package mutsa.api.service.order;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.order.OrderDetailResponseDto;
-import mutsa.api.dto.order.OrderResponseDto;
 import mutsa.api.dto.order.OrderStatusRequestDto;
 import mutsa.common.domain.filter.order.OrderFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
 import mutsa.common.domain.models.user.User;
+import mutsa.common.dto.order.OrderResponseDto;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.repository.order.OrderRepository;
 import org.springframework.data.domain.Page;
@@ -65,13 +65,13 @@ public class OrderModuleService {
         orderRepository.delete(getByApiId(orderApiId));
     }
 
-    public Page<OrderResponseDto> getOrderByFilter(User user, OrderFilter orderFilter, Pageable pageable) {
+    public Page<mutsa.common.dto.order.OrderResponseDto> getOrderByFilter(User user, OrderFilter orderFilter, Pageable pageable) {
         if (orderFilter.getOrderUserType() == OrderFilter.OrderUserType.SELLER) {
-            return orderRepository.getOrderByFilterBySeller(orderFilter, user, pageable).map(OrderResponseDto::fromEntity);
+            return orderRepository.getOrderByFilterBySeller(orderFilter, user, pageable);
         }
 
         if (orderFilter.getOrderUserType() == OrderFilter.OrderUserType.CONSUMER) {
-            return orderRepository.getOrderByFilterByConsumer(orderFilter, user, pageable).map(OrderResponseDto::fromEntity);
+            return orderRepository.getOrderByFilterByConsumer(orderFilter, user, pageable);
         }
 
         return null;
