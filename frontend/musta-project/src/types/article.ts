@@ -1,5 +1,5 @@
 // export type Status = 'ACTIVE' | 'DELETED';
-export const status = ['LIVE', 'EXPIRED'] as const;
+export const status = ['ACTIVE', 'DELETED'] as const;
 export type Status = (typeof status)[number];
 // export type ArticleStatus = 'LIVE' | 'EXPIRED';
 export const articleStatus = ['LIVE', 'EXPIRED'] as const;
