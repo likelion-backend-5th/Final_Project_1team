@@ -1,11 +1,15 @@
 import {
-  Backdrop,
   Button,
   Card,
   CardActions,
   CardContent,
   CardMedia,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Skeleton,
   SpeedDial,
   SpeedDialAction,
@@ -20,10 +24,20 @@ import {
 } from '../../types/article.ts';
 import axios from 'axios';
 import { styled } from '@mui/material/styles';
-import { Api, Edit, Flag, Share, ShoppingCart, Sms } from '@mui/icons-material';
+import {
+  Close,
+  Edit,
+  Flag,
+  Help,
+  Share,
+  ShoppingCart,
+  Sms,
+} from '@mui/icons-material';
 import ReviewListForm from '../review/ReviewListForm.tsx';
 import { loadingTime } from '../../util/loadingUtil.ts';
 import { useNavigate } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import IconButton from '@mui/material/IconButton';
 
 const baseUrl = 'http://localhost:8080/api/articles/';
 
@@ -70,13 +84,6 @@ const StyledSpeedDial = styled(SpeedDial)({
   right: '16px',
 });
 
-const actions = [
-  { icon: <ShoppingCart color="primary" />, name: '주문하기' },
-  { icon: <Sms color="primary" />, name: '채팅하기' },
-  { icon: <Flag color="primary" />, name: '신고하기' },
-  { icon: <Share color="primary" />, name: '공유하기' },
-];
-
 export function ArticleDetail() {
   const [url, setURL] = useState(baseUrl + getArticleApiId());
   const [article, setAritcle] = useState<ArticleImpl>({
@@ -91,8 +98,11 @@ export function ArticleDetail() {
   });
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [moveToEditPage, setMoveToEditPage] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const handleOpenMoveEdit = () => setMoveToEditPage(true);
+  const handleCloseMoveEdit = () => setMoveToEditPage(false);
 
   const fetchData = async () => {
     try {
@@ -121,6 +131,49 @@ export function ArticleDetail() {
     const id = getArticleApiId();
     navigate(`/article/${id}/order`);
   };
+
+  const handleEditClick = () => {
+    const id = getArticleApiId();
+    navigate(`/article/edit/${id}`);
+  };
+
+  const actions = [
+    {
+      icon: <ShoppingCart color="primary" />,
+      name: '주문하기',
+      onClick: () => {
+        console.log('onClick 주문하기');
+      },
+    },
+    {
+      icon: <Sms color="primary" />,
+      name: '채팅하기',
+      onClick: () => {
+        console.log('onClick 채팅하기');
+      },
+    },
+    {
+      icon: <Flag color="primary" />,
+      name: '신고하기',
+      onClick: () => {
+        console.log('onClick 신고하기');
+      },
+    },
+    {
+      icon: <Share color="primary" />,
+      name: '공유하기',
+      onClick: () => {
+        console.log('onclick 공유하기');
+      },
+    },
+    {
+      icon: <EditIcon color="primary" />,
+      name: '수정하기',
+      onClick: () => {
+        handleOpenMoveEdit();
+      },
+    },
+  ];
 
   useEffect(() => {
     fetchData();
@@ -181,12 +234,51 @@ export function ArticleDetail() {
                   <SpeedDialAction
                     key={action.name}
                     icon={action.icon}
-                    onClick={handleClose}
+                    onClick={action.onClick}
                   />
                 ))}
               </StyledSpeedDial>
             </Box>
             <Typography paragraph>{article.description}</Typography>
+            <Box>
+              <Dialog
+                open={moveToEditPage}
+                onClose={handleCloseMoveEdit}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description">
+                <Box
+                  display={'flex'}
+                  flexDirection={'row'}
+                  justifyContent={'start'}
+                  alignItems={'center'}
+                  marginX={'10px'}>
+                  <Help fontSize={'large'} />
+                  <DialogTitle id="alert-dialog-title">{'알림'}</DialogTitle>
+                </Box>
+                <IconButton
+                  aria-label="close"
+                  onClick={handleCloseMoveEdit}
+                  sx={{
+                    position: 'absolute',
+                    right: 8,
+                    top: 8,
+                    color: (theme) => theme.palette.grey[500],
+                  }}>
+                  <Close />
+                </IconButton>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    게시글 수정 페이지로 이동하시겠습니까?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCloseMoveEdit}>취소</Button>
+                  <Button onClick={handleEditClick} autoFocus>
+                    이동
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </Box>
           </StyledCardContent>
 
           <Button

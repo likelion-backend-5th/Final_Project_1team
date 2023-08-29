@@ -1,5 +1,9 @@
-export type Status = 'ACTIVE' | 'DELETED';
-export type ArticleStatus = 'LIVE' | 'EXPIRED';
+// export type Status = 'ACTIVE' | 'DELETED';
+export const status = ['LIVE', 'EXPIRED'] as const;
+export type Status = (typeof status)[number];
+// export type ArticleStatus = 'LIVE' | 'EXPIRED';
+export const articleStatus = ['LIVE', 'EXPIRED'] as const;
+export type ArticleStatus = (typeof articleStatus)[number];
 
 export function getChipColorByArticleStatus(articleStatus: ArticleStatus) {
   if (articleStatus === 'LIVE') {
@@ -37,15 +41,24 @@ export class ArticleImpl implements Article {
   ) {}
 }
 
-export const ofArticleImpl = (dto) => {
+export const ofArticleImpl = (dto: {
+  apiId: string;
+  title: string;
+  description: string;
+  username: string;
+  thumbnail: string;
+  status: string;
+  articleStatus: string;
+  createdDate: string;
+}) => {
   return new ArticleImpl(
     dto.apiId,
     dto.title,
     dto.description,
     dto.username,
     dto.thumbnail,
-    dto.status,
-    dto.articleStatus,
+    dto.status as Status,
+    dto.articleStatus as ArticleStatus,
     dto.createdDate
   );
 };
