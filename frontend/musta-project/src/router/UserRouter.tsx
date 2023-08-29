@@ -18,7 +18,6 @@ import ReviewCreatePage from '../pages/reviewPages/ReviewCreatePage.tsx';
 const UserRouter = () => {
   return (
     <Routes>
-      <Route path="" element={<MainPage />} errorElement={<Error404Page />} />
       <Route
         path="/hello"
         element={<HelloPage />}
