@@ -22,7 +22,6 @@ import { ArticleEdit } from '../components/article/ArticleEdit.tsx';
 const UserRouter = () => {
   return (
     <Routes>
-      <Route path="" element={<MainPage />} errorElement={<Error404Page />} />
       <Route
         path="/hello"
         element={<HelloPage />}

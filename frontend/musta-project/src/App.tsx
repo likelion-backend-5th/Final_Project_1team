@@ -4,6 +4,13 @@ import { Navigation } from './components/organisms/Navigation';
 import UserRouter from './router/UserRouter';
 import './App.css';
 import { styled } from 'styled-components';
+import { Provider } from 'mobx-react';
+import useStores from './store/useStores';
+import { Route, Routes } from 'react-router-dom';
+import MainPage from './pages/MainPage';
+import LoginForm from './components/auth/LoginForm';
+import { Suspense, lazy } from 'react';
+import Circular from './components/organisms/Circular';
 
 const StyledMain = styled.main`
   display: block;
@@ -16,14 +23,26 @@ const StyledMain = styled.main`
 `;
 
 function App() {
+  const useStore = useStores();
   return (
-    <StyledMain>
-      <Header />
-      <Navigation />
-      {/* 권한별 라우터 정의 필요 */}
-      <UserRouter />
-      <Footer />
-    </StyledMain>
+    <Provider {...useStore}>
+      <Suspense fallback={<Circular />}></Suspense>
+      <MainPage>
+        <LoginForm />
+        {/* <Routes>
+          <Route
+            path={''}
+            element={<Suspense fallback={<Circular />}></Suspense>}
+          />
+        </Routes> */}
+      </MainPage>
+      {/* <StyledMain>
+        <Header />
+        <Navigation />
+        <UserRouter />
+        <Footer />
+      </StyledMain> */}
+    </Provider>
   );
 }
 
