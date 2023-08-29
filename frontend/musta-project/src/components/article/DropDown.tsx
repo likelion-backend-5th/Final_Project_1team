@@ -50,17 +50,20 @@ const StyledMenu = styled((props: MenuProps) => (
 
 interface DropDownProps {
   elements: string[][];
+  setValue;
 }
 
 export default function DropDown(props: DropDownProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [value, setValue] = React.useState<string>(props.elements[0][2]);
+  const [innerValue, setInnerValue] = React.useState<string>(
+    props.elements[0][2]
+  );
   const [buttonText, setButtonText] = React.useState<string>(
     props.elements[0][0]
   );
   const open = Boolean(anchorEl);
 
-  useEffect(() => {}, [value]);
+  useEffect(() => {}, [innerValue]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -69,13 +72,18 @@ export default function DropDown(props: DropDownProps) {
     setAnchorEl(null);
   };
 
+  const returnChangedValueToParent = (item: string) => {
+    props.setValue(item);
+  };
+
   const elementComp = props.elements.map(function (item) {
     return (
       <MenuItem
         key={item[1]}
         onClick={() => {
           handleClose();
-          setValue(item[2]);
+          setInnerValue(item[2]);
+          returnChangedValueToParent(item[2]);
           setButtonText(item[0]);
         }}
         disableRipple>

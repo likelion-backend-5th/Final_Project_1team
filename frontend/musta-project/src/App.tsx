@@ -27,21 +27,21 @@ function App() {
   return (
     <Provider {...useStore}>
       <Suspense fallback={<Circular />}></Suspense>
-      <MainPage>
+      {/* <MainPage>
         <LoginForm />
-        {/* <Routes>
+        <Routes>
           <Route
             path={''}
             element={<Suspense fallback={<Circular />}></Suspense>}
           />
-        </Routes> */}
-      </MainPage>
-      {/* <StyledMain>
+        </Routes>
+      </MainPage> */}
+      <StyledMain>
         <Header />
         <Navigation />
         <UserRouter />
         <Footer />
-      </StyledMain> */}
+      </StyledMain>
     </Provider>
   );
 }
