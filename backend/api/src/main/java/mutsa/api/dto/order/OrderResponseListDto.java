@@ -3,6 +3,7 @@ package mutsa.api.dto.order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import mutsa.api.dto.CustomPage;
+import mutsa.common.dto.order.OrderResponseDto;
 
 @Getter
 @NoArgsConstructor
