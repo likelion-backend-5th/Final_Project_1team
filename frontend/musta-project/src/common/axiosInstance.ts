@@ -2,15 +2,19 @@ import axios from 'axios';
 
 const AUTH_TOKEN = `Bearer `;
 
-const axiosInstance = axios.create({ baseURL: import.meta.env.VITE_API });
+const baseUrl = import.meta.env.VITE_API;
 
-axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-axios.defaults.headers.get['content-Type'] = 'application/json';
-axios.defaults.headers.post['content-Type'] = 'application/json';
-axios.defaults.headers.put['content-Type'] = 'application/json';
-axios.defaults.headers.delete['content-Type'] = 'application/json';
-axios.defaults.withCredentials = true;
-axios.interceptors.request.use(
+console.log(baseUrl);
+
+const axiosInstance = axios.create({ baseURL: baseUrl });
+
+axiosInstance.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+axiosInstance.defaults.headers.get['content-Type'] = 'application/json';
+axiosInstance.defaults.headers.post['content-Type'] = 'application/json';
+axiosInstance.defaults.headers.put['content-Type'] = 'application/json';
+axiosInstance.defaults.headers.delete['content-Type'] = 'application/json';
+axiosInstance.defaults.withCredentials = true;
+axiosInstance.interceptors.request.use(
   (config) => {
     config.headers['Authorization'] = localStorage.getItem('token');
     return config;
@@ -20,7 +24,7 @@ axios.interceptors.request.use(
     return Promise.reject(err);
   }
 );
-axios.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   (res) => {
     console.log(res);
     return res;
