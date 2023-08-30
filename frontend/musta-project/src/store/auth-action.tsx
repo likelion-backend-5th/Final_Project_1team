@@ -1,5 +1,6 @@
 import { GET, POST, PUT } from './fetch-auth-action';
 import { Token } from '@mui/icons-material';
+import { ArticleStatus } from '../types/article.ts';
 
 const createTokenHeader = (token: string) => {
   return {
@@ -211,4 +212,16 @@ export const postArticleHandler = (
   const URL = `/api/articles`;
   const articleRequestObject = { title, description };
   return POST(URL, articleRequestObject, createTokenHeader(token));
+};
+
+export const putArticleHandler = (
+  token: string,
+  title: string,
+  description: string,
+  apiId: string,
+  articleStatus: ArticleStatus
+) => {
+  const URL = `/api/articles`;
+  const articleRequestObject = { title, description, apiId, articleStatus };
+  return PUT(URL, articleRequestObject, createTokenHeader(token));
 };

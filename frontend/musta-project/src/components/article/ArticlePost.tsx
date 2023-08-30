@@ -121,6 +121,7 @@ export function ArticlePost() {
             id="article-title"
             label="게시글 제목"
             value={title}
+            inputProps={{ maxLength: 100, 'aria-rowcount': 5 }} // Set maximum character length
             onChange={(e) => setTitle(e.target.value)}
           />
         </Box>
@@ -131,6 +132,7 @@ export function ArticlePost() {
             multiline
             rows={4}
             value={description}
+            inputProps={{ maxLength: 255, 'aria-rowcount': 5 }} // Set maximum character length
             onChange={(e) => setDescription(e.target.value)}
           />
         </Box>

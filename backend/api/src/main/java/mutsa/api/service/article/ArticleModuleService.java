@@ -26,7 +26,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import static mutsa.common.exception.ErrorCode.ARTICLE_NOT_FOUND;
-import static mutsa.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +54,7 @@ public class ArticleModuleService {
 
         article.setTitle(updateDto.getTitle());
         article.setDescription(updateDto.getDescription());
+        article.setArticleStatus(updateDto.getArticleStatus());
 
         return article;
     }
@@ -71,6 +71,7 @@ public class ArticleModuleService {
 
         article.setTitle(updateDto.getTitle());
         article.setDescription(updateDto.getDescription());
+        article.setArticleStatus(updateDto.getArticleStatus());
 
         return article;
     }
@@ -82,7 +83,7 @@ public class ArticleModuleService {
                 .build();
     }
 
-    public Article updateToEntity(ArticleUpdateRequestDto updateDto) {
+    public Article updateDtoToEntity(ArticleUpdateRequestDto updateDto) {
         return articleRepository.getByApiId(updateDto.getApiId())
                 .orElseThrow(() -> new BusinessException(ARTICLE_NOT_FOUND));
     }

@@ -7,7 +7,9 @@
 package mutsa.api.dto.article;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import mutsa.common.domain.models.article.ArticleStatus;
 
 @Getter
 @Setter
@@ -21,4 +23,6 @@ public class ArticleUpdateRequestDto {
     private String description;
     @NotBlank
     private String apiId;
+    @NotNull
+    private ArticleStatus articleStatus;
 }
