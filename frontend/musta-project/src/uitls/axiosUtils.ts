@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axiosInstance from '../common/axiosInstance';
 
 export default class axiosUtils {
   static get = (url: string, param?: any | null): any => {
-    return axios.request({
+    return axiosInstance.request({
       method: 'get',
       url: '/api' + url,
       params: param,
@@ -17,7 +17,7 @@ export default class axiosUtils {
   };
 
   static post = (url: string, data?: any): any => {
-    return axios.request({
+    return axiosInstance.request({
       method: 'post',
       url: '/api' + url,
       data: data,
@@ -25,7 +25,7 @@ export default class axiosUtils {
   };
 
   static put = (url: string, data?: any): any => {
-    return axios.request({
+    return axiosInstance.request({
       method: 'put',
       url: '/api' + url,
       data: data,
@@ -33,7 +33,7 @@ export default class axiosUtils {
   };
 
   static delete = (url: string, data?: any): any => {
-    return axios.request({
+    return axiosInstance.request({
       method: 'delete',
       url: '/api' + url,
       data: data,

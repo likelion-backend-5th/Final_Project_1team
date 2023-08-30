@@ -104,8 +104,8 @@ export default class userStore {
 
     const res = await userRepository
       .signup(signupform)
-      .then((res) => {
-        if (res.status.include(2)) {
+      .then((res: AxiosResponse) => {
+        if (res.status < 300 && res.status >= 200) {
           const navigate = useNavigate();
           navigate('');
         }

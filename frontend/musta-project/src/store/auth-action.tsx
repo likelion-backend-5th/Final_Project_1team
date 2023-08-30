@@ -1,6 +1,7 @@
 import { GET, POST, PUT } from './fetch-auth-action';
 import { Token } from '@mui/icons-material';
 import { ArticleStatus } from '../types/article.ts';
+import axiosUtils from '../uitls/axiosUtils.ts';
 
 const createTokenHeader = (token: string) => {
   return {
@@ -183,8 +184,8 @@ export const getConsumerOrderHandler = (
   }
   const queryString = getQueryString(queryParams);
 
-  const URL = `/api/order/consume?${queryString}`;
-  return GET(URL, createTokenHeader(token));
+  const URL = `/order/consume?${queryString}`;
+  return axiosUtils.get(URL);
 };
 
 export const getOrderHandler = (
@@ -192,8 +193,8 @@ export const getOrderHandler = (
   articleApiId: string | undefined,
   orderApiId: string | undefined
 ) => {
-  const URL = `/api/articles/${articleApiId}/order/${orderApiId}`;
-  return GET(URL, createTokenHeader(token));
+  const URL = `/articles/${articleApiId}/order/${orderApiId}`;
+  return axiosUtils.get(URL);
 };
 
 function getQueryString(queryParams: Record<string, string>) {
