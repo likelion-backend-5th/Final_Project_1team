@@ -115,7 +115,7 @@ export const getArticleOrderHandler = (
   const queryString = getQueryString(queryParams);
 
   const URL = `/api/articles/${articleApiId}/order?${queryString}`;
-  return GET(URL, createTokenHeader(token));
+  return axiosUtils.get(URL);
 };
 
 export const getSellOrderHandler = (
@@ -149,8 +149,8 @@ export const getSellOrderHandler = (
   }
   const queryString = getQueryString(queryParams);
 
-  const URL = `/api/order/sell?${queryString}`;
-  return GET(URL, createTokenHeader(token));
+  const URL = `/order/sell?${queryString}`;
+  return axiosUtils.get(URL);
 };
 
 export const getConsumerOrderHandler = (
@@ -226,3 +226,19 @@ export const putArticleHandler = (
   const articleRequestObject = { title, description, apiId, articleStatus };
   return PUT(URL, articleRequestObject, createTokenHeader(token));
 };
+
+export const getChatroomHandler = (
+  token: string,
+) => {
+  console.log('hello!');
+  const url = '/api/chat'
+  return GET(url, createTokenHeader(token));
+}
+
+export const getEachChatroomHandler = (
+  token: string,
+  chatroomId: string | undefined
+) => {
+  const url = '/api/chat/' + chatroomId
+  return GET(url, createTokenHeader(token));
+}
