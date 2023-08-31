@@ -1,5 +1,4 @@
 import { GET, POST, PUT } from './fetch-auth-action';
-import { Token } from '@mui/icons-material';
 import { ArticleStatus } from '../types/article.ts';
 import axiosUtils from '../uitls/axiosUtils.ts';
 
@@ -81,13 +80,12 @@ export const logoutActionHandler = () => {
   localStorage.removeItem('expirationTime');
 };
 
-export const getArticleHandler = (token: string, articleApiId: any) => {
+export const getArticleHandler = (articleApiId: any) => {
   const URL = `/api/articles/${articleApiId}`;
-  return GET(URL, createTokenHeader(token));
+  return axiosUtils.get(URL);
 };
 
 export const getArticleOrderHandler = (
-  token: string,
   articleApiId: string | undefined,
   orderStatus: string | undefined,
   sortOrder: string | undefined,
@@ -119,7 +117,6 @@ export const getArticleOrderHandler = (
 };
 
 export const getSellOrderHandler = (
-  token: string,
   orderStatus: string | undefined,
   searchText: string | undefined,
   sortOrder: string | undefined,
@@ -154,7 +151,6 @@ export const getSellOrderHandler = (
 };
 
 export const getConsumerOrderHandler = (
-  token: string,
   orderStatus: string | undefined,
   searchText: string | undefined,
   sortOrder: string | undefined,
@@ -189,7 +185,6 @@ export const getConsumerOrderHandler = (
 };
 
 export const getOrderHandler = (
-  token: string,
   articleApiId: string | undefined,
   orderApiId: string | undefined
 ) => {
@@ -228,17 +223,15 @@ export const putArticleHandler = (
 };
 
 export const getChatroomHandler = (
-  token: string,
 ) => {
   console.log('hello!');
   const url = '/api/chat'
-  return GET(url, createTokenHeader(token));
+  return axiosUtils.get(url);
 }
 
 export const getEachChatroomHandler = (
-  token: string,
   chatroomId: string | undefined
 ) => {
   const url = '/api/chat/' + chatroomId
-  return GET(url, createTokenHeader(token));
+  return axiosUtils.get(url);
 }

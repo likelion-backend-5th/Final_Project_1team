@@ -12,7 +12,7 @@ const ChatRoomList: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        getChatroomHandler().then((response) => {
+        getChatroomHandler().then((response: { data: ChatRoom[] } | null) => {
             if (response != null) {
                 console.log('채팅방 얻어옴');
                 setChatRooms(response.data)
