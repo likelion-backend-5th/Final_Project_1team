@@ -1,9 +1,9 @@
-export type ChatRoom = {
+export type Chatroom = {
     chatroomApiId: number,
     roomName: string
 }
 
-export type ChatRoomDetail = {
+export type ChatroomDetail = {
     chatroomApiId: number,
     roomName: string
 }

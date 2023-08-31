@@ -1,19 +1,19 @@
 import {useNavigate} from 'react-router-dom';
 
-import { ChatRoom } from '../../types/chat';
+import { Chatroom } from '../../types/chat';
 
 
 type Props = {
-    chatRooms: ChatRoom[];
+    chatRooms: Chatroom[];
 };
 
 const ChatRoomListForm: React.FC<Props> = ({chatRooms}) => {
     const navigate = useNavigate();
     console.log(chatRooms)
 
-    const handleChatRoomClick = (chatRoom: ChatRoom) => {
+    const handleChatRoomClick = (chatRoom: Chatroom) => {
         console.log(chatRoom.chatroomApiId + '을 클릭함');
-        navigate(`/chatroom-view/${chatRoom.chatroomApiId}`);
+        navigate(`/chatroom/${chatRoom.chatroomApiId}`);
     };
 
     return (

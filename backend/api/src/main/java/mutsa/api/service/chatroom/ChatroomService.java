@@ -11,6 +11,7 @@ import mutsa.common.domain.models.chatroom.ChatroomUser;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.dto.chatroom.ChatroomUserResult;
 import mutsa.common.exception.BusinessException;
+import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.chatroom.ChatroomRepository;
 import mutsa.common.repository.chatroom.ChatroomUserRepository;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,9 @@ public class ChatroomService {
         Optional<Chatroom> byChatroomWithUsers = chatroomUserRepository.findByChatroomWithUsers(seller, suggester);
         if (!byChatroomWithUsers.isEmpty()) { //이미 해당 유저와의 채팅방이 존재한다.
             return ChatroomResponseDto.fromEntity(byChatroomWithUsers.get(), seller.getUsername());
+        }
+        if (seller.getId().equals(suggester.getId())) {
+            throw new BusinessException(ErrorCode.INVALID_ROOM_REQUEST);
         }
 
         //채팅방 생성

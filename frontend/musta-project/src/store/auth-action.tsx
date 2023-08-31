@@ -81,7 +81,7 @@ export const logoutActionHandler = () => {
 };
 
 export const getArticleHandler = (articleApiId: any) => {
-  const URL = `/api/articles/${articleApiId}`;
+  const URL = `/articles/${articleApiId}`;
   return axiosUtils.get(URL);
 };
 
@@ -112,7 +112,7 @@ export const getArticleOrderHandler = (
 
   const queryString = getQueryString(queryParams);
 
-  const URL = `/api/articles/${articleApiId}/order?${queryString}`;
+  const URL = `/articles/${articleApiId}/order?${queryString}`;
   return axiosUtils.get(URL);
 };
 
@@ -225,13 +225,20 @@ export const putArticleHandler = (
 export const getChatroomHandler = (
 ) => {
   console.log('hello!');
-  const url = '/api/chat'
+  const url = '/chat/room'
   return axiosUtils.get(url);
 }
 
 export const getEachChatroomHandler = (
   chatroomId: string | undefined
 ) => {
-  const url = '/api/chat/' + chatroomId
+  const url = `/chat/room/${chatroomId}`
   return axiosUtils.get(url);
 }
+
+export const createChatroom = (
+  articleApiId : string | undefined
+) => {
+  const url = '/chat/room';
+  return axiosUtils.post(url,{articleApiId: articleApiId});
+ }

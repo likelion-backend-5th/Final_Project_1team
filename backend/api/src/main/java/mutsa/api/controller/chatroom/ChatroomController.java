@@ -15,14 +15,14 @@ import static mutsa.api.util.SecurityUtil.getCurrentUsername;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/chat")
+@RequestMapping("/api/chat/room")
 @Slf4j
 public class ChatroomController {
     private final ChatroomService chatService;
 
     //필요 메서드
     //내가 방을 만들어서 들어가는 경우(제안을 하는 경우)
-    @PostMapping("rooms")
+    @PostMapping
     public ResponseEntity<ChatroomResponseDto> createRoom(@RequestBody ChatroomRequestDto requestChatroomDto) {
         return ResponseEntity.ok(chatService.createChatRoom(requestChatroomDto, getCurrentUsername()));
     }

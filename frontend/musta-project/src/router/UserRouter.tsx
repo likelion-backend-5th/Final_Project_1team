@@ -79,8 +79,8 @@ const UserRouter = () => {
         path="/report/:resourceType/:resourceApiId"
         element={<ReportRegister />}
       />
-      <Route path="/chatroomlist-view" element={<ChatRoomList/>}/>    
-      <Route path="/chatroom-view/:roomId" element={<ChatPage/>}/>
+      <Route path="/chatrooms" element={<ChatRoomList/>}/>    
+      <Route path="/chatroom/:roomId" element={<ChatPage/>}/>
     </Routes>
   );
 };

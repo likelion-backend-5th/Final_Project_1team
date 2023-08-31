@@ -2,13 +2,13 @@ import React, {useEffect, useRef, useState} from "react";
 import {Params, useNavigate, useParams} from "react-router-dom";
 import * as Stomp from "@stomp/stompjs";
 import './ChatPage.css'
-import { ChatMessage, ChatRoomDetail } from "../../types/chat";
+import { ChatMessage, ChatroomDetail } from "../../types/chat";
 import { getEachChatroomHandler } from "../../store/auth-action";
 
 const ChatPage: React.FC= () => {
     const client = useRef<Stomp.Client | null>(null);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const [chatRoom, setChatRooms] = useState<ChatRoomDetail>();
+    const [chatRoom, setChatRooms] = useState<ChatroomDetail>();
     const {roomId} = useParams<Params>();
 
     const [message, setMessage] = useState<string>("");
@@ -19,7 +19,7 @@ const ChatPage: React.FC= () => {
 
     const userApiId = '3277eb42-f55a-4edb-a66e-61fd94454e48';
     function findRoomDetail() {
-        getEachChatroomHandler(roomId).then((response: { data: ChatRoomDetail } | null) => {
+        getEachChatroomHandler(roomId).then((response: { data: ChatroomDetail } | null) => {
             if (response != null) {
                 setChatRooms(response.data)
                 console.log(response.data)
