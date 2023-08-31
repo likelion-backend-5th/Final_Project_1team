@@ -95,14 +95,12 @@ class OrderStore {
 
 const fetchArticleOrderData = (newPage: number) => {
   orderStore.setLoading(true);
-  const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0'
   getArticleOrderHandler(
-    token,
     orderStore.articleId,
     orderStore.selectedStatus === 'all' ? undefined : orderStore.selectedStatus,
     orderStore.sortOrder,
     newPage - 1,
-    orderStore.ordersPerPage).then((response) => {
+    orderStore.ordersPerPage).then((response: { data: OrderResponseDto; } | null) => {
       if (response != null) {
         console.log("게시글의 주문목록을 불러옴");
         console.log(response.data);
@@ -114,10 +112,8 @@ const fetchArticleOrderData = (newPage: number) => {
 
 const fetchArticleData = () => {
   orderStore.setLoading(true);
-  const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0'
   getArticleHandler(
-    token,
-    orderStore.articleId).then((response) => {
+    orderStore.articleId).then((response: { data: { title: string; }; } | null) => {
       if (response != null) {
         console.log("게시글의 제목을 불러옴");
         console.log(response.data);

@@ -1,6 +1,6 @@
 import { GET, POST, PUT } from './fetch-auth-action';
-import { Token } from '@mui/icons-material';
 import { ArticleStatus } from '../types/article.ts';
+import axiosUtils from '../uitls/axiosUtils.ts';
 
 const createTokenHeader = (token: string) => {
   return {
@@ -80,13 +80,12 @@ export const logoutActionHandler = () => {
   localStorage.removeItem('expirationTime');
 };
 
-export const getArticleHandler = (token: string, articleApiId: any) => {
-  const URL = `/api/articles/${articleApiId}`;
-  return GET(URL, createTokenHeader(token));
+export const getArticleHandler = (articleApiId: any) => {
+  const URL = `/articles/${articleApiId}`;
+  return axiosUtils.get(URL);
 };
 
 export const getArticleOrderHandler = (
-  token: string,
   articleApiId: string | undefined,
   orderStatus: string | undefined,
   sortOrder: string | undefined,
@@ -113,12 +112,11 @@ export const getArticleOrderHandler = (
 
   const queryString = getQueryString(queryParams);
 
-  const URL = `/api/articles/${articleApiId}/order?${queryString}`;
-  return GET(URL, createTokenHeader(token));
+  const URL = `/articles/${articleApiId}/order?${queryString}`;
+  return axiosUtils.get(URL);
 };
 
 export const getSellOrderHandler = (
-  token: string,
   orderStatus: string | undefined,
   searchText: string | undefined,
   sortOrder: string | undefined,
@@ -148,12 +146,11 @@ export const getSellOrderHandler = (
   }
   const queryString = getQueryString(queryParams);
 
-  const URL = `/api/order/sell?${queryString}`;
-  return GET(URL, createTokenHeader(token));
+  const URL = `/order/sell?${queryString}`;
+  return axiosUtils.get(URL);
 };
 
 export const getConsumerOrderHandler = (
-  token: string,
   orderStatus: string | undefined,
   searchText: string | undefined,
   sortOrder: string | undefined,
@@ -183,17 +180,16 @@ export const getConsumerOrderHandler = (
   }
   const queryString = getQueryString(queryParams);
 
-  const URL = `/api/order/consume?${queryString}`;
-  return GET(URL, createTokenHeader(token));
+  const URL = `/order/consume?${queryString}`;
+  return axiosUtils.get(URL);
 };
 
 export const getOrderHandler = (
-  token: string,
   articleApiId: string | undefined,
   orderApiId: string | undefined
 ) => {
-  const URL = `/api/articles/${articleApiId}/order/${orderApiId}`;
-  return GET(URL, createTokenHeader(token));
+  const URL = `/articles/${articleApiId}/order/${orderApiId}`;
+  return axiosUtils.get(URL);
 };
 
 function getQueryString(queryParams: Record<string, string>) {
@@ -225,3 +221,24 @@ export const putArticleHandler = (
   const articleRequestObject = { title, description, apiId, articleStatus };
   return PUT(URL, articleRequestObject, createTokenHeader(token));
 };
+
+export const getChatroomHandler = (
+) => {
+  console.log('hello!');
+  const url = '/chat/room'
+  return axiosUtils.get(url);
+}
+
+export const getEachChatroomHandler = (
+  chatroomId: string | undefined
+) => {
+  const url = `/chat/room/${chatroomId}`
+  return axiosUtils.get(url);
+}
+
+export const createChatroom = (
+  articleApiId : string | undefined
+) => {
+  const url = '/chat/room';
+  return axiosUtils.post(url,{articleApiId: articleApiId});
+ }

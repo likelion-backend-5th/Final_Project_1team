@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import {Typography, Grid, Chip, Button, Card, CardContent } from '@mui/material';
+import { Typography, Grid, Chip, Button, Card, CardContent } from '@mui/material';
 import { getOrderHandler } from '../../store/auth-action';
-import { getFormattedDate, getFormattedTime } from '../../util/DateUtil';
+import { getFormattedDate, getFormattedTime } from '../../util/dateUtil';
 
 
 
@@ -31,8 +31,7 @@ const OrderDetailPage: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     // 컴포넌트가 처음 마운트될 때만 더미 데이터를 생성하여 orders 상태를 초기화
-    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0'
-    getOrderHandler(token, articleApiId, orderApiId).then((response) => {
+    getOrderHandler(articleApiId, orderApiId).then((response: { data: React.SetStateAction<OrderResponse | null>; } | null) => {
       if (response != null) {
         console.log("주문상세 정보를 불러옴");
         setOrderDetail(response.data);

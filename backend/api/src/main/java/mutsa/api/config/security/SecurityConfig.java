@@ -3,7 +3,6 @@ package mutsa.api.config.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import mutsa.api.config.security.filter.CustomAuthorizationFilter;
 import mutsa.api.config.security.filter.JsonUsernamePasswordAuthenticationFilter;
@@ -34,9 +33,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -44,7 +40,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
-    private final AuthenticationEntryPoint authenticationEntryPoint;
+    private final AuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAuthorizationFilter customAuthorizationFilter;
     private final OAuth2UserService<OAuth2UserRequest, OAuth2User> defaultOAuth2UserService;
     private final AuthenticationSuccessHandler redirectAuthenticationSuccessHandler;
@@ -61,44 +57,44 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .exceptionHandling(handle ->
-                                           handle.authenticationEntryPoint(authenticationEntryPoint))
-                .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(
-                        jsonUsernamePasswordAuthenticationFilter(),
-                        UsernamePasswordAuthenticationFilter.class
-                );
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .exceptionHandling(handle ->
+                handle.authenticationEntryPoint(customAuthenticationEntryPoint))
+            .addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(
+                jsonUsernamePasswordAuthenticationFilter(),
+                UsernamePasswordAuthenticationFilter.class
+            );
 
         httpSecurity.sessionManagement(session ->
-                                               session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         httpSecurity.authorizeHttpRequests(registry -> registry.anyRequest().permitAll());
 
         httpSecurity.oauth2Login(oAuth2LoginConfigurer ->
-                                         oAuth2LoginConfigurer
-                                                 .authorizationEndpoint(
-                                                         authorizationEndpointConfig ->
-                                                                 authorizationEndpointConfig.authorizationRequestRepository(
-                                                                                 httOAuth2AuthorizationRequestAuthorizationRequestRepository)
-                                                                         .baseUri("/oauth2/authorization"))
-                                                 .redirectionEndpoint(redirectionEndpointConfig ->
-                                                                              redirectionEndpointConfig.baseUri(
-                                                                                      "/login/oauth2/callback/**"))
-                                                 .userInfoEndpoint(userInfoEndpointConfig ->
-                                                                           userInfoEndpointConfig.userService(
-                                                                                   defaultOAuth2UserService))
-                                                 .successHandler(redirectAuthenticationSuccessHandler)
-                                                 .failureHandler(redirectAuthenticationFailureHandler)
+            oAuth2LoginConfigurer
+                .authorizationEndpoint(
+                    authorizationEndpointConfig ->
+                        authorizationEndpointConfig.authorizationRequestRepository(
+                                httOAuth2AuthorizationRequestAuthorizationRequestRepository)
+                            .baseUri("/oauth2/authorization"))
+                .redirectionEndpoint(redirectionEndpointConfig ->
+                    redirectionEndpointConfig.baseUri(
+                        "/login/oauth2/callback/**"))
+                .userInfoEndpoint(userInfoEndpointConfig ->
+                    userInfoEndpointConfig.userService(
+                        defaultOAuth2UserService))
+                .successHandler(redirectAuthenticationSuccessHandler)
+                .failureHandler(redirectAuthenticationFailureHandler)
         ).logout(logout ->
-                         logout
-                                 .logoutSuccessHandler((request, response, authentication) -> {
-                                     response.setStatus(HttpStatus.NO_CONTENT.value());
-                                     response.sendRedirect("/login");
-                                 })
-                                 .clearAuthentication(true)
-                                 .logoutRequestMatcher(new AntPathRequestMatcher("/api/security/logout")
-                                 ));
+            logout
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.setStatus(HttpStatus.NO_CONTENT.value());
+                    response.sendRedirect("/login");
+                })
+                .clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/api/security/logout")
+                ));
 
         return httpSecurity.build();
     }
@@ -117,27 +113,14 @@ public class SecurityConfig {
         return source;
     }
 
-    @Configuration
-    @EnableWebMvc
-    public class WebConfig implements WebMvcConfigurer {
-        @Override
-        public void addCorsMappings(CorsRegistry registry) {
-            registry.addMapping("/**")
-                    .allowedOrigins("http://localhost:5173")
-                    .allowedMethods("*")
-                    .allowCredentials(false)
-                    .maxAge(3000);
-        }
-    }
-
     @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter() {
         JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter =
-                new JsonUsernamePasswordAuthenticationFilter(
-                        objectMapper,
-                        customAuthenticationSuccessHandler,
-                        customAuthenticationFailureHandler
-                );
+            new JsonUsernamePasswordAuthenticationFilter(
+                objectMapper,
+                customAuthenticationSuccessHandler,
+                customAuthenticationFailureHandler
+            );
         jsonUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
         return jsonUsernamePasswordAuthenticationFilter;
     }

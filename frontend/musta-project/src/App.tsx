@@ -24,6 +24,10 @@ const StyledMain = styled.main`
 
 function App() {
   const useStore = useStores();
+  localStorage.setItem(
+    'token',
+    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0'
+  );
   return (
     <Provider {...useStore}>
       <Suspense fallback={<Circular />}></Suspense>

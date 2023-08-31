@@ -6,14 +6,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.Cookie;
-import lombok.Builder;
-import lombok.Getter;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import lombok.Builder;
+import lombok.Getter;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class JwtUtil {
 
@@ -21,27 +20,25 @@ public class JwtUtil {
     private static final String AUTHORITIES = "authorities";
 
     public static String createToken(String requestUrl, String subject,
-                                     String tokenExpire, Algorithm algorithm, Collection<String> authorities) {
-
+        String tokenExpire, Algorithm algorithm, Collection<String> authorities) {
         return JWT.create()
-                .withSubject(subject)
-                .withIssuer(requestUrl)
-                .withExpiresAt(
-                        new Date(System.currentTimeMillis() + Integer.parseInt(tokenExpire)))
-                .withClaim("authorities",
-                        new ArrayList<>(authorities))
-                .sign(algorithm);
+            .withSubject(subject)
+            .withIssuer(requestUrl)
+            .withExpiresAt(
+                new Date(System.currentTimeMillis() + Integer.parseInt(tokenExpire)))
+            .withClaim("authorities",
+                new ArrayList<>(authorities))
+            .sign(algorithm);
     }
 
     public static String createToken(String requestUrl, String subject,
-                                     String tokenExpire, Algorithm algorithm) {
-
+        String tokenExpire, Algorithm algorithm) {
         return JWT.create()
-                .withSubject(subject)
-                .withIssuer(requestUrl)
-                .withExpiresAt(
-                        new Date(System.currentTimeMillis() + Integer.parseInt(tokenExpire)))
-                .sign(algorithm);
+            .withSubject(subject)
+            .withIssuer(requestUrl)
+            .withExpiresAt(
+                new Date(System.currentTimeMillis() + Integer.parseInt(tokenExpire)))
+            .sign(algorithm);
     }
 
     /**
@@ -53,14 +50,14 @@ public class JwtUtil {
      * @throws JWTVerificationException
      */
     public static JWTInfo decodeToken(Algorithm algorithm, String token)
-            throws JWTVerificationException {
+        throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(algorithm).build();
 
         DecodedJWT decodedJWT = verifier.verify(token);
         String username = decodedJWT.getSubject();
 
         String[] authoritiesJWT = decodedJWT.getClaim("authorities")
-                .asArray(String.class);
+            .asArray(String.class);
 
         if (authoritiesJWT != null) {
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -70,9 +67,9 @@ public class JwtUtil {
         }
 
         return JWTInfo.builder()
-                .username(username)
-                .authorities(authoritiesJWT)
-                .build();
+            .username(username)
+            .authorities(authoritiesJWT)
+            .build();
     }
 
     public static boolean isCookieNameRefreshToken(Cookie cookie) {
@@ -82,7 +79,6 @@ public class JwtUtil {
     @Getter
     @Builder
     public static class JWTInfo {
-
         private final String username;
         private final String[] authorities;
     }
