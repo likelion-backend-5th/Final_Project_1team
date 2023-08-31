@@ -11,6 +11,7 @@ import mutsa.common.domain.models.order.OrderStatus;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.dto.order.OrderResponseDto;
 import mutsa.common.exception.BusinessException;
+import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.order.OrderRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +36,7 @@ public class OrderModuleService {
     }
 
     public Page<OrderResponseDto> findAllOrder(Article article, User user, String orderStatus, Pageable pageable) {
-        article.validUser(user); //판매자만 확인할 수 있는지
+        validArticleUser(article, user); //판매자만 확인할 수 있는지
         if (orderStatus == null) {
             return orderRepository.findByArticle(article, pageable).map(OrderResponseDto::fromEntity);
         }
@@ -86,5 +87,11 @@ public class OrderModuleService {
     public Order getById(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ORDER_NOT_FOUND));
+    }
+
+    private void validArticleUser(Article article, User user) {
+        if (!article.validUser(user)) {
+            throw new BusinessException(ErrorCode.ARTICLE_PERMISSION_DENIED);
+        }
     }
 }

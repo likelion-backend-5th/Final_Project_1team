@@ -74,8 +74,7 @@ public class Article extends BaseEntity implements Serializable {
         this.orders.add(order);
     }
 
-    public void validUser(User user) {
-        if (!Objects.equals(this.user.getId(), user.getId()))
-            throw new BusinessException(ErrorCode.ARTICLE_PERMISSION_DENIED);
+    public boolean validUser(User user) {
+        return Objects.equals(this.user.getId(), user.getId());
     }
 }

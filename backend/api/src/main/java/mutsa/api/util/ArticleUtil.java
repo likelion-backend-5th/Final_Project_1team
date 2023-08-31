@@ -53,7 +53,7 @@ public class ArticleUtil {
         }
 
         //  게시글을 작성한 유저일 경우 통과
-        article.validUser(curUser);
+        validArticleUser(article, curUser);
 
         return article;
     }
@@ -66,8 +66,14 @@ public class ArticleUtil {
             return article;
         }
 
-        article.validUser(curUser);
+        validArticleUser(article, curUser);
 
         return article;
+    }
+
+    public void validArticleUser(Article article, User user) {
+        if (!article.validUser(user)) {
+            throw new BusinessException(ErrorCode.ARTICLE_USER_NOT_MATCH);
+        }
     }
 }
