@@ -21,6 +21,7 @@ const pages = [
   ['내가 주문한 목록', '/my/order/consume'],
   ['내가 판매한 목록', '/my/order/sell'],
   ['신고 목록', '/reports'], // 임시 링크 (어드민 페이지로 갈 예정)
+  ['나의 채팅방', '/chatrooms'],
 ];
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
