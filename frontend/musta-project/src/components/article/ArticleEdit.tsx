@@ -21,10 +21,9 @@ import DropDown from './DropDown.tsx';
 import { Carousel } from 'react-responsive-carousel';
 import { InsertPhoto } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
-import {
-  postArticleHandler,
-  putArticleHandler,
-} from '../../store/auth-action.tsx';
+import { putArticleHandler } from '../../store/auth-action.tsx';
+import { s3Client } from '../../util/sampleClient.ts';
+import { CreateBucketCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 
 const baseUrl = 'http://localhost:8080/api/articles/';
 
@@ -108,6 +107,51 @@ export function ArticleEdit() {
     //   apiFormData.append('images', file);
     // });
 
+    //  1. 현재 로그인 상태인지 확인한다.
+    //      - 로그인이 되어 있다면 다음 단계
+    //      - 로그인이 되어 있지 않다면, 로그인 화면으로 이동
+    //  2. s3에 파일을 업로드한다.
+    //      - 중복 파일인 경우는 아예 고려 X
+    //        - 해쉬 등을 사용해서 중복 파일 검사를 시도해볼 수 있지만, 현재는 고려 x
+    //  3. 업로드한 파일의 url 리스트를 api 서버에 전송
+    //  4. api 서버에서는 전송받은 url 리스트를 db에 저장
+
+    const params = {
+      Bucket: '1team-s3', // The name of the bucket. For example, 'sample-bucket-101'.
+      Key: 'sample_upload.txt', // The name of the object. For example, 'sample_upload.txt'.
+      Body: 'Hello world!', // The content of the object. For example, 'Hello world!".
+    };
+
+    const run = async () => {
+      // Create an Amazon S3 bucket.
+      try {
+        const data = await s3Client.send(
+          new CreateBucketCommand({ Bucket: params.Bucket })
+        );
+        console.log(data);
+        console.log('Successfully created a bucket called ', data.Location);
+        return data; // For unit tests.
+      } catch (err) {
+        console.log('Error', err);
+      }
+      // Create an object and upload it to the Amazon S3 bucket.
+      try {
+        const results = await s3Client.send(new PutObjectCommand(params));
+        console.log(
+          'Successfully created ' +
+            params.Key +
+            ' and uploaded it to ' +
+            params.Bucket +
+            '/' +
+            params.Key
+        );
+        return results; // For unit tests.
+      } catch (err) {
+        console.log('Error', err);
+      }
+    };
+    run();
+
     try {
       let token = localStorage.getItem('token');
 
@@ -115,7 +159,7 @@ export function ArticleEdit() {
         ? token
         : 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0';
       putArticleHandler(
-        token,
+        // token,
         title,
         description,
         apiId,
