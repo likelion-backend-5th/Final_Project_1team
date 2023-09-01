@@ -1,18 +1,17 @@
 package mutsa.api.dto.chat;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ChatRequestDto {
     private String userApiId;
     private String message;
     private String roomApiId;
-
-    public ChatRequestDto(String from, String message, String roomId) {
-        this.userApiId = from;
-        this.message = message;
-        this.roomApiId = roomId;
-    }
+    private String type;
 }

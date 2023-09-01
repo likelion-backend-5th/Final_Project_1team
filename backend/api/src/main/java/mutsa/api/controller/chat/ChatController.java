@@ -1,6 +1,7 @@
 package mutsa.api.controller.chat;
 
 
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.chat.ChatRequestDto;
@@ -11,23 +12,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/chat")
 @Slf4j
 @RequiredArgsConstructor
 public class ChatController {
 
     private final ChatService chatService;
-    private final RedisMessageSubscriber redisMessageSubscriber;
 
     /**
      * /pub/chat/message
      * @param chatRequestDto
      */
-    @MessageMapping("/message")
+    @MessageMapping("/chat/message")
     public void message(
             ChatRequestDto chatRequestDto
     ) {
-        log.info("문 열어!!!! ");
+        log.info("문 열어!!!! "+chatRequestDto);
         chatService.sendMessage(chatRequestDto);
     }
 }

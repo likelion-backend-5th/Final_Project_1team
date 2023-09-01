@@ -3,6 +3,8 @@ package mutsa.api.config.socket;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.config.jwt.JwtConfig;
@@ -12,12 +14,15 @@ import mutsa.common.exception.ErrorResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 @Component
@@ -29,6 +34,16 @@ public class StompHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        log.info("{}", message.getHeaders());
+        // Get payload and headers from the WebSocket message
+        log.info("{}",message.getPayload());
+        byte[] payloadBytes = (byte[]) message.getPayload();
+        // Convert payload to string (assuming UTF-8 encoding)
+        String payloadString = new String(payloadBytes, StandardCharsets.UTF_8);
+
+        // Now payloadString contains the JSON payload as a string
+        System.out.println("JSON Payload: " + payloadString);
+
 
 //        String token = Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization")).substring(7);
 //        //TODO 토큰의 유효성 검증 해당 부분을 따로 추출하는 방법을 확인

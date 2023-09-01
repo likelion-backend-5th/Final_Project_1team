@@ -3,7 +3,7 @@ package mutsa.common.domain.models.chatroom;
 import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
-import mutsa.common.domain.models.order.Order;
+import mutsa.common.domain.models.chat.ChatRedis;
 
 import java.io.Serializable;
 import java.util.ArrayList;
