@@ -9,7 +9,10 @@ package mutsa.api.dto.article;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import mutsa.api.dto.image.ImagesRequestDto;
 import mutsa.common.domain.models.article.ArticleStatus;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,4 +28,5 @@ public class ArticleUpdateRequestDto {
     private String apiId;
     @NotNull
     private ArticleStatus articleStatus;
+    private List<ImagesRequestDto> images;
 }
