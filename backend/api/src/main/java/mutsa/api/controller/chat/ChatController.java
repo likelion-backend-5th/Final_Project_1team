@@ -7,9 +7,9 @@ import mutsa.api.dto.chat.ChatRequestDto;
 import mutsa.api.dto.chat.ChatResponseDto;
 import mutsa.api.service.chat.ChatService;
 import mutsa.api.service.chatroom.ChatroomService;
-import mutsa.common.domain.models.chatroom.Chatroom;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,10 +30,14 @@ public class ChatController {
      */
     @MessageMapping("/chat/message")
     public void message(
-            ChatRequestDto chatRequestDto
+            ChatRequestDto chatRequestDto,
+            SimpMessageHeaderAccessor accessor
     ) {
         log.info("채팅이 들어왔다!!!! " + chatRequestDto);
-        chatService.sendMessage(chatRequestDto);
+        // WebSocket 세션에서 사용자 정보 가져오기
+        String username = (String)accessor.getSessionAttributes().get("username");
+
+        chatService.sendMessage(chatRequestDto, username);
     }
 
     /**
@@ -46,7 +50,7 @@ public class ChatController {
             @DestinationVariable("roomApiId") String roomApiId
     ) {
         log.info("new subscription to {}", roomApiId);
-        Chatroom chatRoom = chatroomService.getByApiId(roomApiId); //방이 존재하는지 확인하는 기능(제거 가능)
+        chatroomService.getByApiId(roomApiId); //방이 존재하는지 확인하는 기능(제거 가능)
         List<ChatResponseDto> messages = chatService.getLastMessages(roomApiId);
         return messages;
 

@@ -35,30 +35,27 @@ public class ChatService {
     private final ObjectMapper objectMapper;
 
     /**
-     *
      * @param chatRequestDto
      * @return 들어온 채팅을 관리합니다.
      */
     @Transactional
-    public void sendMessage(ChatRequestDto chatRequestDto) {
+    public void sendMessage(ChatRequestDto chatRequestDto, String currentUsername) {
         Gson gson = new Gson();
-        User user = userModuleService.getByApiId(chatRequestDto.getUserApiId());
+        User user = userModuleService.getByUsername(currentUsername);
         Chatroom chatroom = chatroomService.getByApiId(chatRequestDto.getRoomApiId());
-        String json = "";
         //채팅 저장
         ChatRedis chatRedis = ChatRedis.of(chatroom, user, chatRequestDto.getMessage());
         chatRedisRepository.saveMessage(chatRedis); //채팅 저장
 
         //반환 정보
         ChatResponseDto chatResponseDto = ChatResponseDto.fromEntity(chatRedis, chatroom.getApiId());
-        json = gson.toJson(chatResponseDto);
+        String json = gson.toJson(chatResponseDto);
         log.info("채팅 정보 : {}", json);
 
         redisTemplate.convertAndSend(channelTopic.getTopic(), json);
     }
 
     /**
-     *
      * @param roomApiId
      * @return 이전 메세지를 불러오는 기능(레디스 정보를 파싱해서 가져옵니다)
      */
