@@ -33,18 +33,14 @@ public class StompHandler implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         log.info("{}", message.getHeaders());
-        // Get payload and headers from the WebSocket message
         log.info("{}",message.getPayload());
         byte[] payloadBytes = (byte[]) message.getPayload();
-        // Convert payload to string (assuming UTF-8 encoding)
         String payloadString = new String(payloadBytes, StandardCharsets.UTF_8);
-
-        // Now payloadString contains the JSON payload as a string
-        System.out.println("JSON Payload: " + payloadString);
+        log.info("JSON Payload: {}", payloadString);
 
 
+//        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 //        String token = Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization")).substring(7);
 //        //TODO 토큰의 유효성 검증 해당 부분을 따로 추출하는 방법을 확인
 //        if (StompCommand.CONNECT.equals(accessor.getCommand())) {

@@ -3,7 +3,6 @@ package mutsa.api.service.chat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mutsa.api.dto.chat.ChatRequestDto;
 import mutsa.api.dto.chat.ChatResponseDto;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
@@ -12,10 +11,6 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Function;
 
 @Service
 @Slf4j
@@ -30,9 +25,10 @@ public class RedisMessageSubscriber implements MessageListener {
         try {
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
             ChatResponseDto chatResponseDto = objectMapper.readValue(publishMessage, ChatResponseDto.class);
+//            PubSubMessage<ChatResponseDto> chatResponseDto = objectMapper.readValue(publishMessage, PubSubMessage.class);
 
-            log.info("데이터 전달 받음 : {}",chatResponseDto);
-            log.info("데이터 전달 할거임 : {}","/sub/chat/room/" + chatResponseDto.getChatroomApiId());
+            log.info("데이터 전달 받음 : {}", chatResponseDto);
+            log.info("데이터 전달 할거임 : {}", "/sub/chat/room/" + chatResponseDto.getChatroomApiId());
             messagingTemplate.convertAndSend("/sub/chat/room/" + chatResponseDto.getChatroomApiId(), chatResponseDto);
 
         } catch (Exception e) {
