@@ -6,7 +6,6 @@ import { getEachChatroomHandler } from "../../store/auth-action";
 import * as Stomp from "@stomp/stompjs";
 const ChatPage: React.FC = () => {
     const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0'
-
     const headers = { Authorization: "Bearer " + accessToken };
 
     const stompClient = useRef<Stomp.Client | null>(null);
@@ -16,7 +15,6 @@ const ChatPage: React.FC = () => {
 
     const [message, setMessage] = useState<string>("");
     const messageContainerRef = useRef<HTMLDivElement>(null);
-    const [enter, setEnter] = useState<boolean>(false);
     const navigate = useNavigate();
 
     const userApiId = localStorage.getItem('userApiId');
@@ -34,7 +32,7 @@ const ChatPage: React.FC = () => {
                 console.log("success");
             },
         });
-        
+
         //실행
         stompClient.current.activate();
         return () => {
@@ -65,26 +63,31 @@ const ChatPage: React.FC = () => {
         console.log(`Subscribing to: /sub/chat/room/${roomId}`);
         stompClient.current?.subscribe(`/sub/chat/room/${roomId}`, (body) => {
             const parsedBodies = JSON.parse(body.body);
-        
+
             if (Array.isArray(parsedBodies)) {
                 // 여러개로 오는 경우
-                parsedBodies.forEach((parsedBody) => {
+                const newMessages: any = []; // 새로운 메시지를 담을 배열
+
+                parsedBodies.reverse().forEach((parsedBody) => {
                     const { from, date, message, chatroomApiId } = parsedBody;
-        
-                    // 각 메시지를 이전 메시지 배열에 추가합니다.
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        {
-                            from: from,
-                            date: date,
-                            message: message,
-                            chatroomApiId: chatroomApiId,
-                        },
-                    ]);
+
+                    // 새로운 메시지를 배열의 뒷쪽에 추가합니다.
+                    newMessages.push({
+                        from: from,
+                        date: date,
+                        message: message,
+                        chatroomApiId: chatroomApiId,
+                    });
                 });
+
+                // 이전 메시지와 새로운 메시지를 합쳐서 업데이트합니다.
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    ...newMessages,
+                ]);
             } else {
                 const { from, date, message, chatroomApiId } = parsedBodies;
-        
+
                 setMessages((prevMessages) => [
                     ...prevMessages,
                     {
@@ -96,8 +99,8 @@ const ChatPage: React.FC = () => {
                 ]);
             }
         });
-        
-        
+
+
     };
 
 
