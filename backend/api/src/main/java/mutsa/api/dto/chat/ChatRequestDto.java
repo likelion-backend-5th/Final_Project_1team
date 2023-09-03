@@ -8,13 +8,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ChatRequestDto {
-    private String userApiId;
     private String message;
     private String roomApiId;
     private MessageType type;
 
-    public ChatRequestDto(String userApiId, String message, String roomApiId, String type) {
-        this.userApiId = userApiId;
+    public ChatRequestDto(String message, String roomApiId, String type) {
         this.message = message;
         this.roomApiId = roomApiId;
         this.type = MessageType.valueOf(type);

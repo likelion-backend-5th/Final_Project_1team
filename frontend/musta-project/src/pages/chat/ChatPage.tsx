@@ -5,8 +5,6 @@ import { ChatMessage, ChatroomDetail } from "../../types/chat";
 import { getEachChatroomHandler } from "../../store/auth-action";
 import * as Stomp from "@stomp/stompjs";
 const ChatPage: React.FC = () => {
-    const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0'
-    const headers = { Authorization: "Bearer " + accessToken };
 
     const stompClient = useRef<Stomp.Client | null>(null);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -16,8 +14,7 @@ const ChatPage: React.FC = () => {
     const [message, setMessage] = useState<string>("");
     const messageContainerRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
-
-    const userApiId = localStorage.getItem('userApiId');
+    const authorizationToken: string | null = window.localStorage.getItem('token') || ''; // 또는 다른 기본값 설정
 
     useEffect(() => {
         // 방 상세 정보
@@ -26,7 +23,9 @@ const ChatPage: React.FC = () => {
         // STOMP 클라이언트 초기화및 설정
         stompClient.current = new Stomp.Client({
             brokerURL: "ws://localhost:8080/ws",
-            connectHeaders: headers,
+            connectHeaders: {
+                Authorization: authorizationToken,
+            },
             onConnect: async () => {
                 subscribe();
                 console.log("success");
@@ -98,7 +97,9 @@ const ChatPage: React.FC = () => {
                     },
                 ]);
             }
-        });
+        }, {
+            Authorization: authorizationToken,
+        })
 
 
     };
@@ -125,16 +126,19 @@ const ChatPage: React.FC = () => {
             stompClient.current?.publish({
                 destination: "/pub/chat/message",
                 body: JSON.stringify({
-                    userApiId: userApiId,
                     message: message,
                     roomApiId: roomId,
                     type: 'message',
                 }),
+                headers: {
+                    Authorization: authorizationToken,
+                },
             });
-
+    
             setMessage("");
         }
     };
+    
 
     const handleOutChatRoom = () => {
         disconnect();
@@ -155,10 +159,7 @@ const ChatPage: React.FC = () => {
             </div>
             <div className="chat-messages-container" ref={messageContainerRef}>
                 {messages.map((msg, index) => (
-                    <div key={index} className={`chat-bubble ${msg.from === userApiId ? "mine" : "theirs"}`}>
-                        <div className={`chat-message-writer ${msg.from === userApiId ? "me" : "other"}`}>
-                            {msg.from}
-                        </div>
+                    <div key={index} className={`chat-bubble mine`}>
                         <div className="chat-bubble-message">{msg.message}</div>
                         <div className="chat-bubble-message">{msg.date}</div>
                     </div>
