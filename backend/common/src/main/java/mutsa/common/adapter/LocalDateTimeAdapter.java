@@ -1,4 +1,4 @@
-package mutsa.common;
+package mutsa.common.adapter;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

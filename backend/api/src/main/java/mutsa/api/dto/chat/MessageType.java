@@ -14,7 +14,7 @@ public enum MessageType {
     }
 
     @JsonValue
-    public String value(){
+    public String value() {
         return this.value;
     }
 }

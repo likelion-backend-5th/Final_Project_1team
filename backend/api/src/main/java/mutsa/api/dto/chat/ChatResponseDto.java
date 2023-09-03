@@ -16,7 +16,7 @@ public class ChatResponseDto {
     private String message;
     private String chatroomApiId;
 
-    public static ChatResponseDto fromEntity(ChatRedis chat,String chatroomApiId) {
+    public static ChatResponseDto fromEntity(ChatRedis chat, String chatroomApiId) {
         ChatResponseDto chatResponseDto = new ChatResponseDto();
         chatResponseDto.date = chat.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
         chatResponseDto.from = chat.getUsername();

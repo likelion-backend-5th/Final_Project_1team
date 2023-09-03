@@ -20,6 +20,11 @@ public class RedisMessageSubscriber implements MessageListener {
     private final RedisTemplate redisTemplate;
     private final SimpMessageSendingOperations messagingTemplate;
 
+    /**
+     * 여기서 메세지를 다시 구독자들에게 전송합니다.(레디스 pub/sub)
+     * @param message message must not be {@literal null}.
+     * @param pattern pattern matching the channel (if specified) - can be {@literal null}.
+     */
     @Override
     public void onMessage(final Message message, final byte[] pattern) {
         try {

@@ -33,13 +33,13 @@ public class StompHandler implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        log.info("{}", message.getHeaders());
-        log.info("{}",message.getPayload());
+        log.info("들어온 소켓의 헤더 : {}", message.getHeaders());
+        log.info("들어온 소켓의 바디 : {}",message.getPayload());
         byte[] payloadBytes = (byte[]) message.getPayload();
         String payloadString = new String(payloadBytes, StandardCharsets.UTF_8);
-        log.info("JSON Payload: {}", payloadString);
+        log.info("들어온 소켓의 바디(string으로 변환시): {}", payloadString);
 
-
+//        아직 헤더에 토큰 검증은 진행하지 않습니다.
 //        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 //        String token = Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization")).substring(7);
 //        //TODO 토큰의 유효성 검증 해당 부분을 따로 추출하는 방법을 확인

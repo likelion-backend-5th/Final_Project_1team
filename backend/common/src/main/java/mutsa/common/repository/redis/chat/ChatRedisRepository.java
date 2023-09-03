@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mutsa.common.LocalDateTimeAdapter;
+import mutsa.common.adapter.LocalDateTimeAdapter;
 import mutsa.common.domain.models.chat.ChatRedis;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,11 +18,15 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ChatRedisRepository {
     private final StringRedisTemplate redisTemplate;
-
-    private static final String USER_ROOMS_KEY = "user:%d:rooms";
-    private static final String ROOM_NAME_KEY = "room:%s:name";
     public static final String ROOM_KEY = "room:%s";
 
+    /**
+     *
+     * @param roomId
+     * @param offset
+     * @param size
+     * @return 입장시에 이전 메세지를 출력해주는 메서드
+     */
     public Set<String> getMessages(String roomId, int offset, int size) {
         String roomNameKey = String.format(ROOM_KEY, roomId);
         Set<String> messages = redisTemplate.opsForZSet().reverseRange(roomNameKey, offset, offset + size);
@@ -30,19 +34,14 @@ public class ChatRedisRepository {
         return messages;
     }
 
-    public void sendMessageToRedis(String topic, String serializedMessage) {
-        log.info(String.format("Saving message to Redis: topic:%s, message:%s ", topic, serializedMessage));
-        redisTemplate.convertAndSend(topic, serializedMessage);
-    }
-
     public void saveMessage(ChatRedis message) {
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()) //time저장시에 오류로 추가하였는데 삭제 가능여부 확인 필요
                 .create();
 
         String roomKey = String.format(ROOM_KEY, message.getChatroomId());
-
-        redisTemplate.opsForZSet().add(roomKey, gson.toJson(message), getTimeToDouble(message.getCreatedAt()));
+        String saveMessage = gson.toJson(message);//(레디스에 toString으로 저장한다)
+        redisTemplate.opsForZSet().add(roomKey, saveMessage, getTimeToDouble(message.getCreatedAt())); //시간을 더블형으로 변환하여 저장(확인 필요,레디스 예제 참고함)
     }
 
     public double getTimeToDouble(LocalDateTime createdAt) {

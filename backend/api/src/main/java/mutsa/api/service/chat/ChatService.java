@@ -34,6 +34,11 @@ public class ChatService {
     private final RedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
 
+    /**
+     *
+     * @param chatRequestDto
+     * @return 들어온 채팅을 관리합니다.
+     */
     @Transactional
     public void sendMessage(ChatRequestDto chatRequestDto) {
         Gson gson = new Gson();
@@ -42,7 +47,7 @@ public class ChatService {
         String json = "";
         //채팅 저장
         ChatRedis chatRedis = ChatRedis.of(chatroom, user, chatRequestDto.getMessage());
-        chatRedisRepository.saveMessage(chatRedis);
+        chatRedisRepository.saveMessage(chatRedis); //채팅 저장
 
         //반환 정보
         ChatResponseDto chatResponseDto = ChatResponseDto.fromEntity(chatRedis, chatroom.getApiId());
@@ -52,6 +57,11 @@ public class ChatService {
         redisTemplate.convertAndSend(channelTopic.getTopic(), json);
     }
 
+    /**
+     *
+     * @param roomApiId
+     * @return 이전 메세지를 불러오는 기능(레디스 정보를 파싱해서 가져옵니다)
+     */
     public List<ChatResponseDto> getLastMessages(String roomApiId) {
 
         List<ChatResponseDto> responseDtos = new ArrayList<>();
@@ -71,7 +81,7 @@ public class ChatService {
                 responseDtos.add(chatResponseDto);
             }
         } else {
-            responseDtos.add(new ChatResponseDto("", "", "빈방임", roomApiId));
+            responseDtos.add(new ChatResponseDto("ADMIN", "", "빈방임", roomApiId));
         }
 
         return responseDtos;
