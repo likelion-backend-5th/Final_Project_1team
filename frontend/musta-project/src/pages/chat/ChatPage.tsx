@@ -1,137 +1,144 @@
-import React, {useEffect, useRef, useState} from "react";
-import {Params, useNavigate, useParams} from "react-router-dom";
-import * as Stomp from "@stomp/stompjs";
+import React, { useEffect, useRef, useState } from "react";
+import { Params, useNavigate, useParams } from "react-router-dom";
 import './ChatPage.css'
 import { ChatMessage, ChatroomDetail } from "../../types/chat";
 import { getEachChatroomHandler } from "../../store/auth-action";
+import * as Stomp from "@stomp/stompjs";
+const ChatPage: React.FC = () => {
+    const accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0'
+    const headers = { Authorization: "Bearer " + accessToken };
 
-const ChatPage: React.FC= () => {
-    const client = useRef<Stomp.Client | null>(null);
+    const stompClient = useRef<Stomp.Client | null>(null);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const [chatRoom, setChatRooms] = useState<ChatroomDetail>();
-    const {roomId} = useParams<Params>();
+    const [chatRoom, setChatRoom] = useState<ChatroomDetail | null>(null);
+    const { roomId } = useParams<Params>();
 
     const [message, setMessage] = useState<string>("");
     const messageContainerRef = useRef<HTMLDivElement>(null);
-    const [enter, setEnter] = useState<boolean>(false);
-    const headers = {Authorization: "Bearer " + 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0'};
-    const navigate = useNavigate(); // useNavigate hook 사용
+    const navigate = useNavigate();
 
-    const userApiId = '3277eb42-f55a-4edb-a66e-61fd94454e48';
-    function findRoomDetail() {
-        getEachChatroomHandler(roomId).then((response: { data: ChatroomDetail } | null) => {
-            if (response != null) {
-                setChatRooms(response.data)
-                console.log(response.data)
-            }
-        });
-    }
+    const userApiId = localStorage.getItem('userApiId');
 
     useEffect(() => {
-        console.log("testing" + roomId + " ");
-        findRoomDetail(); //먼저 방의 자세한 정보를 받아온다. 
-        connect(); //접속한다.
-    }, []);
+        // 방 상세 정보
+        findRoomDetail();
 
-    const connect = async () => {
-        client.current = new Stomp.Client({
+        // STOMP 클라이언트 초기화및 설정
+        stompClient.current = new Stomp.Client({
             brokerURL: "ws://localhost:8080/ws",
             connectHeaders: headers,
             onConnect: async () => {
-                enterRoom();
                 subscribe();
                 console.log("success");
             },
         });
-        // 접속한다.
-        client.current?.activate();
-    };
 
-    // const destination = "/user/ArticleControllerTestUser1/sub/chat/enter/" + roomId;
-    const subscribe = async () => {
-        // console.log(destination);
-        // client.current?.subscribe(destination, (body) => {
-        //     const chatlist = JSON.parse(body.body);
-        //     console.log("과거기록 들어옴");
+        //실행
+        stompClient.current.activate();
+        return () => {
+            disconnect();
+        };
 
-        //     setMessages(
-        //         chatlist.map(
-        //             (chat: { messageType: any; roomId: any; sender: any; message: any; time: any }) => ({
-        //                 messageType: chat.messageType,
-        //                 roomId: chat.roomId,
-        //                 sender: chat.sender,
-        //                 message: chat.message,
-        //                 time: chat.time,
-        //             })
-        //         )
-        //     );
-        // });
+    }, []); // 의존성 배열 비움
 
-        client.current?.subscribe("/pub/chat/" + roomId, (body) => {
-            const parsed_body = JSON.parse(body.body);
-            const {from,date,message,chatroomApiId} = parsed_body; // 파싱된 정보를 추출
-
-            setMessages((_chat_list) => [
-                ..._chat_list, //이전에 있던 데이터들
-                {
-                    from : from,
-                    date : date,
-                    message : message,
-                    chatroomApiId : chatroomApiId
-                }
-            ]);
-            findRoomDetail();
+    const findRoomDetail = () => {
+        getEachChatroomHandler(roomId).then((response: { data: ChatroomDetail } | null) => {
+            if (response != null) {
+                setChatRoom(response.data)
+                console.log(response.data)
+            }
         });
+    }
+    const subscribe = () => {
+        if (!stompClient) {
+            console.log("Stomp client is not available");
+            return;
+        }
+
+        if (!stompClient.current?.connected) {
+            console.log("Stomp client is not connected");
+            return;
+        }
+
+        console.log(`Subscribing to: /sub/chat/room/${roomId}`);
+        stompClient.current?.subscribe(`/sub/chat/room/${roomId}`, (body) => {
+            const parsedBodies = JSON.parse(body.body);
+
+            if (Array.isArray(parsedBodies)) {
+                // 여러개로 오는 경우
+                const newMessages: any = []; // 새로운 메시지를 담을 배열
+
+                parsedBodies.reverse().forEach((parsedBody) => {
+                    const { from, date, message, chatroomApiId } = parsedBody;
+
+                    // 새로운 메시지를 배열의 뒷쪽에 추가합니다.
+                    newMessages.push({
+                        from: from,
+                        date: date,
+                        message: message,
+                        chatroomApiId: chatroomApiId,
+                    });
+                });
+
+                // 이전 메시지와 새로운 메시지를 합쳐서 업데이트합니다.
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    ...newMessages,
+                ]);
+            } else {
+                const { from, date, message, chatroomApiId } = parsedBodies;
+
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    {
+                        from: from,
+                        date: date,
+                        message: message,
+                        chatroomApiId: chatroomApiId,
+                    },
+                ]);
+            }
+        });
+
+
     };
+
 
     const disconnect = () => {
-        console.log("subDisconnect");
-        outRoom();
-        client.current?.deactivate();
+        console.log("Disconnecting");
+        stompClient.current?.deactivate();
     };
 
     const handleMessageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setMessage(event.target.value);
     };
 
-    const enterRoom = () => {
-        console.log("ENTER")
-        console.log("??" + roomId+ 'ArticleControllerTestUser1')
-        if (!enter) {
-            //처음 접속 한 경우에만
-            client.current?.publish({
-                destination: "/pub/chat/message",
-                body: JSON.stringify({
-                    userApiId : userApiId,
-                    message : '안녕',
-                    roomApiId :  roomId
-                }),
-            });
-            console.log("여기까지 오케이")
-            setEnter(true);
+    useEffect(() => {
+        if (messageContainerRef.current) {
+            messageContainerRef.current.scrollTop =
+                messageContainerRef.current.scrollHeight;
         }
-        console.log("접속 완료")
-    };
-
-    const outRoom = () => {
-        setEnter(false);
-    };
+    }, [messages]);
 
     const handleSendMessage = () => {
-        client.current?.publish({
-            destination: "/pub/chat/message",
-            body: JSON.stringify({
-                userApiId : userApiId,
-                message : '안녕',
-                roomApiId :  roomId
-            }),
-        });
-        setMessage("");
+        if (stompClient) {
+            stompClient.current?.publish({
+                destination: "/pub/chat/message",
+                body: JSON.stringify({
+                    userApiId: userApiId,
+                    message: message,
+                    roomApiId: roomId,
+                    type: 'message',
+                }),
+            });
+
+            setMessage("");
+        }
     };
 
     const handleOutChatRoom = () => {
         disconnect();
-        navigate("/chatroomlist-view");
+        navigate("/chatrooms");
     };
 
     useEffect(() => {
@@ -144,15 +151,12 @@ const ChatPage: React.FC= () => {
     return (
         <div className="chat-page-container">
             <div className="chat-header">
-                <div> 판매자 : {chatRoom?.chatroomApiId}</div>
-                <div> 제품 설명 : {chatRoom?.roomName}</div>
+                <div>채팅방 이름: {chatRoom?.roomName}</div>
             </div>
             <div className="chat-messages-container" ref={messageContainerRef}>
                 {messages.map((msg, index) => (
-                    <div key={index}
-                         className={`chat-bubble ${msg.from === 'ArticleControllerTestUser1'? "mine" : "theirs"}`}>
-                        <div
-                            className={`chat-message-writer ${msg.from === 'ArticleControllerTestUser1'? "other" : "me"}`}>
+                    <div key={index} className={`chat-bubble ${msg.from === userApiId ? "mine" : "theirs"}`}>
+                        <div className={`chat-message-writer ${msg.from === userApiId ? "me" : "other"}`}>
                             {msg.from}
                         </div>
                         <div className="chat-bubble-message">{msg.message}</div>
@@ -175,4 +179,3 @@ const ChatPage: React.FC= () => {
 };
 
 export default ChatPage;
-

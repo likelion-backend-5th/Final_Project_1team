@@ -49,6 +49,9 @@ dependencies {
     //kafka
     implementation 'org.springframework.kafka:spring-kafka'
 
+    //socket - gson
+    implementation 'com.google.code.gson:gson:2.10.1'
+
 }
 
 tasks.bootJar { enabled = false}
