@@ -7,13 +7,10 @@ import mutsa.api.dto.chat.ChatRequestDto;
 import mutsa.api.dto.chat.ChatResponseDto;
 import mutsa.api.service.chat.ChatService;
 import mutsa.api.service.chatroom.ChatroomService;
-import mutsa.api.util.SecurityUtil;
-import mutsa.common.domain.models.chatroom.Chatroom;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -53,7 +50,7 @@ public class ChatController {
             @DestinationVariable("roomApiId") String roomApiId
     ) {
         log.info("new subscription to {}", roomApiId);
-        Chatroom chatRoom = chatroomService.getByApiId(roomApiId); //방이 존재하는지 확인하는 기능(제거 가능)
+        chatroomService.getByApiId(roomApiId); //방이 존재하는지 확인하는 기능(제거 가능)
         List<ChatResponseDto> messages = chatService.getLastMessages(roomApiId);
         return messages;
 

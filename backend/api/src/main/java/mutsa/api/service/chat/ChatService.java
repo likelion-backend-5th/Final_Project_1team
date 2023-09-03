@@ -43,14 +43,13 @@ public class ChatService {
         Gson gson = new Gson();
         User user = userModuleService.getByUsername(currentUsername);
         Chatroom chatroom = chatroomService.getByApiId(chatRequestDto.getRoomApiId());
-        String json = "";
         //채팅 저장
         ChatRedis chatRedis = ChatRedis.of(chatroom, user, chatRequestDto.getMessage());
         chatRedisRepository.saveMessage(chatRedis); //채팅 저장
 
         //반환 정보
         ChatResponseDto chatResponseDto = ChatResponseDto.fromEntity(chatRedis, chatroom.getApiId());
-        json = gson.toJson(chatResponseDto);
+        String json = gson.toJson(chatResponseDto);
         log.info("채팅 정보 : {}", json);
 
         redisTemplate.convertAndSend(channelTopic.getTopic(), json);

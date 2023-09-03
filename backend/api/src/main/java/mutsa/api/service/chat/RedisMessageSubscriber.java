@@ -30,7 +30,6 @@ public class RedisMessageSubscriber implements MessageListener {
         try {
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
             ChatResponseDto chatResponseDto = objectMapper.readValue(publishMessage, ChatResponseDto.class);
-//            PubSubMessage<ChatResponseDto> chatResponseDto = objectMapper.readValue(publishMessage, PubSubMessage.class);
 
             log.info("데이터 전달 받음 : {}", chatResponseDto);
             log.info("데이터 전달 할거임 : {}", "/sub/chat/room/" + chatResponseDto.getChatroomApiId());
