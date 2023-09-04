@@ -1,27 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import styled from 'styled-components';
-import { Typography, Grid, Card, CardContent } from '@mui/material';
-import { getOrderHandler } from '../../store/auth-action';
-import { getFormattedDate, getFormattedTime } from '../../util/dateUtil';
+import {Box, Container, Grid, Paper, Table, TableBody, TableCell, TableRow, Typography} from '@mui/material';
+import {getOrderHandler} from '../../store/auth-action';
+import {getFormattedDate, getFormattedTime} from '../../util/dateUtil';
 import axiosUtils from '../../uitls/axiosUtils';
 
 import BackButton from '../../components/BackButton';
 import OrderStatusBadge from '../../components/order/OrderStatusBadge';
 import OrderActionButton from '../../components/order/OrderActionButton';
 
-const StyledCard = styled(Card)`
-  margin-bottom: 3px;
-  border-radius: 8px;
-`;
-
-const Label = styled(Typography)({
-  fontWeight: 'bold',
-  marginBottom: '8px',
+const StyledTypography = styled(Typography)({
+  fontWeight: 700,
+  marginTop: '10px',
+  color: 'darkblue',
 });
 
-const Value = styled(Typography)({
-  marginBottom: '16px',
+const StyledTableCell = styled(TableCell)({
+  component: "th",
+  scope: "row",
+  variant: "head",
+  sx: { fontWeight: 'bold', width: '20%' },
 });
 
 
@@ -44,7 +43,7 @@ const OrderDetailPage: React.FC = () => {
 
   const handleOrderAction = (action: string) => {
     const url = `/articles/${articleApiId}/order/${orderApiId}`;
-    
+
     switch (action) {
       case 'CANCEL':
         axiosUtils.put(url, { orderStatus: 'CANCEL' });
@@ -61,8 +60,8 @@ const OrderDetailPage: React.FC = () => {
 
     navigate(0);
   };
-  
-  
+
+
   if (!orderDetail || loading) {
     return <div>Loading...</div>;
   }
@@ -70,29 +69,60 @@ const OrderDetailPage: React.FC = () => {
   const time = getFormattedDate(orderDetail.date) + getFormattedTime(orderDetail.date);
 
   return (
-    <StyledCard elevation={3}>
-      <CardContent>
-        <BackButton />
-        <Typography variant="h4">{orderDetail.articleTitle} </Typography>
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={12}>
-            <Label variant="subtitle1">주문 번호</Label>
-            <Value>{orderDetail.orderApiId}</Value>
-            <Value>
-              <OrderStatusBadge orderStatus={orderDetail.orderStatus} />
-            </Value>
-            <Value>{time}</Value>
+    <Container>
+      <Box sx={{ my: 4 }}>
+        <Grid
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={2}
+          style={{ marginBottom: '8px' }}
+        >
+          <Grid item>
+            <BackButton />
           </Grid>
-          <Grid item xs={12} md={6}>
-            <Label variant="subtitle1">판매자 이름</Label>
-            <Value>{orderDetail.sellerName}</Value>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Label variant="subtitle1">주문자 이름</Label>
-            <Value>{orderDetail.consumerName}</Value>
+          <Grid item>
+            <StyledTypography variant="h4" gutterBottom>
+              {orderDetail.articleTitle}
+            </StyledTypography>
           </Grid>
         </Grid>
+
+
+        <Paper
+          elevation={3}
+          style={{ marginBottom: '8px' }}>
+          <Table sx={{ minWidth: 650 }}>
+            <TableBody>
+              <TableRow>
+                <StyledTableCell variant="head">주문 번호</StyledTableCell>
+                <TableCell>{orderDetail.orderApiId}</TableCell>
+              </TableRow>
+              <TableRow>
+                <StyledTableCell variant="head">주문한 게시글</StyledTableCell>
+                <TableCell>{orderDetail.articleTitle}</TableCell>
+              </TableRow>
+              <TableRow>
+                <StyledTableCell variant="head">주문 상태</StyledTableCell>
+                <TableCell>
+                  <OrderStatusBadge orderStatus={orderDetail.orderStatus} />
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <StyledTableCell variant="head">주문 시간</StyledTableCell>
+                <TableCell>{time}</TableCell>
+              </TableRow>
+              <TableRow>
+                <StyledTableCell variant="head">판매자 이름</StyledTableCell>
+                <TableCell>{orderDetail.sellerName}</TableCell>
+              </TableRow>
+              <TableRow>
+                <StyledTableCell variant="head">주문자 이름</StyledTableCell>
+                <TableCell>{orderDetail.consumerName}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </Paper>
 
         <OrderActionButton
           orderStatus={orderDetail.orderStatus}
@@ -101,8 +131,8 @@ const OrderDetailPage: React.FC = () => {
           handleOrderCompletionWithWaiting={() => handleOrderAction('WAIT')}
           handleOrderEnd={() => handleOrderAction('END')}
         />
-      </CardContent>
-    </StyledCard>
+      </Box>
+    </Container>
   );
 };
 

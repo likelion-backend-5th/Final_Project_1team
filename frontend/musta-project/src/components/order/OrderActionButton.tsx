@@ -1,5 +1,9 @@
 import React from 'react';
 import {Button} from '@mui/material';
+import CancelIcon from '@mui/icons-material/Cancel';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import HourglassTopIcon from '@mui/icons-material/HourglassTop';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 interface OrderActionButtonProps {
     orderStatus: string;
@@ -19,24 +23,44 @@ const OrderActionButton: React.FC<OrderActionButtonProps> = ({
     return (
         <div>
             {orderStatus === 'END' && (
-                <Button variant="contained" color="primary" onClick={handleReviewClick}>
+                <Button
+                    style={{ margin: '0.5rem' }}
+                    variant="outlined"
+                    color="success"
+                    startIcon={<RateReviewIcon />}
+                    onClick={handleReviewClick}>
                     리뷰 작성하기
                 </Button>
             )}
 
             {orderStatus === 'PROGRESS' && (
                 <div>
-                    <Button variant="contained" color="primary" onClick={handleOrderCancellation}>
+                    <Button
+                        style={{ margin: '0.5rem' }}
+                        variant="outlined"
+                        color="error"
+                        startIcon={<CancelIcon />}
+                        onClick={handleOrderCancellation}>
                         주문 취소
                     </Button>
-                    <Button variant="contained" color="primary" onClick={handleOrderCompletionWithWaiting}>
+                    <Button
+                        style={{ margin: '0.5rem' }}
+                        variant="outlined"
+                        color="success"
+                        startIcon={<HourglassTopIcon />}
+                        onClick={handleOrderCompletionWithWaiting}>
                         주문 확인(주문 대기)
                     </Button>
                 </div>
             )}
 
             {orderStatus === 'WAIT' && (
-                <Button variant="contained" color="primary" onClick={handleOrderEnd}>
+                <Button
+                    style={{ margin: '0.5rem' }}
+                    variant="outlined"
+                    color="success"
+                    startIcon={<CheckCircleIcon />}
+                    onClick={handleOrderEnd}>
                     주문 완료
                 </Button>
             )}
