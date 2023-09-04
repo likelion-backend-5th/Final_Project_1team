@@ -46,6 +46,11 @@ public enum ErrorCode {
     REVIEW_NOT_ALLOW(HttpStatus.BAD_REQUEST.value(), "REVIEW_NOT_ALLOW", "아직 리뷰를 작성할 수 없습니다."),
     REVIEW_PERMISSION_DENIED(HttpStatus.FORBIDDEN.value(), "REVIEW_PERMISSION_DENIED", "주문 작성자가 아닙니다."),
 
+    // payment
+    PAYMENT_INVALID_AMOUNT(HttpStatus.BAD_REQUEST.value(), "PAYMENT_INVALID_AMOUNT", "옳지 않은 결제 금액입니다."),
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "PAYMENT_NOT_FOUND", "해당 결제 정보를 찾을 수 없습니다."),
+    PAYMENT_ALREADY_APPROVED(HttpStatus.BAD_REQUEST.value(), "PAYMENT_ALREADY_APPROVED", "이미 인가된 결제입니다.")
+
     CHAT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "CHAT_NOTFOUND","해당 채팅을 찾지 못했습니다." ),
     INVALID_ROOM_REQUEST(HttpStatus.BAD_REQUEST.value(), "INVALID_REQUEST", "자신의 글에 채팅방을 만들 수 없습니다." );
 
