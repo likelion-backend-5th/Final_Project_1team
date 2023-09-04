@@ -18,6 +18,7 @@ import ReviewListPage from '../pages/reviewPages/ReviewListPage.tsx';
 import ReportRegister from '../components/report/ReportRegister.tsx';
 import { ArticlePost } from '../components/article/ArticlePost.tsx';
 import { ArticleEdit } from '../components/article/ArticleEdit.tsx';
+import PaymentWidget from "../components/payment/PaymentWidget.tsx";
 
 const UserRouter = () => {
   return (
@@ -70,6 +71,7 @@ const UserRouter = () => {
       <Route path="/article" element={<ArticlePage />} />
       <Route path="/article/post" element={<ArticlePost />} />
       <Route path="/article/edit/:articleApiId" element={<ArticleEdit />} />
+      <Route path="/article/detail/:articleApiId/payment" element={<PaymentWidget />} />
 
       <Route path="/reports" element={<ReportList />} />
       <Route path="/report/:reportApiId" element={<ReportDetail />} />
