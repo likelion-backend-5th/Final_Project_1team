@@ -237,8 +237,15 @@ export const getEachChatroomHandler = (
 }
 
 export const createChatroom = (
-  articleApiId : string | undefined
+  articleApiId: string | undefined
 ) => {
   const url = '/chat/room';
-  return axiosUtils.post(url,{articleApiId: articleApiId});
- }
+  return axiosUtils.post(url, { articleApiId: articleApiId });
+}
+
+export const createOrder = (
+  articleApiId: string | undefined
+) => {
+  const url = `/articles/${articleApiId}/order`;
+  return axiosUtils.post(url);
+}
