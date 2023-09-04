@@ -1,4 +1,4 @@
-package mutsa.common.config;
+package mutsa.api.config.swagger;
 
 
 import io.swagger.v3.oas.models.Components;

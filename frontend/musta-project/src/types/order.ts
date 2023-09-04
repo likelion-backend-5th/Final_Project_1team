@@ -1,4 +1,4 @@
-type OrderStatus = 'PROGRESS' | 'END' | 'CANCEL';
+type OrderStatus = 'PROGRESS' | 'END' | 'CANCEL' | 'WAIT';
 
 interface OrderDetailResponse {
   orderApiId: String;

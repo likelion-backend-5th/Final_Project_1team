@@ -23,7 +23,7 @@ class OrderStore {
   orderFilterResponse: OrderFilterResponseDto | null = null;
   loading = false;
   currentPage = initialPage;
-  selectedStatus: 'all' | 'PROGRESS' | 'END' | 'CANCLE' = 'all';
+  selectedStatus: 'all' | 'PROGRESS' | 'END' | 'CANCEL' | 'WAIT' = 'all';
   ordersPerPage = ordersPerPageOptions[1];
   sortOrder: 'asc' | 'desc' = 'desc';
   searchInput = '';
@@ -59,7 +59,7 @@ class OrderStore {
     this.currentPage = page;
   }
 
-  setSelectedStatus(newStatus: 'all' | 'PROGRESS' | 'END' | 'CANCLE') {
+  setSelectedStatus(newStatus: 'all' | 'PROGRESS' | 'END' | 'CANCEL' | 'WAIT') {
     this.selectedStatus = newStatus;
   }
 
@@ -82,15 +82,13 @@ const orderStore = new OrderStore();
 
 const fetchData = (newPage: number) => {
   orderStore.setLoading(true);
-  const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0'
   getConsumerOrderHandler(
-    token,
     orderStore.selectedStatus === 'all' ? undefined : orderStore.selectedStatus,
     orderStore.searchInput === '' ? undefined : orderStore.searchInput, // 상태 파라미터 추가
     orderStore.sortOrder,
     newPage - 1,
     orderStore.ordersPerPage
-  ).then((response) => {
+  ).then((response: { data: OrderFilterResponseDto; } | null) => {
     if (response != null) {
       console.log("내가 구매한 주문목록을 불러옴");
       console.log(response.data);

@@ -1,10 +1,8 @@
 import React from 'react';
 import { ListItem, ListItemText, Avatar, Typography, Grid } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import PendingIcon from '@mui/icons-material/Pending';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
-import ClearIcon from '@mui/icons-material/Clear';
+import OrderStatusIcon from './OrderStatusIcon';
 interface OrderItemProps {
   order: OrderResponse;
 }
@@ -17,6 +15,7 @@ const StyledListItem = styled(ListItem)`
   border-radius: 8px;
   transition: background-color 0.3s;
   cursor: pointer;
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.05);
   }
@@ -60,13 +59,7 @@ const OrderConsumerItem: React.FC<OrderItemProps> = ({ order }) => {
           {order.date}
         </Typography>
       </UserInfoWrapper>
-      {order.orderStatus === 'END' ? (
-        <CheckCircleIcon color="primary" />
-      ) : order.orderStatus === 'PROGRESS' ? (
-        <PendingIcon color="secondary" />
-      ) : (
-        <ClearIcon color="error" />
-      )}
+      <OrderStatusIcon orderStatus={order.orderStatus} />
     </StyledListItem>
   );
 };

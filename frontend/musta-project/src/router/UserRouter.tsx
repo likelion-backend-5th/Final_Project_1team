@@ -19,6 +19,8 @@ import ReportRegister from '../components/report/ReportRegister.tsx';
 import { ArticlePost } from '../components/article/ArticlePost.tsx';
 import { ArticleEdit } from '../components/article/ArticleEdit.tsx';
 import PaymentWidget from "../components/payment/PaymentWidget.tsx";
+import ChatPage from '../pages/chat/ChatPage.tsx';
+import ChatRoomList from '../components/chat/ChatRoomList.tsx';
 
 const UserRouter = () => {
   return (
@@ -79,6 +81,8 @@ const UserRouter = () => {
         path="/report/:resourceType/:resourceApiId"
         element={<ReportRegister />}
       />
+      <Route path="/chatrooms" element={<ChatRoomList/>}/>    
+      <Route path="/chatroom/:roomId" element={<ChatPage/>}/>
     </Routes>
   );
 };
