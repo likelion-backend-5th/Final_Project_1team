@@ -211,14 +211,20 @@ export const postArticleHandler = (
 };
 
 export const putArticleHandler = (
-  // token: string,
   title: string,
   description: string,
   apiId: string,
-  articleStatus: ArticleStatus
+  articleStatus: ArticleStatus,
+  images: string[]
 ) => {
   const URL = `/articles`;
-  const articleRequestObject = { title, description, apiId, articleStatus };
+  const articleRequestObject = {
+    title,
+    description,
+    apiId,
+    articleStatus,
+    images,
+  };
   return axiosUtils.put(URL, articleRequestObject);
 };
 
@@ -236,4 +242,9 @@ export const getEachChatroomHandler = (chatroomId: string | undefined) => {
 export const createChatroom = (articleApiId: string | undefined) => {
   const url = '/chat/room';
   return axiosUtils.post(url, { articleApiId: articleApiId });
+};
+
+export const createOrder = (articleApiId: string | undefined) => {
+  const url = `/articles/${articleApiId}/order`;
+  return axiosUtils.post(url);
 };

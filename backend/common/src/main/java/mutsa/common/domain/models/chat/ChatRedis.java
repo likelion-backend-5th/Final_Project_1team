@@ -20,19 +20,32 @@ public class ChatRedis {
     private String id;
     private final String apiId = UUID.randomUUID().toString();
     private String content;
-    private Long userId; //유저 이름을 저장
-    private Long chatroomId;
+    private String username; //유저 이름을 저장
+    private String chatroomId;
+
     private LocalDateTime createdAt;
 
     public static ChatRedis of(Chatroom chatroom, User user, String message) {
         ChatRedis chat = ChatRedis.builder()
                 .id(UUID.randomUUID().toString())
                 .content(message)
-                .chatroomId(chatroom.getId())
-                .userId(user.getId())
+                .chatroomId(chatroom.getApiId())
+                .username(user.getUsername())
                 .createdAt(LocalDateTime.now())
                 .build();
+
         return chat;
     }
 
+    @Override
+    public String toString() {
+        return "ChatRedis{" +
+                "id='" + id + '\'' +
+                ", apiId='" + apiId + '\'' +
+                ", content='" + content + '\'' +
+                ", username=" + username +
+                ", chatroomId=" + chatroomId +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

@@ -32,6 +32,12 @@ public class ChatroomService {
     private final ArticleModuleService articleModuleService;
     private final UserModuleService userModuleService;
 
+    /**
+     *
+     * @param dto
+     * @param username
+     * @return 이미 채팅방이 있는 경우는 기존의 방을 리턴, 아닌경우 새로운 방을 리턴한다
+     */
     @Transactional
     public ChatroomResponseDto createChatRoom(ChatroomRequestDto dto, String username) {
         User suggester = userModuleService.getByUsername(username);//제안하는 사람
@@ -56,6 +62,11 @@ public class ChatroomService {
         return ChatroomResponseDto.fromEntity(chatroom, seller.getUsername());
     }
 
+    /**
+     *
+     * @param username
+     * @return 내가 속한 채팅방을 반환(상대방의 이름으로 된 채팅방)
+     */
     public List<ChatroomResponseDto> findMyChatroom(String username) {
         User user = userModuleService.getByUsername(username);//현재 내가 누구인가
 
@@ -68,6 +79,13 @@ public class ChatroomService {
     }
 
 
+    /**
+     *
+     * @param chatroomApiId
+     * @param currentUsername
+     * @return 채팅방을 찾고, 상대방의 이름으로 방 이름을 저장하여 반환한다.
+     * HELP : 채팅방 이름을 찾는 경우 이렇게 찾는게 맞을지 고민</p>
+     */
     public ChatroomResponseDto findChatroom(String chatroomApiId, String currentUsername) {
         Chatroom chatroom = getByApiId(chatroomApiId);
 

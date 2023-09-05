@@ -28,5 +28,5 @@ public class ArticleUpdateRequestDto {
     private String apiId;
     @NotNull
     private ArticleStatus articleStatus;
-    private List<ImagesRequestDto> images;
+    private List<String> images;
 }

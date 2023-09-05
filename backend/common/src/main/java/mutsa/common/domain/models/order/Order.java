@@ -5,6 +5,7 @@ import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
 import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.payment.Payment;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
@@ -51,6 +52,9 @@ public class Order extends BaseEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Status status = ACTIVE;
+
+    @OneToOne(mappedBy = "order")
+    private Payment payment;
 
     public static Order of(Article article, User user) {
         Order order = Order.builder()

@@ -1,0 +1,17 @@
+version: '3'
+services:
+  my-spring-app:
+    image: mutsateam1/mutsa-application-1
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    container_name: app
+    ports:
+      - 80:8080
+    depends_on:
+      - redis
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - 6379:6379

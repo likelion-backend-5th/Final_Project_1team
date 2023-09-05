@@ -23,7 +23,7 @@ class OrderStore {
   orderFilterResponse: OrderFilterResponseDto | null = null;
   loading = false;
   currentPage = initialPage;
-  selectedStatus: 'all' | 'PROGRESS' | 'END' | 'CANCLE' = 'all';
+  selectedStatus: 'all' | 'PROGRESS' | 'END' | 'CANCEL' | 'WAIT' = 'all';
   ordersPerPage = ordersPerPageOptions[1];
   sortOrder: 'asc' | 'desc' = 'desc';
   searchInput = '';
@@ -59,7 +59,7 @@ class OrderStore {
     this.currentPage = page;
   }
 
-  setSelectedStatus(newStatus: 'all' | 'PROGRESS' | 'END' | 'CANCLE') {
+  setSelectedStatus(newStatus: 'all' | 'PROGRESS' | 'END' | 'CANCEL' | 'WAIT') {
     this.selectedStatus = newStatus;
   }
 

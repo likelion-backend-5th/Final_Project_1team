@@ -56,6 +56,9 @@ public class ArticleModuleService {
         article.setDescription(updateDto.getDescription());
         article.setArticleStatus(updateDto.getArticleStatus());
 
+        //  TODO ImageService를 이용해서 Image파일 등록
+        //  Article 검색시에도 Image 파일 찾기
+
         return article;
     }
 

@@ -1,12 +1,11 @@
 import React from 'react';
-import { ListItem, ListItemText, Avatar, Typography, Grid } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import PendingIcon from '@mui/icons-material/Pending';
-import { styled } from '@mui/system';
-import { useNavigate } from 'react-router-dom';
-import ClearIcon from '@mui/icons-material/Clear';
+import {Avatar, Grid, ListItem, ListItemText, Typography} from '@mui/material';
+import {styled} from '@mui/system';
+import {useNavigate} from 'react-router-dom';
+import OrderStatusIcon from './OrderStatusIcon';
+
 interface OrderItemProps {
-  order: OrderResponse;
+    order: OrderResponse;
 }
 
 const StyledListItem = styled(ListItem)`
@@ -17,6 +16,7 @@ const StyledListItem = styled(ListItem)`
   border-radius: 8px;
   transition: background-color 0.3s;
   cursor: pointer;
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.05);
   }
@@ -38,36 +38,30 @@ const UserInfoWrapper = styled(Grid)`
   align-items: flex-end;
 `;
 
-const OrderSellerItem: React.FC<OrderItemProps> = ({ order }) => {
-  const navigate = useNavigate();
+const OrderSellerItem: React.FC<OrderItemProps> = ({order}) => {
+    const navigate = useNavigate();
 
-  const handleItemClick = () => {
-    navigate(`/article/${order.articleApiId}/order/${order.orderApiId}`);
-  };
+    const handleItemClick = () => {
+        navigate(`/article/${order.articleApiId}/order/${order.orderApiId}`);
+    };
 
-  return (
-    <StyledListItem onClick={handleItemClick}>
-      <UserAvatar alt={order.consumerName} src="/path/to/user-image.jpg" />
-      <OrderItemText
-        primary={order.consumerName}
-      />
-      <UserInfoWrapper>
-        <Typography variant="body2" color="textSecondary">
-          {order.orderStatus}
-        </Typography>
-        <Typography variant="caption" color="textSecondary">
-          {order.date}
-        </Typography>
-      </UserInfoWrapper>
-      {order.orderStatus === 'END' ? (
-        <CheckCircleIcon color="primary" />
-      ) : order.orderStatus === 'PROGRESS' ? (
-        <PendingIcon color="secondary" />
-      ) : (
-        <ClearIcon color="error" />
-      )}
-    </StyledListItem>
-  );
+    return (
+        <StyledListItem onClick={handleItemClick}>
+            <UserAvatar alt={order.consumerName} src="/path/to/user-image.jpg"/>
+            <OrderItemText
+                primary={order.consumerName}
+            />
+            <UserInfoWrapper>
+                <Typography variant="body2" color="textSecondary">
+                    {order.orderStatus}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                    {order.date}
+                </Typography>
+            </UserInfoWrapper>
+            <OrderStatusIcon orderStatus={order.orderStatus}/>
+        </StyledListItem>
+    );
 };
 
 export default OrderSellerItem;

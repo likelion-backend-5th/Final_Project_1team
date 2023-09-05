@@ -20,20 +20,31 @@ import static mutsa.api.util.SecurityUtil.getCurrentUsername;
 public class ChatroomController {
     private final ChatroomService chatService;
 
-    //필요 메서드
-    //내가 방을 만들어서 들어가는 경우(제안을 하는 경우)
+    /**
+     * @param requestChatroomDto
+     * @return 방을 들어가는 경우 ( 기존에 방이 있는 경우 그 방을 반환한다)
+     */
     @PostMapping
     public ResponseEntity<ChatroomResponseDto> createRoom(@RequestBody ChatroomRequestDto requestChatroomDto) {
         return ResponseEntity.ok(chatService.createChatRoom(requestChatroomDto, getCurrentUsername()));
     }
 
+    /**
+     *
+     * @return 내가 속한 모든 방을 반환
+     */
     @GetMapping
     public ResponseEntity<List<ChatroomResponseDto>> getRoom() {
         return ResponseEntity.ok(chatService.findMyChatroom(SecurityUtil.getCurrentUsername()));
     }
 
+    /**
+     *
+     * @param chatroomApiId
+     * @return 한개의 방 정보를 반환
+     */
     @GetMapping("/{chatroomId}")
-    public ResponseEntity<ChatroomResponseDto> getOngRoom(@PathVariable("chatroomId") String chatroomApiId) {
+    public ResponseEntity<ChatroomResponseDto> getOneRoom(@PathVariable("chatroomId") String chatroomApiId) {
         return ResponseEntity.ok(chatService.findChatroom(chatroomApiId,SecurityUtil.getCurrentUsername()));
     }
 

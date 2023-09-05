@@ -16,6 +16,5 @@ import java.util.List;
 @Setter
 @Builder
 public class ImagesRequestDto {
-    private String refApiId;
-    private List<String> s3URLs;
+    private String s3URL;
 }

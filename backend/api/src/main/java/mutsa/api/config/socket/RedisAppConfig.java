@@ -35,7 +35,7 @@ public class RedisAppConfig {
      */
     @Bean
     MessageListenerAdapter messageListener(RedisMessageSubscriber redisMessageSubscriber) {
-        return new MessageListenerAdapter(redisMessageSubscriber,"onMessage");
+        return new MessageListenerAdapter(redisMessageSubscriber);
     }
 
     /**
@@ -52,13 +52,12 @@ public class RedisAppConfig {
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
-        container.addMessageListener(messageListener, messageTopic());
+        container.addMessageListener(messageListener, topic());
         return container;
     }
 
     @Bean
-    //메세지 큐
-    ChannelTopic messageTopic() {
+    ChannelTopic topic() {
         return new ChannelTopic("MESSAGE");
     }
 }

@@ -22,8 +22,7 @@ import { Carousel } from 'react-responsive-carousel';
 import { InsertPhoto } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import { putArticleHandler } from '../../store/auth-action.tsx';
-import { s3Client } from '../../util/sampleClient.ts';
-import { CreateBucketCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { uploadImagesToS3, bucketName, s3Client } from '../../util/s3Client.ts';
 
 const baseUrl = 'http://localhost:8080/api/articles/';
 
@@ -77,6 +76,7 @@ export function ArticleEdit() {
   const [loading, setLoading] = useState(true);
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [oldImageFiles, setOldImageFiles] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
   const [apiId, setApiId] = useState('');
   const [title, setTitle] = useState('');
@@ -116,68 +116,72 @@ export function ArticleEdit() {
     //  3. 업로드한 파일의 url 리스트를 api 서버에 전송
     //  4. api 서버에서는 전송받은 url 리스트를 db에 저장
 
-    const params = {
-      Bucket: '1team-s3', // The name of the bucket. For example, 'sample-bucket-101'.
-      Key: 'sample_upload.txt', // The name of the object. For example, 'sample_upload.txt'.
-      Body: 'Hello world!', // The content of the object. For example, 'Hello world!".
-    };
+    uploadImagesToS3(imageFiles, 'article').then((result) => {
+      if (result) {
+        console.log('All images uploaded successfully.');
+        console.log(result);
+        try {
+          putArticleHandler(
+            title,
+            description,
+            apiId,
+            articleStatus as ArticleStatus,
+            result
+          ).then((response) => {
+            if (response != null) {
+              console.log('Article posted successfully:', response.data);
+              navigate(`/article/detail/${response.data.apiId}`, {
+                replace: false,
+              });
+              return;
+            }
 
-    const run = async () => {
-      // Create an Amazon S3 bucket.
-      try {
-        const data = await s3Client.send(
-          new CreateBucketCommand({ Bucket: params.Bucket })
-        );
-        console.log(data);
-        console.log('Successfully created a bucket called ', data.Location);
-        return data; // For unit tests.
-      } catch (err) {
-        console.log('Error', err);
-      }
-      // Create an object and upload it to the Amazon S3 bucket.
-      try {
-        const results = await s3Client.send(new PutObjectCommand(params));
-        console.log(
-          'Successfully created ' +
-            params.Key +
-            ' and uploaded it to ' +
-            params.Bucket +
-            '/' +
-            params.Key
-        );
-        return results; // For unit tests.
-      } catch (err) {
-        console.log('Error', err);
-      }
-    };
-    run();
-
-    try {
-      let token = localStorage.getItem('token');
-
-      token = token
-        ? token
-        : 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0';
-      putArticleHandler(
-        // token,
-        title,
-        description,
-        apiId,
-        articleStatus as ArticleStatus
-      ).then((response) => {
-        if (response != null) {
-          console.log('Article posted successfully:', response.data);
-          navigate(`/article/detail/${response.data.apiId}`, {
-            replace: false,
+            console.log('Response Data is null');
           });
-          return;
+        } catch (error) {
+          console.error('Error posting article:', error);
         }
-
-        console.log('Response Data is null');
-      });
-    } catch (error) {
-      console.error('Error posting article:', error);
-    }
+        // 이미지 업로드 후 다른 처리를 수행할 수 있습니다.
+      } else {
+        console.log('Image upload failed.');
+      }
+    });
+    //
+    // const params = {
+    //   Bucket: bucketName, // The name of the bucket. For example, 'sample-bucket-101'.
+    //   Key: 'sample_upload.txt', // The name of the object. For example, 'sample_upload.txt'.
+    //   Body: 'Hello world!', // The content of the object. For example, 'Hello world!".
+    // };
+    //
+    // const run = async () => {
+    //   // Create an Amazon S3 bucket.
+    //   try {
+    //     const data = await s3Client.send(
+    //       new CreateBucketCommand({ Bucket: params.Bucket })
+    //     );
+    //     console.log(data);
+    //     console.log('Successfully created a bucket called ', data.Location);
+    //     return data; // For unit tests.
+    //   } catch (err) {
+    //     console.log('Error', err);
+    //   }
+    //   // Create an object and upload it to the Amazon S3 bucket.
+    //   try {
+    //     const results = await s3Client.send(new PutObjectCommand(params));
+    //     console.log(
+    //       'Successfully created ' +
+    //         params.Key +
+    //         ' and uploaded it to ' +
+    //         params.Bucket +
+    //         '/' +
+    //         params.Key
+    //     );
+    //     return results; // For unit tests.
+    //   } catch (err) {
+    //     console.log('Error', err);
+    //   }
+    // };
+    // run();
   };
 
   const fetchData = async () => {
@@ -189,7 +193,9 @@ export function ArticleEdit() {
       setDescription(data.description);
       setCreatedDate(data.createdDate);
       setArticleStatus(data.articleStatus);
-      //  TODO DEBUG용
+      //  TODO 기존에 있던 이미지 정보를 받아오는 것도 필요
+      setOldImageFiles(data.images);
+      setImagePreviews(oldImageFiles);
       articleStatusListElement.splice(0, articleStatusListElement.length);
       articleStatusListElement.push([
         mapArticleStatus(data.articleStatus as ArticleStatus),

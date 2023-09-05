@@ -38,7 +38,7 @@ import { loadingTime } from '../../util/loadingUtil.ts';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
-import { createChatroom } from '../../store/auth-action.tsx';
+import { createChatroom, createOrder } from '../../store/auth-action.tsx';
 import { Chatroom } from '../../types/chat.ts';
 
 const baseUrl = 'http://localhost:8080/api/articles/';
@@ -142,7 +142,11 @@ export function ArticleDetail() {
   const handleChatRoomClick = (chatRoom: Chatroom) => {
     console.log(chatRoom.chatroomApiId + '을 클릭함');
     navigate(`/chatroom/${chatRoom.chatroomApiId}`);
-};
+  };
+
+  const handleCreateOrderClick = (order: OrderDetailResponse) => {
+    navigate(`/article/${order.articleApiId}/order/${order.orderApiId}`);
+  };
 
   const actions = [
     {
@@ -150,6 +154,10 @@ export function ArticleDetail() {
       name: '주문하기',
       onClick: () => {
         console.log('onClick 주문하기');
+        createOrder(getArticleApiId()).then((response: { data: OrderDetailResponse; }) => {
+          const order: OrderDetailResponse = response.data;
+          handleCreateOrderClick(order);
+        });
       },
     },
     {
@@ -157,8 +165,8 @@ export function ArticleDetail() {
       name: '채팅하기',
       onClick: () => {
         console.log('onclick 채팅하기');
-        createChatroom(getArticleApiId()).then((response: { data: Chatroom; })=>{
-          const chatroom : Chatroom= response.data;
+        createChatroom(getArticleApiId()).then((response: { data: Chatroom; }) => {
+          const chatroom: Chatroom = response.data;
           handleChatRoomClick(chatroom);
         });
       },
