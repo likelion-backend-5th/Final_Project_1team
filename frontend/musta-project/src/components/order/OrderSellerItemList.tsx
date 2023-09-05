@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
-import { List, Select, MenuItem, Pagination, TextField, Button } from '@mui/material';
+import { List, Pagination } from '@mui/material';
 import { styled } from '@mui/system';
+import { action, makeObservable, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { makeObservable, observable, action } from 'mobx';
-import OrderSellerWithArticleItem from './OrderSellerItemWithArticle';
+import React, { useEffect } from 'react';
 import { getSellOrderHandler } from '../../store/auth-action';
+import SearchInput from '../atoms/SearchInput';
+import Dropdown from './OrderDropdown';
+import OrderSellerWithArticleItem from './OrderSellerItemWithArticle';
 
 const StyledList = styled(List)`
   margin-top: 20px;
@@ -15,8 +17,26 @@ const PaginationContainer = styled('div')`
   margin-top: 10px;
 `;
 
-const ordersPerPageOptions = [5, 10, 15, 20];
 const initialPage = 1;
+const sortOrderOptions = [
+  { value: 'asc', label: '오름차순(오래된순)' },
+  { value: 'desc', label: '내림차순(최신순)' },
+];
+
+const statusOptions = [
+  { value: 'all', label: '모든 주문' },
+  { value: 'PROGRESS', label: '주문 대기' },
+  { value: 'END', label: '주문 종료' },
+  { value: 'WAIT', label: '주문중' },
+  { value: 'CANCEL', label: '주문취소' },
+];
+
+const ordersPerPageOptions = [
+  { value: 5, label: '5개' },
+  { value: 10, label: '10개' },
+  { value: 15, label: '15개' },
+  { value: 20, label: '20개' },
+];
 
 class OrderStore {
 
@@ -24,7 +44,7 @@ class OrderStore {
   loading = false;
   currentPage = initialPage;
   selectedStatus: 'all' | 'PROGRESS' | 'END' | 'CANCEL' | 'WAIT' = 'all';
-  ordersPerPage = ordersPerPageOptions[1];
+  ordersPerPage = ordersPerPageOptions[1].value;
   sortOrder: 'asc' | 'desc' = 'desc';
   searchInput = '';
 
@@ -132,11 +152,6 @@ const OrderSellerItemList: React.FC = observer(() => {
     fetchData(orderStore.currentPage);
   };
 
-  const handleChange = (event: any) => {
-    const inputSearch = event.target.value;
-    orderStore.setSearchInput(inputSearch);
-  };
-
   const handleSearch = () => {
     console.log('Search input value:');
     fetchData(orderStore.currentPage);
@@ -144,50 +159,19 @@ const OrderSellerItemList: React.FC = observer(() => {
 
   return (
     <div>
-      <Select
-        value={orderStore.selectedStatus}
-        onChange={handleStatusChange}
-      >
-        <MenuItem value="all">All</MenuItem>
-        <MenuItem value="PROGRESS">Progress</MenuItem>
-        <MenuItem value="END">End</MenuItem>
-        <MenuItem value="CANCEL">Cancel</MenuItem>
-      </Select>
-      <Select
-        value={orderStore.ordersPerPage}
-        onChange={handleOrdersPerPageChange}
-      >
-        {ordersPerPageOptions.map(option => (
-          <MenuItem key={option} value={option}>
-            {option} per page
-          </MenuItem>
-        ))}
-      </Select>
-      <Select
-        value={orderStore.sortOrder}
-        onChange={handleSortOrderChange}
-      >
-        <MenuItem value="asc">오름차순(오래된순)</MenuItem>
-        <MenuItem value="desc">내림차순(최신순)</MenuItem>
-      </Select>
-
-      <TextField
-        label="Input Value"
-        value={orderStore.searchInput}
-        onChange={handleChange}
-      />
-      <Button variant="contained" onClick={handleSearch}>
-        Search
-      </Button>
+      <Dropdown value={orderStore.selectedStatus} onChange={handleStatusChange} options={statusOptions} />
+      <Dropdown value={orderStore.sortOrder} onChange={handleSortOrderChange} options={sortOrderOptions} />
+      <Dropdown value={orderStore.ordersPerPage} onChange={handleOrdersPerPageChange} options={ordersPerPageOptions} />
+      <SearchInput onSearch={handleSearch} />
 
       <StyledList>
-         {orders.length === 0 ? (
-            <p>아직 판매된 아이템이 없습니다(검색정보가 없습니다)</p>
-          ) : (
-            orders.map((order, index) => (
-              <OrderSellerWithArticleItem key={index} order={order} />
-            ))
-          )}
+        {orders.length === 0 ? (
+          <p>아직 판매된 아이템이 없습니다(검색정보가 없습니다)</p>
+        ) : (
+          orders.map((order, index) => (
+            <OrderSellerWithArticleItem key={index} order={order} />
+          ))
+        )}
       </StyledList>
       <PaginationContainer>
         <Pagination
