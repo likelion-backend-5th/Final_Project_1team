@@ -94,7 +94,14 @@ public class PaymentModuleService {
 
     // 결제 정보 DTO 생성
     private PaymentDto createPaymentDto(User user, Article article, Order savedOrder) {
-        return PaymentDto.builder().customerApiId(user.getApiId()).amount(119000L).orderId(savedOrder.getApiId()).orderName(article.getTitle()).customerEmail(user.getEmail()).customerName(user.getUsername()).build();
+        return PaymentDto.builder()
+                .customerApiId(user.getApiId())
+                .amount(article.getPrice())
+                .orderId(savedOrder.getApiId())
+                .orderName(article.getTitle())
+                .customerEmail(user.getEmail())
+                .customerName(user.getUsername())
+                .build();
     }
 
     // 결제 정보 저장
