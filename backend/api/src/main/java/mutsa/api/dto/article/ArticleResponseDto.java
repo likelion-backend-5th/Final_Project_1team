@@ -7,11 +7,13 @@
 package mutsa.api.dto.article;
 
 import lombok.*;
+import mutsa.api.dto.image.ImageResponseDto;
 import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.article.ArticleStatus;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Builder
 @Getter
@@ -27,6 +29,7 @@ public class ArticleResponseDto {
     private Status status;
     private ArticleStatus articleStatus;
     private String createdDate;
+    private List<ImageResponseDto> images;
 
     public static ArticleResponseDto to(Article entity) {
         return ArticleResponseDto.builder()
@@ -39,5 +42,9 @@ public class ArticleResponseDto {
                 .articleStatus(entity.getArticleStatus())
                 .createdDate(entity.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
                 .build();
+    }
+
+    public void addArticleImages(List<ImageResponseDto> images) {
+        this.images.addAll(images);
     }
 }

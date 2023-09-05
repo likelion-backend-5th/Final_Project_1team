@@ -201,51 +201,50 @@ function getQueryString(queryParams: Record<string, string>) {
 }
 
 export const postArticleHandler = (
-  token: string,
+  // token: string,
   title: string,
   description: string
 ) => {
-  const URL = `/api/articles`;
+  const URL = `/articles`;
   const articleRequestObject = { title, description };
-  return POST(URL, articleRequestObject, createTokenHeader(token));
+  return axiosUtils.post(URL, articleRequestObject);
 };
 
 export const putArticleHandler = (
-  token: string,
   title: string,
   description: string,
   apiId: string,
-  articleStatus: ArticleStatus
+  articleStatus: ArticleStatus,
+  images: string[]
 ) => {
-  const URL = `/api/articles`;
-  const articleRequestObject = { title, description, apiId, articleStatus };
-  return PUT(URL, articleRequestObject, createTokenHeader(token));
+  const URL = `/articles`;
+  const articleRequestObject = {
+    title,
+    description,
+    apiId,
+    articleStatus,
+    images,
+  };
+  return axiosUtils.put(URL, articleRequestObject);
 };
 
-export const getChatroomHandler = (
-) => {
+export const getChatroomHandler = () => {
   console.log('hello!');
-  const url = '/chat/room'
+  const url = '/chat/room';
   return axiosUtils.get(url);
-}
+};
 
-export const getEachChatroomHandler = (
-  chatroomId: string | undefined
-) => {
-  const url = `/chat/room/${chatroomId}`
+export const getEachChatroomHandler = (chatroomId: string | undefined) => {
+  const url = `/chat/room/${chatroomId}`;
   return axiosUtils.get(url);
-}
+};
 
-export const createChatroom = (
-  articleApiId: string | undefined
-) => {
+export const createChatroom = (articleApiId: string | undefined) => {
   const url = '/chat/room';
   return axiosUtils.post(url, { articleApiId: articleApiId });
-}
+};
 
-export const createOrder = (
-  articleApiId: string | undefined
-) => {
+export const createOrder = (articleApiId: string | undefined) => {
   const url = `/articles/${articleApiId}/order`;
   return axiosUtils.post(url);
-}
+};
