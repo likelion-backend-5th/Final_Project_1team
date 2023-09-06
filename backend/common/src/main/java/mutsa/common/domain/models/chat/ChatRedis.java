@@ -13,12 +13,9 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@RedisHash(value = "chat")
 public class ChatRedis {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
-    private final String apiId = UUID.randomUUID().toString();
     private String content;
     private String username; //유저 이름을 저장
     private String chatroomId;
@@ -41,7 +38,6 @@ public class ChatRedis {
     public String toString() {
         return "ChatRedis{" +
                 "id='" + id + '\'' +
-                ", apiId='" + apiId + '\'' +
                 ", content='" + content + '\'' +
                 ", username=" + username +
                 ", chatroomId=" + chatroomId +
