@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom';
 import ReviewItemList from './ReviewItemList';
 import { useEffect, useState } from 'react';
 import { Review } from '../../types/review';
-import axios from 'axios';
+import { getAllReview } from '../../store/auth-action';
 
 const StyledSelect = styled(Select)`
   margin-left: 0.5rem;
@@ -34,20 +34,13 @@ const ReviewListForm = () => {
     fetchReviews(currentPage, itemsPerPage, sortType);
   }, [currentPage, sortType]);
 
-  const fetchReviews = (page: number, limit: number, sort: string) => {
-    axios
-      .get(`/api/article/${articleApiId}/review`, {
-        params: {
-          page,
-          limit,
-          sort,
-        },
-      })
-      .then((response) => {
+  const fetchReviews = async (page: number, limit: number, sort: string) => {
+    getAllReview(articleApiId, page, limit, sort)
+      .then((response: any) => {
         setReviews(response.data.content);
         setTotalItems(response.data.totalElements);
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error('Error fetching reviews:', error);
       });
   };
@@ -77,35 +70,49 @@ const ReviewListForm = () => {
   };
 
   return (
-    <List>
-      <Typography variant="h5" gutterBottom>
-        Review
-      </Typography>
-      <List style={{ textAlign: 'left' }}>
-        <StyledSelect
-          size="small"
-          value={sortType}
-          onChange={handleSortTypeChange}>
-          <MenuItem value="descByDate">최신순</MenuItem>
-          <MenuItem value="ascByDate">오래된 순</MenuItem>
-          <MenuItem value="descByPoint">높은 별점 순</MenuItem>
-          <MenuItem value="ascByPoint">낮은 별점 순</MenuItem>
-        </StyledSelect>
-        <Select
-          size="small"
-          value={itemsPerPage}
-          onChange={handleItemsPerPageChange}>
-          <MenuItem value={5}>5개씩</MenuItem>
-          <MenuItem value={10}>10개씩</MenuItem>
-        </Select>
-      </List>
-      <List>{reviewItems}</List>
-      <Pagination
-        count={Math.ceil(totalItems / itemsPerPage)}
-        page={currentPage}
-        onChange={(_event, newPage) => handlePageChange(newPage)}
-      />
-    </List>
+    <div>
+      {reviews.length > 0 ? (
+        <List>
+          <Typography variant="h5" gutterBottom>
+            Review
+          </Typography>
+          <List style={{ textAlign: 'left' }}>
+            <StyledSelect
+              size="small"
+              value={sortType}
+              onChange={handleSortTypeChange}>
+              <MenuItem value="descByDate">최신순</MenuItem>
+              <MenuItem value="ascByDate">오래된 순</MenuItem>
+              <MenuItem value="descByPoint">높은 별점 순</MenuItem>
+              <MenuItem value="ascByPoint">낮은 별점 순</MenuItem>
+            </StyledSelect>
+            <Select
+              size="small"
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}>
+              <MenuItem value={5}>5개씩</MenuItem>
+              <MenuItem value={10}>10개씩</MenuItem>
+            </Select>
+          </List>
+          <List>{reviewItems}</List>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Pagination
+              count={Math.ceil(totalItems / itemsPerPage)}
+              page={currentPage}
+              onChange={(_event, newPage) => handlePageChange(newPage)}
+            />
+          </div>
+        </List>
+      ) : (
+        <List>
+          <Typography variant="body1">
+            해당 게시글의 리뷰가 존재하지 않습니다.
+          </Typography>
+          <Typography variant="body1">첫 리뷰를 작성해주세요!!</Typography>
+          <br></br>
+        </List>
+      )}
+    </div>
   );
 };
 

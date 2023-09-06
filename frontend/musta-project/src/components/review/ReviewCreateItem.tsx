@@ -4,7 +4,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { createReview } from '../../store/auth-action';
 
 const ContentsDiv = styled('div')`
   align: left;
@@ -12,9 +12,7 @@ const ContentsDiv = styled('div')`
 
 const ReviewCreateItem = () => {
   const { articleApiId, orderApiId } = useParams();
-  const token =
-    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0';
-  const [createReview, setCreateReview] = useState({
+  const [createReviewData, setCreateReviewData] = useState({
     content: '',
     point: 0,
   });
@@ -22,50 +20,38 @@ const ReviewCreateItem = () => {
   const navigate = useNavigate();
 
   const handleReviewChange = (event: any) => {
-    setCreateReview((prevData) => ({
+    setCreateReviewData((prevData) => ({
       ...prevData,
       content: event.target.value,
     }));
   };
 
   const handleRatingChange = (newPoint: any) => {
-    setCreateReview((prevData: any) => ({
+    setCreateReviewData((prevData: any) => ({
       ...prevData,
       point: newPoint,
     }));
   };
 
   const handleSaveReview = async () => {
-    // 리뷰 저장 로직 구현
-    const reviewData = {
-      content: createReview.content,
-      point: createReview.point,
-    };
-
-    axios
-      .post(
-        `/api/article/${articleApiId}/order/${orderApiId}/review`,
-        reviewData,
-        {
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
-        }
-      )
-      .then((response) => {
+    createReview(
+      articleApiId,
+      orderApiId,
+      createReviewData.content,
+      createReviewData.point
+    )
+      .then((response: any) => {
         console.log('리뷰 저장 완료:', response.data);
         // 저장 후 어떤 동작을 할지 구현
         navigate(`/review/${response.data.apiId}`); // 저장 후 리뷰 페이지로 이동 예시
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error('Error saving review:', error);
         // 에러 처리
       });
 
-    console.log('새로운 리뷰: ', createReview.content);
-    console.log('별점: ', createReview.point);
-    // 리뷰 저장 후 어떤 동작을 할지 구현하세요
-    // navigate(`/review/${createReview.apiId}`); // 저장 후 리뷰 페이지로 이동 예시
+    console.log('새로운 리뷰: ', createReviewData.content);
+    console.log('별점: ', createReviewData.point);
   };
 
   const handleCancel = () => {
@@ -88,14 +74,14 @@ const ReviewCreateItem = () => {
                 fullWidth
                 variant="outlined"
                 label="리뷰 내용"
-                value={createReview.content}
+                value={createReviewData.content}
                 onChange={handleReviewChange}
                 sx={{ marginTop: 2 }}
               />
               <h4 style={{ borderBottom: '1px solid black' }}>별점 선택</h4>
               <Rating
                 name="simple-controlled"
-                value={Number(createReview.point)}
+                value={Number(createReviewData.point)}
                 sx={{ marginTop: 2 }}
                 onChange={(_event, newPoint) => handleRatingChange(newPoint)}
               />

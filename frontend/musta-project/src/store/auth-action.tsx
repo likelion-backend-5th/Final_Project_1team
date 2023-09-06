@@ -172,3 +172,66 @@ export const createOrder = (articleApiId: string | undefined) => {
   const url = `/articles/${articleApiId}/order`;
   return axiosUtils.post(url);
 };
+
+export const createReview = (
+  articleApiId: string | undefined,
+  orderApiId: string | undefined,
+  content: string,
+  point: number
+) => {
+  const reviewRequestData = { content, point };
+
+  const URL = `/article/${articleApiId}/order/${orderApiId}/review`;
+
+  return axiosUtils.post(URL, reviewRequestData);
+};
+
+export const getAllReview = (
+  articleApiId: string,
+  page: number,
+  limit: number,
+  sort: string
+) => {
+  const queryParams: Record<string, string> = {};
+
+  if (page !== undefined) {
+    queryParams.page = page.toString();
+  }
+
+  if (limit !== undefined) {
+    queryParams.limit = limit.toString();
+  }
+
+  if (sort !== undefined) {
+    queryParams.sort = sort.toString();
+  }
+
+  const queryString = getQueryString(queryParams);
+
+  const URL = `/article/${articleApiId}/review?${queryString}`;
+
+  return axiosUtils.get(URL);
+};
+
+export const getDetailReview = (reviewApiId: string) => {
+  const URL = `/review/${reviewApiId}`;
+
+  return axiosUtils.get(URL);
+};
+
+export const deleteReview = (reviewApiId: string) => {
+  const URL = `/review/${reviewApiId}`;
+
+  return axiosUtils.delete(URL);
+};
+
+export const updateReview = (
+  reviewApiId: string,
+  content: string,
+  point: number
+) => {
+  const updateReviewData = { content, point };
+  const URL = `/review/${reviewApiId}`;
+
+  return axiosUtils.put(URL, updateReviewData);
+};

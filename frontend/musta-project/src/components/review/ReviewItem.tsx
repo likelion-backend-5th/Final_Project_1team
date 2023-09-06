@@ -11,8 +11,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import ReportIcon from '@mui/icons-material/Report';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import useStores from '../../store/useStores';
 import { Review } from '../../types/review';
+import { deleteReview, getDetailReview } from '../../store/auth-action';
 
 const ContentsDiv = styled('div')`
   display: flex;
@@ -20,33 +21,36 @@ const ContentsDiv = styled('div')`
 
 const ReviewItem = ({ reviewApiId }: any) => {
   const navigate = useNavigate();
+  const authStore = useStores().authStore;
 
-  // 현재 로그인 되어있는 계정의 username 더미
-  const [username, setUsername] = useState('ArticleControllerTestUser1');
+  useEffect(() => {
+    if (localStorage.getItem('accessToken') == null) {
+      return;
+    }
+    try {
+      authStore.findUserInfo();
+    } catch (error) {
+      localStorage.remove('accessToken');
+    }
+    return () => {};
+  }, []);
 
   const [detailReview, setDetailReview] = useState<Review>();
-  const token =
-    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0';
 
   useEffect(() => {
     // 리뷰 조회를 위한 API 호출
-    axios
-      .get(`/api/review/${reviewApiId}`, {
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
-      })
-      .then((response) => {
+    getDetailReview(reviewApiId)
+      .then((response: any) => {
         setDetailReview(response.data);
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error('Error fetching review:', error);
       });
-  }, [reviewApiId, token]);
+  }, [reviewApiId]);
 
   const userHandler = () => {
     if (detailReview) {
-      if (detailReview.username == username) return true;
+      if (detailReview.username == authStore.userInfo?.username) return true;
       return false;
     }
   };
@@ -72,18 +76,13 @@ const ReviewItem = ({ reviewApiId }: any) => {
 
   const deleteHandler = async () => {
     if (detailReview) {
-      axios
-        .delete(`/api/review/${detailReview.apiId}`, {
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
-        })
+      deleteReview(reviewApiId)
         .then(() => {
           console.log('리뷰가 삭제되었습니다.');
           alert('리뷰가 성공적으로 삭제되었습니다.');
           navigate(-1);
         })
-        .catch((error) => {
+        .catch((error: any) => {
           console.error('Error deleting review:', error);
         });
     }
