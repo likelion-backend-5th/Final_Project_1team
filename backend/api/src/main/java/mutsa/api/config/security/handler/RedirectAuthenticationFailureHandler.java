@@ -18,7 +18,7 @@ public class RedirectAuthenticationFailureHandler implements AuthenticationFailu
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException exception) throws IOException, ServletException {
-        log.error("OAuth2 failure login");
+        log.error("OAuth2 failure login", exception);
         response.setStatus(UNAUTHORIZED.value());
     }
 }

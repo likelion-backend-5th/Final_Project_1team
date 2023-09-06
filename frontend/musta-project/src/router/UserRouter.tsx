@@ -18,13 +18,19 @@ import ReviewListPage from '../pages/reviewPages/ReviewListPage.tsx';
 import ReportRegister from '../components/report/ReportRegister.tsx';
 import { ArticlePost } from '../components/article/ArticlePost.tsx';
 import { ArticleEdit } from '../components/article/ArticleEdit.tsx';
-import PaymentWidget from "../components/payment/PaymentWidget.tsx";
+import LoginForm from '../components/auth/LoginForm.tsx';
+import PaymentWidget from '../components/payment/PaymentWidget.tsx';
 import ChatPage from '../pages/chat/ChatPage.tsx';
 import ChatRoomList from '../components/chat/ChatRoomList.tsx';
+import SignUpForm from '../components/auth/SignUpForm.tsx';
 
 const UserRouter = () => {
   return (
     <Routes>
+      <Route path="/" element={<MainPage />} />
+      <Route path="/login" element={<LoginForm />} />
+      <Route path="/signup" element={<SignUpForm />} />
+
       <Route
         path="/hello"
         element={<HelloPage />}
@@ -73,7 +79,10 @@ const UserRouter = () => {
       <Route path="/article" element={<ArticlePage />} />
       <Route path="/article/post" element={<ArticlePost />} />
       <Route path="/article/edit/:articleApiId" element={<ArticleEdit />} />
-      <Route path="/article/detail/:articleApiId/payment" element={<PaymentWidget />} />
+      <Route
+        path="/article/detail/:articleApiId/payment"
+        element={<PaymentWidget />}
+      />
 
       <Route path="/reports" element={<ReportList />} />
       <Route path="/report/:reportApiId" element={<ReportDetail />} />
@@ -81,8 +90,8 @@ const UserRouter = () => {
         path="/report/:resourceType/:resourceApiId"
         element={<ReportRegister />}
       />
-      <Route path="/chatrooms" element={<ChatRoomList/>}/>    
-      <Route path="/chatroom/:roomId" element={<ChatPage/>}/>
+      <Route path="/chatrooms" element={<ChatRoomList />} />
+      <Route path="/chatroom/:roomId" element={<ChatPage />} />
     </Routes>
   );
 };

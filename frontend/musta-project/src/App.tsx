@@ -1,16 +1,11 @@
 import Footer from './components/organisms/Footer';
-import Header from './components/organisms/Header';
-import { Navigation } from './components/organisms/Navigation';
-import UserRouter from './router/UserRouter';
 import './App.css';
 import { styled } from 'styled-components';
 import { Provider } from 'mobx-react';
 import useStores from './store/useStores';
-import { Route, Routes } from 'react-router-dom';
-import MainPage from './pages/MainPage';
-import LoginForm from './components/auth/LoginForm';
-import { Suspense, lazy } from 'react';
-import Circular from './components/organisms/Circular';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import Navigation from './components/organisms/Navigation';
+import UserRouter from './router/UserRouter';
 
 const StyledMain = styled.main`
   display: block;
@@ -18,35 +13,24 @@ const StyledMain = styled.main`
   height: 100%;
   margin: 0px auto;
   padding: 0px;
+  max-width: 1280px;
   //background-color: rgba(220, 250, 250);
-  background-color: rgb(255, 245, 234);
+  /* background-color: rgb(255, 245, 234); */
 `;
 
 function App() {
   const useStore = useStores();
-  localStorage.setItem(
-    'token',
-    'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0'
-  );
+
   return (
-    <Provider {...useStore}>
-      <Suspense fallback={<Circular />}></Suspense>
-      {/* <MainPage>
-        <LoginForm />
-        <Routes>
-          <Route
-            path={''}
-            element={<Suspense fallback={<Circular />}></Suspense>}
-          />
-        </Routes>
-      </MainPage> */}
-      <StyledMain>
-        <Header />
+    <GoogleOAuthProvider clientId="446534610656-14r63n2kho9aggjkp8ebi1rgods392uj.apps.googleusercontent.com">
+      <Provider {...useStore}>
         <Navigation />
-        <UserRouter />
+        <StyledMain>
+          <UserRouter />
+        </StyledMain>
         <Footer />
-      </StyledMain>
-    </Provider>
+      </Provider>
+    </GoogleOAuthProvider>
   );
 }
 
