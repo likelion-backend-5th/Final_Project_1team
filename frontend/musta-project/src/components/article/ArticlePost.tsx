@@ -50,6 +50,7 @@ export function ArticlePost() {
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [price, setPrice ] = useState(0);
   const navigate = useNavigate();
 
   const handleImageChange = (event) => {
@@ -84,7 +85,7 @@ export function ArticlePost() {
       token = token
         ? token
         : 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0';
-      postArticleHandler(title, description).then((response) => {
+      postArticleHandler(title, description, price).then((response) => {
         if (response != null) {
           console.log('Article posted successfully:', response.data);
           navigate(`/article/detail/${response.data.apiId}`, {
@@ -123,6 +124,16 @@ export function ArticlePost() {
             value={title}
             inputProps={{ maxLength: 100, 'aria-rowcount': 5 }} // Set maximum character length
             onChange={(e) => setTitle(e.target.value)}
+          />
+        </Box>
+        <Box>
+          <StyledTextField
+              id="article-price"
+              label="판매 가격"
+              type={"number"}
+              value={price}
+              inputProps={{min:0}} // Set maximum character length
+              onChange={(e) => setPrice(parseInt(e.target.value, 10))}
           />
         </Box>
         <Box>
