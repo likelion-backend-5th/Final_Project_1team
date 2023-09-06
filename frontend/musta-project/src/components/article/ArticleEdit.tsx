@@ -83,6 +83,7 @@ export function ArticleEdit() {
   const [description, setDescription] = useState('');
   const [createdDate, setCreatedDate] = useState('');
   const [articleStatus, setArticleStatus] = useState('');
+  const [price, setPrice ] = useState(0);
   const navigate = useNavigate();
 
   const handleImageChange = (event) => {
@@ -126,7 +127,8 @@ export function ArticleEdit() {
             description,
             apiId,
             articleStatus as ArticleStatus,
-            result
+            result,
+            price
           ).then((response) => {
             if (response != null) {
               console.log('Article posted successfully:', response.data);
@@ -196,6 +198,7 @@ export function ArticleEdit() {
       //  TODO 기존에 있던 이미지 정보를 받아오는 것도 필요
       setOldImageFiles(data.images);
       setImagePreviews(oldImageFiles);
+      setPrice(data.price);
       articleStatusListElement.splice(0, articleStatusListElement.length);
       articleStatusListElement.push([
         mapArticleStatus(data.articleStatus as ArticleStatus),
@@ -270,6 +273,16 @@ export function ArticleEdit() {
                   setTitle(event.target.value);
                 }}
                 maxRows="1"
+              />
+              <TextField
+                  id="article-price"
+                  defaultValue={price}
+                  size="medium"
+                  inputProps={{min:0}} // Set maximum character length
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setPrice(parseInt(event.target.value, 10));
+                  }}
+                  maxRows="1"
               />
             </Box>
             <Box
