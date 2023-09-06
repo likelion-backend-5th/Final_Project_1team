@@ -4,6 +4,10 @@ import { ChangeEvent } from 'react';
 import _ from 'lodash';
 import { AxiosResponse, ResponseType } from 'axios';
 import { useNavigate, useNavigation, useRoutes } from 'react-router-dom';
+import authStore from './authStore';
+import useStores from '../useStores';
+import { Cookies } from 'react-cookie';
+import { removeRefershToken } from '../../uitls/cookies';
 
 interface userInfo {
   username: string;
@@ -36,7 +40,6 @@ export default class userStore {
   userAddress = { zipcode: '', city: '', street: '' };
 
   userRepository = userRepository;
-
   getUserInfo = async () => {
     this.userInfo;
   };
@@ -47,7 +50,8 @@ export default class userStore {
       accessToken: '',
     };
 
-    localStorage.removeItem('authentication');
+    localStorage.removeItem('accessToken');
+    removeRefershToken();
   };
 
   login = async (data: FormData) => {
@@ -61,23 +65,22 @@ export default class userStore {
       password: password,
     };
 
-    const res = await userRepository
+    return await userRepository
       .login(loginform)
-      .then((data: any) => {
-        return data;
+      .then((res: any) => {
+        if (200 <= res.status && res.status < 400) {
+          console.log(res.data.accessToken);
+          localStorage.setItem('accessToken', res.data.accessToken);
+          this.userInfo = {
+            ...this.userInfo,
+            username: res.data.username,
+            accessToken: res.data.accessToken,
+          };
+        }
       })
-      .catch(() => {
-        console.error();
+      .catch((err: any) => {
+        Promise.reject(err);
       });
-
-    if (res.status.include(2)) {
-      localStorage.setItem('authentication', res.data.token);
-      this.userInfo = {
-        ...this.userInfo,
-        username: res.data.username,
-        accessToken: res.data.accessToken,
-      };
-    }
   };
 
   handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {

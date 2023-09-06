@@ -20,9 +20,10 @@ public class BootstrapCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if(dataloader.equals("1"))
-        bootStrapDataLoader.createAdminUser();
-        bootStrapDataLoader.createAricleOrder();
-        bootStrapDataLoader.createReport();
+        if (dataloader.equals("2")) {
+            bootStrapDataLoader.createAdminUser();
+            bootStrapDataLoader.createAricleOrder();
+            bootStrapDataLoader.createReport();
+        }
     }
 }

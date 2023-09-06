@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import mutsa.api.dto.auth.LoginRequest;
-import mutsa.api.util.JwtUtil;
+import mutsa.api.util.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -34,7 +34,7 @@ class AuthControllerTest {
         String body = new ObjectMapper().writeValueAsString(loginRequest);
 
         mockMvc.perform(post("/api/auth/login", body)
-                .cookie(new Cookie(JwtUtil.REFRESH_TOKEN, "value"))
+                .cookie(new Cookie(JwtTokenProvider.REFRESH_TOKEN, "value"))
                 .contentType("application/json")
                 .content(body)
             )

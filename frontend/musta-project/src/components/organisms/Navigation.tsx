@@ -12,6 +12,9 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { Link, useNavigate } from 'react-router-dom';
+import useStores from '../../store/useStores';
+import { useEffect } from 'react';
+import { observer } from 'mobx-react';
 
 const pages = [
   ['Hello', '/hello'],
@@ -25,7 +28,8 @@ const pages = [
 ];
 
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-export const Navigation = () => {
+const Navigation = () => {
+  const authStore = useStores().authStore;
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -54,10 +58,27 @@ export const Navigation = () => {
     navigate(path); // 해당 경로로 페이지 이동
   };
 
+  useEffect(() => {
+    if (localStorage.getItem('accessToken') == null) {
+      return;
+    }
+    try {
+      authStore.findUserInfo();
+    } catch (error) {
+      localStorage.remove('accessToken');
+    }
+    return () => {};
+  }, []);
+
   return (
     <AppBar position="static" color="inherit" elevation={0}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Link to={'/'}>
+              <img src="/img/templogo.png" height={23} />
+            </Link>
+          </Box>
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -104,37 +125,47 @@ export const Navigation = () => {
               </Button>
             ))}
           </Box>
-
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/img/monkey.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}>
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          {(authStore.userInfo === undefined && (
+            <Box>
+              <Link to={'/login'} style={{ textDecoration: 'none' }}>
+                login
+              </Link>
+            </Box>
+          )) || (
+            <Box>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Remy Sharp" src="/img/monkey.jpg" />
+                  {authStore.userInfo?.username}
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}>
+                {settings.map((setting) => (
+                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          )}
         </Toolbar>
       </Container>
     </AppBar>
   );
 };
+
+export default observer(Navigation);

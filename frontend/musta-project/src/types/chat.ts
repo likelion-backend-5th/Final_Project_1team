@@ -6,6 +6,9 @@ export type Chatroom = {
 export type ChatroomDetail = {
   chatroomApiId: number;
   roomName: string;
+  articleTitle: string;
+  articleDescription: string;
+  articleUsername: string;
 };
 
 export type ChatMessage = {

@@ -4,6 +4,7 @@ import './ChatPage.css';
 import { ChatMessage, ChatroomDetail } from '../../types/chat';
 import { getEachChatroomHandler } from '../../store/auth-action';
 import * as Stomp from '@stomp/stompjs';
+
 const ChatPage: React.FC = () => {
   const stompClient = useRef<Stomp.Client | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -150,19 +151,68 @@ const ChatPage: React.FC = () => {
     }
   }, [messages]);
 
+  const [isArticlePopupVisible, setIsArticlePopupVisible] = useState(false);
+
+  const showArticlePopup = () => {
+    setIsArticlePopupVisible(true);
+  };
+
+  const hideArticlePopup = () => {
+    setIsArticlePopupVisible(false);
+  };
+
+  const handleEnterKeyPress = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
   return (
     <div className="chat-page-container">
       <div className="chat-header">
-        <div>채팅방 이름: {chatRoom?.roomName}</div>
+        <div>{chatRoom?.roomName}님과의 채팅</div>
       </div>
+      <button onClick={() => showArticlePopup()} className="btn btn-primary">
+        게시글 정보 보기
+      </button>
+      {isArticlePopupVisible && (
+        <div className="article-popup">
+          <h2>게시글 정보</h2>
+          <p>제목: {chatRoom?.articleTitle}</p>
+          <p>내용: {chatRoom?.articleDescription}</p>
+          <p>작성자: {chatRoom?.articleUsername}</p>
+          {/* 다른 article 정보 표시 */}
+          <button onClick={hideArticlePopup}>닫기</button>
+        </div>
+      )}
       <div className="chat-messages-container" ref={messageContainerRef}>
-        {messages.map((msg, index) => (
-          <div key={index} className={`chat-bubble mine`}>
-            <div className="chat-message-writer">{msg.from}</div>
-            <div className="chat-bubble-message">{msg.message}</div>
-            <div className="chat-bubble-message">{msg.date}</div>
-          </div>
-        ))}
+        {messages.map((msg, index) =>
+          msg.from === chatRoom?.roomName ? (
+            <div
+              key={index}
+              className={`chat-bubble mine`}
+              style={{
+                alignSelf: 'flex-start',
+              }}>
+              <div className="chat-message-writer">{msg.from}</div>
+              <div className="chat-bubble-message">{msg.message}</div>
+              <div className="chat-bubble-message">{msg.date}</div>
+            </div>
+          ) : (
+            <div
+              key={index}
+              className={`chat-bubble mine`}
+              style={{
+                alignSelf: 'flex-end',
+              }}>
+              <div className="chat-message-writer">나</div>
+              <div className="chat-bubble-message">{msg.message}</div>
+              <div className="chat-bubble-message">{msg.date}</div>
+            </div>
+          )
+        )}
       </div>
       <div className="chat-input-container">
         <input
@@ -170,6 +220,8 @@ const ChatPage: React.FC = () => {
           placeholder="Type your message"
           value={message}
           onChange={handleMessageChange}
+          onKeyPress={handleEnterKeyPress}
+          style={{ color: 'black' }}
         />
         <button onClick={handleSendMessage}>Send</button>
       </div>
