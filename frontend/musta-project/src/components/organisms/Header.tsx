@@ -85,6 +85,10 @@ const Header = () => {
     };
   }, []);
 
+  const handleSearch = (searchInput: string) => {
+    console.log('Search input value:' + searchInput);
+  };
+
   return (
     <StyledHeader>
       <StyledNav>
@@ -94,7 +98,7 @@ const Header = () => {
           </Link>
           <SearchBox>
             <SearchContent>
-              <SearchInput />
+              <SearchInput onSearch={handleSearch} />
             </SearchContent>
           </SearchBox>
         </StyledNavLeft>

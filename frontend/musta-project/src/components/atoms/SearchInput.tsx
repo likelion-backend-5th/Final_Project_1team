@@ -1,23 +1,32 @@
-import InputAdornment from '@mui/material/InputAdornment';
-import TextField from '@mui/material/TextField';
-import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
-import { useState } from 'react';
-import { FormControl } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import { FormControl, InputAdornment, TextField } from '@mui/material';
+import React, { KeyboardEvent, useState } from 'react';
 
-const SearchInput = () => {
+interface SearchInputProps {
+  onSearch: (searchValue: any) => void;
+}
+
+const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
   const [value, setValue] = useState<string>('');
-  const [showClearIcon, setShowClearIcon] = useState<string>('none');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    e.defaultPrevented;
-    setValue(e.target.value);
-    setShowClearIcon(e.target.value.length < 1 ? 'none' : 'flex');
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    setValue(inputValue);
   };
 
-  const onCLickVisibleEndButton = (): void => {
-    setValue('');
-    setShowClearIcon('none');
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearchClick();
+    }
+  };
+
+  const handleSearchClick = () => {
+    onSearch(value);
+  };
+
+  const handleClearClick = () => {
+    setValue(''); // 입력값 초기화
   };
 
   return (
@@ -27,6 +36,7 @@ const SearchInput = () => {
         variant="outlined"
         placeholder="검색"
         onChange={handleChange}
+        onKeyPress={handleKeyPress}
         value={value}
         InputProps={{
           style: {
@@ -39,15 +49,18 @@ const SearchInput = () => {
             </InputAdornment>
           ),
           endAdornment: (
-            <InputAdornment
-              style={{ display: showClearIcon }}
-              position="end"
-              onClick={onCLickVisibleEndButton}>
-              <ClearIcon />
+            <InputAdornment position="end">
+              <ClearIcon
+                style={{ cursor: 'pointer', display: value ? 'block' : 'none' }}
+                onClick={handleClearClick} // ClearIcon 클릭 시 입력값 초기화
+              />
             </InputAdornment>
           ),
         }}
       />
+      {/* <Button variant="contained" onClick={handleSearchClick}>
+        Search
+      </Button> */}
     </FormControl>
   );
 };

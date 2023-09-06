@@ -209,6 +209,7 @@ public class BootstrapDataLoader {
                     .title("title-" + (i + 1))
                     .description("desc-" + (i + 1))
                     .user(i % 2 == 0 ? user1 : user2)
+                    .price(129000L)
                     .build();
 
             articles.add(article);
