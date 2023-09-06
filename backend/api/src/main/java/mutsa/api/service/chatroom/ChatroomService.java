@@ -1,6 +1,8 @@
 package mutsa.api.service.chatroom;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import mutsa.api.dto.chat.ChatRoomDetailDto;
 import mutsa.api.dto.chat.ChatroomRequestDto;
 import mutsa.api.dto.chat.ChatroomResponseDto;
 import mutsa.api.service.article.ArticleModuleService;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 import static mutsa.common.exception.ErrorCode.ORDER_NOT_FOUND;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ChatroomService {
@@ -39,27 +42,35 @@ public class ChatroomService {
      * @return 이미 채팅방이 있는 경우는 기존의 방을 리턴, 아닌경우 새로운 방을 리턴한다
      */
     @Transactional
-    public ChatroomResponseDto createChatRoom(ChatroomRequestDto dto, String username) {
+    public ChatRoomDetailDto createChatRoom(ChatroomRequestDto dto, String username) {
         User suggester = userModuleService.getByUsername(username);//제안하는 사람
         Article article = articleModuleService.getByApiId(dto.getArticleApiId());
         User seller = article.getUser();//지금 사려고 하는 아이템의 판매자
 
         Optional<Chatroom> byChatroomWithUsers = chatroomUserRepository.findByChatroomWithUsers(seller, suggester);
         if (!byChatroomWithUsers.isEmpty()) { //이미 해당 유저와의 채팅방이 존재한다.
-            return ChatroomResponseDto.fromEntity(byChatroomWithUsers.get(), seller.getUsername());
+            Chatroom chatroom = byChatroomWithUsers.get();
+            if (!chatroom.getArticleApiId().equals(dto.getArticleApiId())) {
+                // 존재하는 채팅방과 연결되어 있는 게시글이 다른 게시글 일때
+                // 게시글 업데이트
+                chatroom.setArticleApiId(dto.getArticleApiId());
+                return ChatRoomDetailDto.fromEntity(chatroom, seller.getUsername(), article.getTitle(), article.getDescription(), seller.getUsername());
+            }
+            return ChatRoomDetailDto.fromEntity(chatroom, seller.getUsername(), article.getTitle(), article.getDescription(), seller.getUsername());
         }
         if (seller.getId().equals(suggester.getId())) {
             throw new BusinessException(ErrorCode.INVALID_ROOM_REQUEST);
         }
 
         //채팅방 생성
-        Chatroom chatroom = chatroomRepository.save(new Chatroom());
+        Chatroom chatroom = chatroomRepository.save(Chatroom.of(dto.getArticleApiId()));
+        log.info("chatService line 67: " + chatroom.getArticleApiId());
 
         //유저들과 연결(매핑 테이블 생성)
         chatroomUserRepository.save(ChatroomUser.of(suggester, chatroom));
         chatroomUserRepository.save(ChatroomUser.of(seller, chatroom));
 
-        return ChatroomResponseDto.fromEntity(chatroom, seller.getUsername());
+        return ChatRoomDetailDto.fromEntity(chatroom, seller.getUsername(), article.getTitle(), article.getDescription(), seller.getUsername());
     }
 
     /**
@@ -86,7 +97,7 @@ public class ChatroomService {
      * @return 채팅방을 찾고, 상대방의 이름으로 방 이름을 저장하여 반환한다.
      * HELP : 채팅방 이름을 찾는 경우 이렇게 찾는게 맞을지 고민</p>
      */
-    public ChatroomResponseDto findChatroom(String chatroomApiId, String currentUsername) {
+    public ChatRoomDetailDto findChatroom(String chatroomApiId, String currentUsername) {
         Chatroom chatroom = getByApiId(chatroomApiId);
 
         String otherName = "";
@@ -99,7 +110,9 @@ public class ChatroomService {
                 }
             }
         }
-        return ChatroomResponseDto.fromEntity(chatroom, otherName);
+        Article article = articleModuleService.getByApiId(chatroom.getArticleApiId());
+        String seller = article.getUser().getUsername();
+        return ChatRoomDetailDto.fromEntity(chatroom, otherName, article.getTitle(), article.getDescription(), seller);
     }
 
     public Chatroom getByApiId(String apiId) {

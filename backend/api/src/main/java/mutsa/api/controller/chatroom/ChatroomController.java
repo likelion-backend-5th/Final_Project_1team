@@ -2,6 +2,7 @@ package mutsa.api.controller.chatroom;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.api.dto.chat.ChatRoomDetailDto;
 import mutsa.api.dto.chat.ChatroomRequestDto;
 import mutsa.api.dto.chat.ChatroomResponseDto;
 import mutsa.api.service.chatroom.ChatroomService;
@@ -25,7 +26,7 @@ public class ChatroomController {
      * @return 방을 들어가는 경우 ( 기존에 방이 있는 경우 그 방을 반환한다)
      */
     @PostMapping
-    public ResponseEntity<ChatroomResponseDto> createRoom(@RequestBody ChatroomRequestDto requestChatroomDto) {
+    public ResponseEntity<ChatRoomDetailDto> createRoom(@RequestBody ChatroomRequestDto requestChatroomDto) {
         return ResponseEntity.ok(chatService.createChatRoom(requestChatroomDto, getCurrentUsername()));
     }
 
@@ -44,7 +45,7 @@ public class ChatroomController {
      * @return 한개의 방 정보를 반환
      */
     @GetMapping("/{chatroomId}")
-    public ResponseEntity<ChatroomResponseDto> getOneRoom(@PathVariable("chatroomId") String chatroomApiId) {
+    public ResponseEntity<ChatRoomDetailDto> getOneRoom(@PathVariable("chatroomId") String chatroomApiId) {
         return ResponseEntity.ok(chatService.findChatroom(chatroomApiId,SecurityUtil.getCurrentUsername()));
     }
 
