@@ -29,4 +29,5 @@ public class ArticleUpdateRequestDto {
     @NotNull
     private ArticleStatus articleStatus;
     private List<String> images;
+    private Long price;
 }

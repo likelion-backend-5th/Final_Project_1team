@@ -86,6 +86,10 @@ const StyledSpeedDial = styled(SpeedDial)({
   right: '16px',
 });
 
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('ko-KR').format(price) + '원';
+};
+
 export function ArticleDetail() {
   const [url, setURL] = useState(baseUrl + getArticleApiId());
   const [article, setAritcle] = useState<ArticleImpl>({
@@ -97,6 +101,7 @@ export function ArticleDetail() {
     status: 'ACTIVE',
     articleStatus: 'LIVE',
     createdDate: '1970-01-01 12:00:00',
+    price: 1000,
   });
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -119,6 +124,7 @@ export function ArticleDetail() {
         status: data.status,
         articleStatus: data.articleStatus,
         createdDate: data.createdDate,
+        price: data.price,
       });
       //  TODO DEBUG용
       setTimeout(() => setLoading(false), loadingTime);
@@ -234,6 +240,9 @@ export function ArticleDetail() {
                 marginBottom: '16px', // Add some spacing
               }}>
               <Typography variant="h6">{article.username}</Typography>
+              <Typography variant="h6" style={{ fontWeight: 'bold', fontSize: '1.5em' }}>
+                {formatPrice(article.price)}
+              </Typography>
               <Typography variant="body2">{article.createdDate}</Typography>
             </Box>
             <Box

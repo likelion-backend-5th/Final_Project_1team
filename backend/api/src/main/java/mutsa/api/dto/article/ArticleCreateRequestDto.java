@@ -18,4 +18,5 @@ public class ArticleCreateRequestDto {
     private String title;
     @NotBlank
     private String description;
+    private Long price;
 }
