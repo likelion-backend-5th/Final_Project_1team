@@ -4,7 +4,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { updateReview } from '../../store/auth-action';
 
 const ContentsDiv = styled('div')`
   align: left;
@@ -28,21 +28,13 @@ const ReviewEditItem = ({ review }: any) => {
     }));
   };
 
-  const token =
-    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0';
   const handleSaveReview = async () => {
-    // 리뷰 저장 로직 구현
-    axios
-      .put(`/api/review/${editReview.apiId}`, editReview, {
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
-      })
-      .then((response) => {
+    updateReview(editReview.apiId, editReview.content, editReview.point)
+      .then((response: any) => {
         console.log('리뷰 수정 완료:', response.data);
         navigate(`/review/${response.data.apiId}`); // 수정 후 리뷰 페이지로 이동 예시
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error('Error updating review:', error);
       });
   };
