@@ -26,6 +26,7 @@ export interface Article {
   status: Status;
   articleStatus: ArticleStatus;
   createdDate: string;
+  price: number;
 }
 
 export class ArticleImpl implements Article {
@@ -37,7 +38,8 @@ export class ArticleImpl implements Article {
     public thumbnail: string,
     public status: Status,
     public articleStatus: ArticleStatus,
-    public createdDate: string
+    public createdDate: string,
+    public price: number
   ) {}
 }
 
@@ -50,6 +52,7 @@ export const ofArticleImpl = (dto: {
   status: string;
   articleStatus: string;
   createdDate: string;
+  price: number;
 }) => {
   return new ArticleImpl(
     dto.apiId,
@@ -59,7 +62,8 @@ export const ofArticleImpl = (dto: {
     dto.thumbnail,
     dto.status as Status,
     dto.articleStatus as ArticleStatus,
-    dto.createdDate
+    dto.createdDate,
+    dto.price
   );
 };
 

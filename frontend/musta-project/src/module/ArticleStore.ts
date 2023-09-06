@@ -10,6 +10,7 @@ class ArticleData {
   status: Status;
   articleStatus: ArticleStatus;
   createdDate: string;
+  price: number;
 
   constructor(
     id: string,
@@ -19,7 +20,8 @@ class ArticleData {
     thumbnail: string,
     status: Status,
     articleStatus: ArticleStatus,
-    createdDate: string
+    createdDate: string,
+    price: number
   ) {
     this.id = id;
     this.title = title;
@@ -29,6 +31,7 @@ class ArticleData {
     this.status = status;
     this.articleStatus = articleStatus;
     this.createdDate = createdDate;
+    this.price = price;
   }
 }
 
