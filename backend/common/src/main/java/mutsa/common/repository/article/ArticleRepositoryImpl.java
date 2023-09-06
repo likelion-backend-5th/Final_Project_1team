@@ -67,11 +67,11 @@ public class ArticleRepositoryImpl extends Querydsl4RepositorySupport implements
         }
 
         if (StringUtils.hasText(articleFilter.getTitle())) {
-            query.where(article.title.eq(articleFilter.getTitle()));
+            query.where(article.title.contains(articleFilter.getTitle()));
         }
 
         if (StringUtils.hasText(articleFilter.getDescription())) {
-            query.where(article.description.eq(articleFilter.getDescription()));
+            query.where(article.description.contains(articleFilter.getDescription()));
         }
 
         if (StringUtils.hasText(articleFilter.getUsername())) {

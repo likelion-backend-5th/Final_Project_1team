@@ -19,7 +19,6 @@
     "@mui/x-data-grid": "^6.11.2",
     "@react-oauth/google": "^0.11.1",
     "@stomp/stompjs": "^7.0.0",
-    "@tosspayments/payment-sdk": "^1.6.5",
     "@types/lodash": "^4.14.197",
     "axios": "^1.4.0",
     "mobx": "^6.10.0",
