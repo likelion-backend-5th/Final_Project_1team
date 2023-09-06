@@ -7,14 +7,30 @@ import DropDown from './DropDown.tsx';
 import Box from '@mui/material/Box';
 
 const filterElements = [
-  ['최신순', '1', 'desc'],
-  ['오래된순', '2', 'asc'],
+  ['최신순', '1', 'DESC'],
+  ['오래된순', '2', 'ASC'],
 ];
 
-export default function SearchInputMui() {
+interface SearchInputMuiProps {
+  title: any;
+  onChangeTitle: any;
+  order: any;
+  onChangeOrder: any;
+  onClickSubmit: any;
+}
+
+export default function SearchInputMui(props: SearchInputMuiProps) {
+  const onChangeText = (event) => {
+    props.onChangeTitle(event.target.value);
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-      <DropDown elements={filterElements} />
+      <DropDown
+        elements={filterElements}
+        order={props.order}
+        onChangeOrder={props.onChangeOrder}
+      />
       <Paper
         component="form"
         sx={{
@@ -24,9 +40,17 @@ export default function SearchInputMui() {
           width: 400,
           marginLeft: '10px', // 추가
         }}>
-        <InputBase sx={{ ml: 1, flex: 1 }} placeholder="검색" />
+        <InputBase
+          sx={{ ml: 1, flex: 1 }}
+          placeholder="검색"
+          onChange={onChangeText}
+          defaultValue={props.title! ? '' : props.title}
+        />
         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-        <IconButton type="button" aria-label="search">
+        <IconButton
+          type="button"
+          aria-label="search"
+          onClick={props.onClickSubmit}>
           <SearchIcon />
         </IconButton>
       </Paper>

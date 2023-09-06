@@ -1,4 +1,11 @@
-import { SetStateAction, useEffect, useState } from 'react';
+import {
+  forwardRef,
+  Ref,
+  SetStateAction,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import { ArticleImpl, ofArticleImpl } from '../../types/article.ts';
 import axios from 'axios';
 import Box from '@mui/material/Box';
@@ -11,13 +18,35 @@ import { getUrlSearchParams, setQuery } from '../../util/urlUtil.ts';
 const PAGE_SIZE: number = 12; // 4x3 열을 위해 12로 변경
 const baseURL = `http://localhost:8080/api/articles`;
 
-export const ArticleList = () => {
-  const [articleArrayList, setArticleArrayList] = useState<ArticleImple[]>([]);
+export const ArticleList = forwardRef((props, ref) => {
+  const [articleArrayList, setArticleArrayList] = useState<ArticleImpl[]>([]);
   const [loading, setLoading] = useState(true);
   const [url, setUrl] = useState(`${baseURL}?size=${PAGE_SIZE}`);
   const [curPageNumber, setCurPageNumber] = useState(1);
   const [totalPageNumber, setTotalPageNumber] = useState(10);
   const navigate = useNavigate();
+
+  useImperativeHandle(ref, () => ({
+    submitSearchParam(title: string, order: string) {
+      let holderUrl = url;
+
+      holderUrl = `${baseURL}?${setQuery(
+        getUrlSearchParams(holderUrl),
+        'title',
+        title
+      )}`;
+
+      holderUrl = `${baseURL}?${setQuery(
+        getUrlSearchParams(holderUrl),
+        'order',
+        order
+      )}`;
+
+      console.log(`${title}-${order}`);
+      console.log(holderUrl);
+      setUrl(holderUrl);
+    },
+  }));
 
   const fetchData = async () => {
     const response = axios.get(url);
@@ -55,7 +84,7 @@ export const ArticleList = () => {
             <AlbumCard
               key={articleArrayList[index].id}
               article={articleArrayList[index]}
-              style={{ margin: '10px', width: '100%' }} // 간격과 카드 크기 조정
+              style={{ margin: '10px', width: '250px' }} // 간격과 카드 크기 조정
               detail={articleArrayList[index].id}
             />
           );
@@ -114,6 +143,6 @@ export const ArticleList = () => {
       </Box>
     </>
   );
-};
+});
 
 export default ArticleList;

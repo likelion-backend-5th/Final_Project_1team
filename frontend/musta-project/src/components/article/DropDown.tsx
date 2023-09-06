@@ -50,7 +50,8 @@ const StyledMenu = styled((props: MenuProps) => (
 
 interface DropDownProps {
   elements: string[][];
-  setValue;
+  order: any;
+  onChangeOrder: any;
 }
 
 export default function DropDown(props: DropDownProps) {
@@ -73,7 +74,7 @@ export default function DropDown(props: DropDownProps) {
   };
 
   const returnChangedValueToParent = (item: string) => {
-    props.setValue(item);
+    props.onChangeOrder(item);
   };
 
   const elementComp = props.elements.map(function (item) {
@@ -86,6 +87,7 @@ export default function DropDown(props: DropDownProps) {
           returnChangedValueToParent(item[2]);
           setButtonText(item[0]);
         }}
+        selected={item[2] === props.order}
         disableRipple>
         {item[0]}
       </MenuItem>

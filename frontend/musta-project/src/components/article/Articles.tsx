@@ -4,8 +4,18 @@ import Box from '@mui/material/Box';
 import SearchInputMui from './SearchInputMui.tsx';
 import Button from '@mui/material/Button';
 import { AddBox } from '@mui/icons-material';
+import { useEffect, useRef, useState } from 'react';
 
 const Articles = () => {
+  const [title, setTitle] = useState();
+  //  asc, desc
+  const [order, setOrder] = useState();
+  const childRef = useRef(null);
+
+  const onClickSubmit = () => {
+    childRef.current.submitSearchParam(title, order);
+  };
+
   return (
     <Container>
       <h3>Articles</h3>
@@ -18,9 +28,15 @@ const Articles = () => {
         <Button variant="contained" startIcon={<AddBox />} href="/article/post">
           글쓰기
         </Button>
-        <SearchInputMui />
+        <SearchInputMui
+          title={title}
+          onChangeTitle={setTitle}
+          order={order}
+          onChangeOrder={setOrder}
+          onClickSubmit={onClickSubmit}
+        />
       </Box>
-      <ArticleList />
+      <ArticleList ref={childRef} />
     </Container>
   );
 };

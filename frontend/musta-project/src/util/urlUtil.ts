@@ -10,7 +10,11 @@ export function setQuery(
   key: string,
   value: string
 ) {
-  urlSearchParams.set(key, value);
+  if (value) {
+    urlSearchParams.set(key, value);
+  } else {
+    urlSearchParams.delete(key);
+  }
 
   return `${urlSearchParams}`;
 }
