@@ -40,7 +40,6 @@ const ordersPerPageOptions = [
   { value: 20, label: '20개' },
 ];
 class OrderStore {
-
   orderFilterResponse: OrderFilterResponseDto | null = null;
   loading = false;
   currentPage = initialPage;
@@ -64,7 +63,7 @@ class OrderStore {
       setSortOrder: action,
       setLoading: action,
       setOrderFilterResponse: action,
-      setSearchInput: action
+      setSearchInput: action,
     });
   }
 
@@ -98,7 +97,6 @@ class OrderStore {
   }
 }
 
-
 const orderStore = new OrderStore();
 
 const fetchData = (newPage: number) => {
@@ -111,7 +109,7 @@ const fetchData = (newPage: number) => {
     orderStore.ordersPerPage
   ).then((response: { data: OrderFilterResponseDto; } | null) => {
     if (response != null) {
-      console.log("내가 구매한 주문목록을 불러옴");
+      console.log('내가 구매한 주문목록을 불러옴');
       console.log(response.data);
       orderStore.setOrderFilterResponse(response.data);
     }
@@ -119,14 +117,16 @@ const fetchData = (newPage: number) => {
   });
 };
 
-
 const OrderConsumerItemList: React.FC = observer(() => {
   useEffect(() => {
     fetchData(initialPage);
+    return () => {};
   }, []);
 
-  const orders: OrderResponse[] = orderStore.orderFilterResponse?.orderResponseDtos.content || [];
-  const totalPageCount = orderStore.orderFilterResponse?.orderResponseDtos.pageable.totalPages || 0;
+  const orders: OrderResponse[] =
+    orderStore.orderFilterResponse?.orderResponseDtos.content || [];
+  const totalPageCount =
+    orderStore.orderFilterResponse?.orderResponseDtos.pageable.totalPages || 0;
 
   const handleStatusChange = (event: any) => {
     const status = event.target.value;

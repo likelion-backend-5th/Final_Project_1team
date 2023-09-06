@@ -6,7 +6,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.config.jwt.JwtConfig;
-import mutsa.api.util.JwtUtil;
+import mutsa.api.util.JwtTokenProvider;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -39,9 +39,9 @@ public class StompHandler implements ChannelInterceptor {
                 .substring(7);
 
             Algorithm algorithm = Algorithm.HMAC256(jwtConfig.getSecretKey().getBytes());
-            JwtUtil.JWTInfo jwtInfo = null;
+            JwtTokenProvider.JWTInfo jwtInfo = null;
             try {
-                jwtInfo = JwtUtil.decodeToken(algorithm, token);
+                jwtInfo = JwtTokenProvider.decodeToken(algorithm, token);
                 log.debug(jwtInfo.toString());
             } catch (TokenExpiredException e) {
                 log.debug("TokenExpiredException: ", e);

@@ -44,7 +44,7 @@ spring:
           google:
             client-id: 446534610656-14r63n2kho9aggjkp8ebi1rgods392uj.apps.googleusercontent.com
             client-secret: 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
-            redirect-uri: http://localhost:8080/api/login/oauth2/callback/**
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
             scope:
               - email
               - profile
@@ -57,3 +57,11 @@ jwt:
   secretKey: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
   accessTokenExpire: 8165431
   refreshTokenExpire: 564657
+
+# toss
+payment:
+  toss:
+    test_client_api_key: test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq
+    test_secret_api_key: test_sk_zXLkKEypNArWmo50nX3lmeaxYG5R
+    success_url: "http://localhost:8080/api/v1/payments/toss/success"
+    fail_url: "http://localhost:8080/api/v1/payments/toss/fail"

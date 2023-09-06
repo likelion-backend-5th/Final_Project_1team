@@ -20,6 +20,14 @@ export default class axiosUtils {
     return axiosInstance.request({
       method: 'post',
       url: '/api' + url,
+      params: data,
+      paramsSerializer: (param) => {
+        const params = new URLSearchParams();
+        for (const key in param) {
+          params.append(key, param[key]);
+        }
+        return params.toString();
+      },
       data: data,
     });
   };
@@ -36,6 +44,22 @@ export default class axiosUtils {
     return axiosInstance.request({
       method: 'delete',
       url: '/api' + url,
+      data: data,
+    });
+  };
+
+  static oauth2Login = (url: string, data?: any): any => {
+    return axiosInstance.request({
+      method: 'post',
+      url: url,
+      params: data,
+      paramsSerializer: (param) => {
+        const params = new URLSearchParams();
+        for (const key in param) {
+          params.append(key, param[key]);
+        }
+        return params.toString();
+      },
       data: data,
     });
   };

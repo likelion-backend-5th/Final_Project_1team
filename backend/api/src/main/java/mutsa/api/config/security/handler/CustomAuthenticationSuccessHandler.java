@@ -7,13 +7,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.config.jwt.JwtConfig;
 import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.api.dto.LoginResponseDto;
-import mutsa.api.util.JwtUtil;
+import mutsa.api.util.CookieUtil;
+import mutsa.api.util.JwtTokenProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -32,27 +32,20 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         Authentication authentication) throws IOException, ServletException {
         CustomPrincipalDetails user = (CustomPrincipalDetails) authentication.getPrincipal();
 
-        Algorithm algorithm = Algorithm.HMAC256(jwtConfig.getSecretKey().getBytes());
-        String accessToken = JwtUtil.createToken(request.getRequestURL().toString(),
+        Algorithm algorithm = jwtConfig.getEncodedSecretKey();
+        String accessToken = JwtTokenProvider.createAccessToken(request,
             user.getUsername(), jwtConfig.getAccessTokenExpire(), algorithm,
             user.getAuthorities().stream()
                 .map(SimpleGrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
-        String refreshToken = JwtUtil.createToken(request.getRequestURL().toString(),
-            user.getUsername(), jwtConfig.getRefreshTokenExpire(), algorithm);
+        String refreshToken = JwtTokenProvider.createRefreshToken(request,
+            user.getUsername(), algorithm);
 
         LoginResponseDto body = new LoginResponseDto();
         body.setUserId(user.getApiId());
         body.setAccessToken(accessToken);
 
-        ResponseCookie cookie = ResponseCookie.from(JwtUtil.REFRESH_TOKEN,
-                refreshToken)
-            .httpOnly(true)
-            .secure(true)
-            .path("/")
-            .maxAge(Duration.ofDays(15))
-            .sameSite("None")
-            .build();
+        ResponseCookie cookie = CookieUtil.createCookie(refreshToken);
 
         response.setStatus(200);
         response.setContentType("application/json");

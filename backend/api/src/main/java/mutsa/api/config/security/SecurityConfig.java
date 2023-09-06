@@ -1,11 +1,10 @@
 package mutsa.api.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.Arrays;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
+import mutsa.api.config.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import mutsa.api.config.security.filter.CustomAuthorizationFilter;
 import mutsa.api.config.security.filter.JsonUsernamePasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,12 +43,12 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final AuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAuthorizationFilter customAuthorizationFilter;
-    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> defaultOAuth2UserService;
+    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> customOAuth2Service;
     private final AuthenticationSuccessHandler redirectAuthenticationSuccessHandler;
     private final AuthenticationFailureHandler redirectAuthenticationFailureHandler;
     private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
-    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> httOAuth2AuthorizationRequestAuthorizationRequestRepository;
+    private final AuthorizationRequestRepository<OAuth2AuthorizationRequest> httpCookieOAuth2AuthorizationRequestRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserDetailsService userDetailsService;
 
@@ -79,14 +78,14 @@ public class SecurityConfig {
                         .authorizationEndpoint(
                                 authorizationEndpointConfig ->
                                         authorizationEndpointConfig.authorizationRequestRepository(
-                                                        httOAuth2AuthorizationRequestAuthorizationRequestRepository)
+                                                httpCookieOAuth2AuthorizationRequestRepository)
                                                 .baseUri("/oauth2/authorization"))
                         .redirectionEndpoint(redirectionEndpointConfig ->
                                 redirectionEndpointConfig.baseUri(
                                         "/login/oauth2/callback/**"))
                         .userInfoEndpoint(userInfoEndpointConfig ->
                                 userInfoEndpointConfig.userService(
-                                        defaultOAuth2UserService))
+                                    customOAuth2Service))
                         .successHandler(redirectAuthenticationSuccessHandler)
                         .failureHandler(redirectAuthenticationFailureHandler)
         ).logout(logout ->
@@ -107,7 +106,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(frontendUrl));
         configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT"));
+        configuration.setAllowedMethods(
+            Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "PATCH", "OPTION"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
@@ -119,11 +119,11 @@ public class SecurityConfig {
     @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter() {
         JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter =
-                new JsonUsernamePasswordAuthenticationFilter(
-                        objectMapper,
-                        customAuthenticationSuccessHandler,
-                        customAuthenticationFailureHandler
-                );
+            new JsonUsernamePasswordAuthenticationFilter(
+                objectMapper,
+                customAuthenticationSuccessHandler,
+                customAuthenticationFailureHandler
+            );
         jsonUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
         return jsonUsernamePasswordAuthenticationFilter;
     }

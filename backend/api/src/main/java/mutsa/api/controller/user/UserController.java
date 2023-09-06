@@ -6,10 +6,14 @@ import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.user.SignUpUserDto;
 import mutsa.api.service.user.UserService;
 import mutsa.api.util.UserUtil;
+import mutsa.common.dto.user.UserInfoDto;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,5 +29,12 @@ public class UserController {
         }
         userService.signUp(signUpDto);
         return new ResponseEntity<>("회원가입이 완료되었습니다.", HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/info")
+    @PreAuthorize("hasAuthority('user.read')")
+    public ResponseEntity<UserInfoDto> findUserInfo(@AuthenticationPrincipal UserDetails user) {
+        return new ResponseEntity(userService.findUserInfo(user.getUsername()),
+            HttpStatus.OK);
     }
 }

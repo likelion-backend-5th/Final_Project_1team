@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-@Qualifier("customOAuth2UserService")
+@Qualifier("customOAuth2Service")
 @RequiredArgsConstructor
 public class CustomOAuth2Service extends DefaultOAuth2UserService {
 
@@ -44,8 +44,8 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
     private final UserRoleRepository userRoleRepository;
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> defaultOAuth2UserService;
+//
+//    private final OAuth2UserService<OAuth2UserRequest, OAuth2User> defaultOAuth2UserService;
 
     /**
      * OAuth2 Code Grant 방식으로 인증을 진행하고, 인증이 완료되고 나서 Resource Server로 부터 유저 정보를 받아오면
@@ -53,12 +53,12 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
      *
      * @param userRequest the user request
      * @return
-     * @throws OAuth2AuthenticationException
+     * @throws OAuth2AuthenticationExceptionx
      */
     @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        Map<String, Object> attributes = defaultOAuth2UserService.loadUser(userRequest)
+        Map<String, Object> attributes = super.loadUser(userRequest)
             .getAttributes();
 
         String apiId = ((Integer) attributes.get(ID_ATTRIBUTE)).toString();
@@ -105,7 +105,7 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
         return necessaryAttributes;
     }
 
-    //TODO 회원가입, 중복 회원가입 예외 처리 필요할 것으로 보임.
+    //TODO 회원가입, 중복 회원가입 예외 처리 필요함
     private OAuth2User signUpUser(String login, String email, String imageUrl,
         String username, Map<String, Object> necessaryAttributes) {
         String encodedPassword = bCryptPasswordEncoder.encode(UUID.randomUUID().toString());

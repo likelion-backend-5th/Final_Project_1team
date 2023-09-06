@@ -14,21 +14,51 @@ import userStore from '../../store/user/userStore';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
+import axiosUtils from '../../uitls/axiosUtils';
+import authStore from '../../store/user/authStore';
+import { useNavigate, useNavigation } from 'react-router-dom';
 
 const LoginForm = (props: any): JSX.Element => {
-  const userStore: userStore = useStores().userStore;
+  const { userStore, authStore } = useStores();
   const [id, setId] = useState<String>('');
   const [password, setPassword] = useState<String>('');
-  const handleEvent = (e: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate();
+  const handleEvent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     if (data.get('id') == null || data.get('password') == null) {
       console.log(data.get('id'));
       console.log(data.get('password'));
-      return <Alert severity="error">아이디와 비밀번호를 확인하세요</Alert>;
     }
-    userStore.login(data);
+    await userStore
+      .login(data)
+      .then(async () => {
+        await authStore
+          .findUserInfo()
+          .then(() => {
+            navigate('/');
+          })
+          .catch();
+      })
+      .catch();
   };
+
+  const googleLogin = useGoogleLogin({
+    scope: 'email profile',
+    onSuccess: async (code) => {
+      code = { ...code, state: 'success' };
+      axiosUtils
+        .oauth2Login('/login/oauth2/code/google', code)
+        .then((res: any) => {
+          console.log(res);
+        });
+    },
+    onError: (res) => {
+      console.error(res);
+    },
+    flow: 'auth-code',
+  });
 
   useEffect(() => {
     setId('');
@@ -94,6 +124,9 @@ const LoginForm = (props: any): JSX.Element => {
           sx={{ mt: 3, mb: 2 }}>
           Sign In
         </Button>
+        <Grid item sx={{ mb: 2 }}>
+          <GoogleLogin size="large" ux_mode="popup" onSuccess={googleLogin} />
+        </Grid>
         <Grid container>
           <Grid item xs>
             <Link href="/find/id" variant="body2">
