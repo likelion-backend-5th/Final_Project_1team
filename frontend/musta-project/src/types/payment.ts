@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosUtils from '../uitls/axiosUtils';
 
 export type PaymentInfo = {
     customerApiId: string;
@@ -9,17 +9,9 @@ export type PaymentInfo = {
     customerName: string;
 };
 
-const createTokenHeader = (token: string) => {
-    return {
-        headers: {
-            Authorization: 'Bearer ' + token,
-        },
-    };
-};
-
-export const fetchPaymentInfo = async (articleApiId: string, token: string): Promise<PaymentInfo> => {
+export const fetchPaymentInfo = async (articleApiId: string): Promise<PaymentInfo> => {
     try {
-        const response = await axios.get(`http://localhost:8080/api/v1/payments/${articleApiId}`, createTokenHeader(token));
+        const response = await axiosUtils.get(`/v1/payments/${articleApiId}`);
         console.log(response);
         return response.data;
     } catch (error) {
