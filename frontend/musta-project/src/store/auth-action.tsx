@@ -203,10 +203,11 @@ function getQueryString(queryParams: Record<string, string>) {
 export const postArticleHandler = (
   // token: string,
   title: string,
-  description: string
+  description: string,
+  price: number
 ) => {
   const URL = `/articles`;
-  const articleRequestObject = { title, description };
+  const articleRequestObject = { title, description, price };
   return axiosUtils.post(URL, articleRequestObject);
 };
 
@@ -215,7 +216,8 @@ export const putArticleHandler = (
   description: string,
   apiId: string,
   articleStatus: ArticleStatus,
-  images: string[]
+  images: string[],
+  price: number
 ) => {
   const URL = `/articles`;
   const articleRequestObject = {
@@ -224,6 +226,7 @@ export const putArticleHandler = (
     apiId,
     articleStatus,
     images,
+    price,
   };
   return axiosUtils.put(URL, articleRequestObject);
 };
