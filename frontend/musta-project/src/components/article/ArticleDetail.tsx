@@ -1,4 +1,15 @@
 import {
+  Close,
+  Edit,
+  Flag,
+  Help,
+  Share,
+  ShoppingCart,
+  Sms
+} from '@mui/icons-material';
+import EditIcon from '@mui/icons-material/Edit';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import {
   Button,
   Card,
   CardActions,
@@ -16,31 +27,21 @@ import {
   SpeedDialIcon,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createChatroom, createOrder } from '../../store/auth-action.tsx';
+import useStores from '../../store/useStores.ts';
 import {
   ArticleImpl,
   getChipColorByArticleStatus,
 } from '../../types/article.ts';
-import axios from 'axios';
-import { styled } from '@mui/material/styles';
-import {
-  Close,
-  Edit,
-  Flag,
-  Help,
-  Share,
-  ShoppingCart,
-  Sms,
-} from '@mui/icons-material';
-import ReviewListForm from '../review/ReviewListForm.tsx';
-import { loadingTime } from '../../util/loadingUtil.ts';
-import { useNavigate } from 'react-router-dom';
-import EditIcon from '@mui/icons-material/Edit';
-import IconButton from '@mui/material/IconButton';
-import { createChatroom, createOrder } from '../../store/auth-action.tsx';
 import { Chatroom } from '../../types/chat.ts';
-
+import { loadingTime } from '../../util/loadingUtil.ts';
+import ReviewListForm from '../review/ReviewListForm.tsx';
 const baseUrl = 'http://localhost:8080/api/articles/';
 
 function getArticleApiId() {
@@ -150,25 +151,31 @@ export function ArticleDetail() {
     navigate(`/chatroom/${chatRoom.chatroomApiId}`);
   };
 
-  const handleCreateOrderClick = (order: OrderDetailResponse) => {
-    navigate(`/article/${order.articleApiId}/order/${order.orderApiId}`);
+  const handleCreateOrderClick = () => {
+    const id = getArticleApiId();
+    navigate(`/article/detail/${id}/payment`);
+
+    // navigate(`/article/${order.articleApiId}/order/${order.orderApiId}`);
   };
 
   const actions = [
     {
       icon: <ShoppingCart color="primary" />,
       name: '주문하기',
+      index: 'consumer',
       onClick: () => {
         console.log('onClick 주문하기');
-        createOrder(getArticleApiId()).then((response: { data: OrderDetailResponse; }) => {
-          const order: OrderDetailResponse = response.data;
-          handleCreateOrderClick(order);
-        });
+        // createOrder(getArticleApiId()).then((response: { data: OrderDetailResponse; }) => {
+        //   const order: OrderDetailResponse = response.data;
+        //   handleCreateOrderClick();
+        // });
+        handleCreateOrderClick();
       },
     },
     {
       icon: <Sms color="primary" />,
       name: '채팅하기',
+      index: 'consumer',
       onClick: () => {
         console.log('onclick 채팅하기');
         createChatroom(getArticleApiId()).then((response: { data: Chatroom; }) => {
@@ -180,6 +187,7 @@ export function ArticleDetail() {
     {
       icon: <Flag color="primary" />,
       name: '신고하기',
+      index: 'consumer',
       onClick: () => {
         console.log('onClick 신고하기');
       },
@@ -187,6 +195,7 @@ export function ArticleDetail() {
     {
       icon: <Share color="primary" />,
       name: '공유하기',
+      index: 'all',
       onClick: () => {
         console.log('onclick 공유하기');
       },
@@ -194,8 +203,17 @@ export function ArticleDetail() {
     {
       icon: <EditIcon color="primary" />,
       name: '수정하기',
+      index: 'seller',
       onClick: () => {
         handleOpenMoveEdit();
+      },
+    },
+    {
+      icon: <ListAltIcon color="primary" />,
+      name: '게시글 주문 확인',
+      index: 'seller',
+      onClick: () => {
+        handleOrderClick();
       },
     },
   ];
@@ -203,6 +221,8 @@ export function ArticleDetail() {
   useEffect(() => {
     fetchData();
   }, [url]);
+
+  const authStore = useStores().authStore;
 
   return (
     <StyledArticleDetail>
@@ -259,11 +279,15 @@ export function ArticleDetail() {
                 onClose={handleClose}
                 open={open}>
                 {actions.map((action) => (
-                  <SpeedDialAction
-                    key={action.name}
-                    icon={action.icon}
-                    onClick={action.onClick}
-                  />
+                  (action.index === 'seller' && article.username === authStore.userInfo?.username)
+                    || (action.index === 'consumer' && article.username != authStore.userInfo?.username)
+                    || (action.index === 'all') ? (
+                    <SpeedDialAction
+                      key={action.name}
+                      icon={action.icon}
+                      onClick={action.onClick}
+                    />
+                  ) : null
                 ))}
               </StyledSpeedDial>
             </Box>
@@ -308,14 +332,6 @@ export function ArticleDetail() {
               </Dialog>
             </Box>
           </StyledCardContent>
-
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleOrderClick}>
-            해당 게시글의 주문 확인
-          </Button>
-
           <ReviewListForm />
         </StyledCard>
       )}

@@ -1,14 +1,14 @@
 type OrderStatus = 'PROGRESS' | 'END' | 'CANCEL' | 'WAIT';
 
 interface OrderDetailResponse {
-  orderApiId: String;
-  articleApiId: String;
-  articleTitle: String;
-  articleDescription: String;
-  articleThumbnail: String;
-  consumerName: String;
-  sellerName: String;
-  date: String;
+  orderApiId: string;
+  articleApiId: string;
+  articleTitle: string;
+  articleDescription: string;
+  articleThumbnail: string;
+  consumerName: string;
+  sellerName: string;
+  date: string;
   orderStatus: OrderStatus;
 }
 interface OrderResponse {

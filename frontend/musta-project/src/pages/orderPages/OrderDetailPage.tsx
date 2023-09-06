@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import {Box, Container, Grid, Paper, Table, TableBody, TableCell, TableRow, Typography} from '@mui/material';
-import {getOrderHandler} from '../../store/auth-action';
-import {getFormattedDate, getFormattedTime} from '../../util/dateUtil';
+import { Box, Container, Grid, Paper, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import { getOrderHandler } from '../../store/auth-action';
+import { getFormattedDate, getFormattedTime } from '../../util/dateUtil';
 import axiosUtils from '../../uitls/axiosUtils';
 
 import BackButton from '../../components/BackButton';
@@ -23,15 +23,22 @@ const StyledTableCell = styled(TableCell)({
   sx: { fontWeight: 'bold', width: '20%' },
 });
 
-
 const OrderDetailPage: React.FC = () => {
   const { articleApiId, orderApiId } = useParams();
-  const [orderDetail, setOrderDetail] = useState<OrderResponse | null>(null);
+  const [orderDetailResponse, setOrderDetail] = useState<OrderDetailResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+
+  const spanStyle = {
+    color: isHovered ? '#007bff' : 'inherit',
+    textDecoration: isHovered ? 'underline' : 'none',
+    cursor: 'pointer',
+  };
+
   useEffect(() => {
     setLoading(true);
-    getOrderHandler(articleApiId, orderApiId).then((response: { data: React.SetStateAction<OrderResponse | null>; } | null) => {
+    getOrderHandler(articleApiId, orderApiId).then((response: { data: React.SetStateAction<OrderDetailResponse | null>; } | null) => {
       if (response != null) {
         console.log("주문상세 정보를 불러옴");
         setOrderDetail(response.data);
@@ -61,12 +68,23 @@ const OrderDetailPage: React.FC = () => {
     navigate(0);
   };
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
 
-  if (!orderDetail || loading) {
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  if (!orderDetailResponse || loading) {
     return <div>Loading...</div>;
   }
 
-  const time = getFormattedDate(orderDetail.date) + getFormattedTime(orderDetail.date);
+  const handleArticleClick = () => {
+    navigate(`/article/detail/${orderDetailResponse.articleApiId}`);
+  };
+
+  const time = getFormattedDate(orderDetailResponse.date) + getFormattedTime(orderDetailResponse.date);
 
   return (
     <Container>
@@ -83,7 +101,7 @@ const OrderDetailPage: React.FC = () => {
           </Grid>
           <Grid item>
             <StyledTypography variant="h4" gutterBottom>
-              {orderDetail.articleTitle}
+              {orderDetailResponse.articleTitle}
             </StyledTypography>
           </Grid>
         </Grid>
@@ -96,16 +114,24 @@ const OrderDetailPage: React.FC = () => {
             <TableBody>
               <TableRow>
                 <StyledTableCell variant="head">주문 번호</StyledTableCell>
-                <TableCell>{orderDetail.orderApiId}</TableCell>
+                <TableCell>{orderDetailResponse.orderApiId}</TableCell>
               </TableRow>
               <TableRow>
                 <StyledTableCell variant="head">주문한 게시글</StyledTableCell>
-                <TableCell>{orderDetail.articleTitle}</TableCell>
+                <TableCell>
+                  <span
+                    onClick={handleArticleClick}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    style={spanStyle}
+                  >
+                    {orderDetailResponse.articleTitle}
+                  </span></TableCell>
               </TableRow>
               <TableRow>
                 <StyledTableCell variant="head">주문 상태</StyledTableCell>
                 <TableCell>
-                  <OrderStatusBadge orderStatus={orderDetail.orderStatus} />
+                  <OrderStatusBadge orderStatus={orderDetailResponse.orderStatus} />
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -114,18 +140,20 @@ const OrderDetailPage: React.FC = () => {
               </TableRow>
               <TableRow>
                 <StyledTableCell variant="head">판매자 이름</StyledTableCell>
-                <TableCell>{orderDetail.sellerName}</TableCell>
+                <TableCell>{orderDetailResponse.sellerName}</TableCell>
               </TableRow>
               <TableRow>
                 <StyledTableCell variant="head">주문자 이름</StyledTableCell>
-                <TableCell>{orderDetail.consumerName}</TableCell>
+                <TableCell>{orderDetailResponse.consumerName}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </Paper>
 
         <OrderActionButton
-          orderStatus={orderDetail.orderStatus}
+          consumerName={orderDetailResponse.consumerName}
+          sellerName={orderDetailResponse.sellerName}
+          orderStatus={orderDetailResponse.orderStatus}
           handleReviewClick={() => navigate(`/article/${articleApiId}/order/${orderApiId}/review`)}
           handleOrderCancellation={() => handleOrderAction('CANCEL')}
           handleOrderCompletionWithWaiting={() => handleOrderAction('WAIT')}
