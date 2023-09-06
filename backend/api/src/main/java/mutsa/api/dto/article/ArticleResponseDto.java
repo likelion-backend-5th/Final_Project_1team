@@ -30,6 +30,7 @@ public class ArticleResponseDto {
     private ArticleStatus articleStatus;
     private String createdDate;
     private List<ImageResponseDto> images;
+    private Long price;
 
     public static ArticleResponseDto to(Article entity) {
         return ArticleResponseDto.builder()
@@ -41,6 +42,7 @@ public class ArticleResponseDto {
                 .status(entity.getStatus())
                 .articleStatus(entity.getArticleStatus())
                 .createdDate(entity.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
+                .price(entity.getPrice())
                 .build();
     }
 

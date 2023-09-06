@@ -83,6 +83,7 @@ public class ArticleModuleService {
         return Article.builder()
                 .title(requestDto.getTitle())
                 .description(requestDto.getDescription())
+                .price(requestDto.getPrice())
                 .build();
     }
 

@@ -301,6 +301,7 @@ public class ArticleControllerTest {
         ArticleCreateRequestDto articleCreateRequestDto = new ArticleCreateRequestDto();
         articleCreateRequestDto.setTitle("test Article");
         articleCreateRequestDto.setDescription("test Desc");
+        articleCreateRequestDto.setPrice(119000L);
 
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
@@ -320,7 +321,8 @@ public class ArticleControllerTest {
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON),
                         jsonPath("title").value(articleCreateRequestDto.getTitle()),
-                        jsonPath("description").value(articleCreateRequestDto.getDescription())
+                        jsonPath("description").value(articleCreateRequestDto.getDescription()),
+                        jsonPath("price").value(articleCreateRequestDto.getPrice())
                 )
                 .andReturn();
     }
