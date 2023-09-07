@@ -42,6 +42,7 @@ import {
 import { Chatroom } from '../../types/chat.ts';
 import { loadingTime } from '../../util/loadingUtil.ts';
 import ReviewListForm from '../review/ReviewListForm.tsx';
+import { formatPrice} from "../../util/formatPrice.ts";
 const baseUrl = 'http://localhost:8080/api/articles/';
 
 function getArticleApiId() {
@@ -86,10 +87,6 @@ const StyledSpeedDial = styled(SpeedDial)({
   bottom: '16px',
   right: '16px',
 });
-
-const formatPrice = (price) => {
-  return new Intl.NumberFormat('ko-KR').format(price) + '원';
-};
 
 export function ArticleDetail() {
   const [url, setURL] = useState(baseUrl + getArticleApiId());
