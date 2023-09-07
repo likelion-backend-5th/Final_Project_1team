@@ -52,6 +52,10 @@ dependencies {
     //socket - gson
     implementation 'com.google.code.gson:gson:2.10.1'
 
+    //java8 LocalDateTime 직렬화 오류 해결을 위해 추가
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 }
 
 tasks.bootJar { enabled = false}
