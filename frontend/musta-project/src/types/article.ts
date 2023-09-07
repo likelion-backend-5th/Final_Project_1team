@@ -39,7 +39,8 @@ export class ArticleImpl implements Article {
     public status: Status,
     public articleStatus: ArticleStatus,
     public createdDate: string,
-    public price: number
+    public price: number,
+    public images: { apiId: string; refApiId: string; fullPath: string }[]
   ) {}
 }
 

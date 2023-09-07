@@ -66,7 +66,7 @@ function convertToImageRequestDto(result: string[]) {
   result.map((value) => {
     arr.push({
       s3URL: value.slice(0, value.lastIndexOf('/')),
-      filename: value.slice(value.lastIndexOf('/'), value.length),
+      filename: value.slice(value.lastIndexOf('/') + 1, value.length),
     });
   });
 
