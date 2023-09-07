@@ -151,8 +151,6 @@ export function ArticleDetail() {
   const handleCreateOrderClick = () => {
     const id = getArticleApiId();
     navigate(`/article/detail/${id}/payment`);
-
-    // navigate(`/article/${order.articleApiId}/order/${order.orderApiId}`);
   };
 
   const actions = [
@@ -162,10 +160,6 @@ export function ArticleDetail() {
       index: 'consumer',
       onClick: () => {
         console.log('onClick 주문하기');
-        // createOrder(getArticleApiId()).then((response: { data: OrderDetailResponse; }) => {
-        //   const order: OrderDetailResponse = response.data;
-        //   handleCreateOrderClick();
-        // });
         handleCreateOrderClick();
       },
     },
