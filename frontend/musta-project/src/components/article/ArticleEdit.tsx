@@ -198,11 +198,38 @@ export function ArticleEdit() {
         <Skeleton variant="rounded" width={888.875} height={639.172} />
       ) : (
         <StyledCard>
-          <StyledCardMedia
-            component="img"
-            alt="place holder"
-            image="https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com"
-          />
+          {oldImageFiles.length == 0 ? (
+            <StyledCardMedia
+              component="img"
+              alt="place holder"
+              image="https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com"
+            />
+          ) : (
+            <Box>
+              <Carousel showArrows={true} infiniteLoop={true} selectedItem={0}>
+                {oldImageFiles.map((preview, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '300px', // Set the desired height
+                    }}>
+                    <img
+                      src={preview.fullPath}
+                      alt={`Image ${index}`}
+                      style={{
+                        maxWidth: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                      }}
+                    />
+                  </div>
+                ))}
+              </Carousel>
+            </Box>
+          )}
           <StyledCardContent>
             <Box sx={{ marginBottom: '20px' }}>
               <Collapse in={alertOpen}>
