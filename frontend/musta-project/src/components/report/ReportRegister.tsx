@@ -22,7 +22,11 @@ function ReportRegister() {
       });
       alert('신고가 등록되었습니다.');
 
-      navigate(`/article/detail/${resourceApiId}`);
+      if (resourceType === 'article') {
+        navigate(`/article/detail/${resourceApiId}`);
+      } else if (resourceType === 'review') {
+        navigate(`/review/${resourceApiId}`);
+      }
 
     } catch (error) {
       alert('신고 등록에 실패하였습니다.');
