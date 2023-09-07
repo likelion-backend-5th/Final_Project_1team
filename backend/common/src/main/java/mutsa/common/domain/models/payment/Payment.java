@@ -50,6 +50,7 @@ public class Payment extends BaseEntity {
 
     public void setOrder(Order order) {
         this.order = order;
+        order.setPayment(this);
     }
 
     public void updateAfterSuccess(String paymentKey) {
