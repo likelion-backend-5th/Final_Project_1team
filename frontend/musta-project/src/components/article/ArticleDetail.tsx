@@ -42,6 +42,7 @@ import {
 import { Chatroom } from '../../types/chat.ts';
 import { loadingTime } from '../../util/loadingUtil.ts';
 import ReviewListForm from '../review/ReviewListForm.tsx';
+import { formatPrice} from "../../util/formatPrice.ts";
 import { Carousel } from 'react-responsive-carousel';
 
 const baseUrl = 'http://localhost:8080/api/articles/';
@@ -88,10 +89,6 @@ const StyledSpeedDial = styled(SpeedDial)({
   bottom: '16px',
   right: '16px',
 });
-
-const formatPrice = (price) => {
-  return new Intl.NumberFormat('ko-KR').format(price) + '원';
-};
 
 export function ArticleDetail() {
   const [url, setURL] = useState(baseUrl + getArticleApiId());
@@ -158,8 +155,6 @@ export function ArticleDetail() {
   const handleCreateOrderClick = () => {
     const id = getArticleApiId();
     navigate(`/article/detail/${id}/payment`);
-
-    // navigate(`/article/${order.articleApiId}/order/${order.orderApiId}`);
   };
 
   const actions = [
@@ -169,10 +164,6 @@ export function ArticleDetail() {
       index: 'consumer',
       onClick: () => {
         console.log('onClick 주문하기');
-        // createOrder(getArticleApiId()).then((response: { data: OrderDetailResponse; }) => {
-        //   const order: OrderDetailResponse = response.data;
-        //   handleCreateOrderClick();
-        // });
         handleCreateOrderClick();
       },
     },

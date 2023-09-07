@@ -10,12 +10,15 @@ import mutsa.common.domain.filter.order.OrderFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
+import mutsa.common.domain.models.payment.PayType;
+import mutsa.common.domain.models.payment.Payment;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.dto.order.OrderResponseDto;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
+import mutsa.common.repository.payment.PaymentRepository;
 import mutsa.common.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +52,8 @@ class OrderModuleServiceTest {
     private ArticleRepository articleRepository;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     private User seller, consumer, other;
     private Article article, article2;
@@ -66,6 +71,7 @@ class OrderModuleServiceTest {
                 .title("Pre Article 1")
                 .description("Pre Article 1 desc")
                 .user(seller)
+                .price(129000L)
                 .build();
 
         article = articleRepository.save(article);
@@ -84,6 +90,8 @@ class OrderModuleServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
+        Payment payment = Payment.of(PayType.CARD, article, savedOrder);
+        paymentRepository.save(payment);
 
         //when
         OrderDetailResponseDto detailOrder = orderModuleService.findDetailOrder(article, seller, savedOrder.getApiId());
@@ -99,6 +107,8 @@ class OrderModuleServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
+        Payment payment = Payment.of(PayType.CARD, article, savedOrder);
+        paymentRepository.save(payment);
 
         //when, then
         Assertions.assertThatThrownBy(() -> orderModuleService.findDetailOrder(article, other, savedOrder.getApiId()))
@@ -220,6 +230,8 @@ class OrderModuleServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
+        Payment payment = Payment.of(PayType.CARD, article, savedOrder);
+        paymentRepository.save(payment);
         entityManager.flush();
         entityManager.clear();
 

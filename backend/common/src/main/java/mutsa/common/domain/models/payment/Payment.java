@@ -3,6 +3,7 @@ package mutsa.common.domain.models.payment;
 import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
+import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 
 @Entity
@@ -60,5 +61,17 @@ public class Payment extends BaseEntity {
     public void updateFail(String message, String orderKey) {
         this.orderKey = orderKey;
         this.failReason = message;
+    }
+
+    public static Payment of(PayType payType, Article article, Order order) {
+        return Payment.builder()
+                .payType(payType)
+                .amount(article.getPrice())
+                .orderName(article.getTitle())
+                .order(order)
+                .orderKey(order.getApiId())
+                .paySuccessYN(false)
+                .cancelYN(false)
+                .build();
     }
 }

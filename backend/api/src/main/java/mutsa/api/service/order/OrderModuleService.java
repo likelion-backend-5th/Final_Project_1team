@@ -8,11 +8,13 @@ import mutsa.common.domain.filter.order.OrderFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
+import mutsa.common.domain.models.payment.Payment;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.dto.order.OrderResponseDto;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.order.OrderRepository;
+import mutsa.common.repository.payment.PaymentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,13 +28,15 @@ import static mutsa.common.exception.ErrorCode.ORDER_NOT_FOUND;
 @Slf4j
 public class OrderModuleService {
     private final OrderRepository orderRepository;
+    private final PaymentRepository paymentRepository;
 
     public OrderDetailResponseDto findDetailOrder(Article article, User user, String orderApiId) {
         Order order = getByApiId(orderApiId);
+        Payment payment = getPayment(orderApiId);
 
         order.validArticleId(article);
         order.validSellerOrConsumerId(user); //판매자와 구매자만 확인할 수 있도록
-        return OrderDetailResponseDto.fromEntity(order);
+        return OrderDetailResponseDto.fromEntity(order, payment.getAmount());
     }
 
     public Page<OrderResponseDto> findAllOrder(Article article, User user, String orderStatus, Pageable pageable) {
@@ -51,11 +55,12 @@ public class OrderModuleService {
     @Transactional
     public OrderDetailResponseDto updateOrderStatus(Article article, User user, OrderStatusRequestDto orderStatusRequestDto, String orderApiId) {
         Order order = getByApiId(orderApiId);
+        Payment payment = getPayment(orderApiId);
         order.validArticleId(article);
         order.validSellerOrConsumerId(user); //판매자와 구매자만 상태를 변경할 수 있다.
 
         order.setOrderStatus(OrderStatus.of(orderStatusRequestDto.getOrderStatus()));
-        return OrderDetailResponseDto.fromEntity(order);
+        return OrderDetailResponseDto.fromEntity(order, payment.getAmount());
     }
 
     @Transactional
@@ -86,6 +91,11 @@ public class OrderModuleService {
 
     public Order getById(Long id) {
         return orderRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ORDER_NOT_FOUND));
+    }
+
+    private Payment getPayment(String orderApiId) {
+        return paymentRepository.findByOrderKey(orderApiId)
                 .orElseThrow(() -> new BusinessException(ORDER_NOT_FOUND));
     }
 

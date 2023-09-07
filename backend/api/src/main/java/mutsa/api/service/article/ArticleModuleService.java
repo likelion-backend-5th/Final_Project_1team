@@ -57,6 +57,7 @@ public class ArticleModuleService {
         article.setTitle(updateDto.getTitle());
         article.setDescription(updateDto.getDescription());
         article.setArticleStatus(updateDto.getArticleStatus());
+        article.setPrice(updateDto.getPrice());
 
         return article;
     }

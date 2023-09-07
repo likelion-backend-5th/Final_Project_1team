@@ -1,6 +1,7 @@
 package mutsa.api.service.payment;
 
 import lombok.RequiredArgsConstructor;
+import mutsa.api.config.common.CommonConfig;
 import mutsa.api.config.payment.TossPaymentConfig;
 import mutsa.api.dto.payment.PaymentDto;
 import mutsa.api.dto.payment.PaymentSuccessDto;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
@@ -134,4 +136,18 @@ public class PaymentModuleService {
     private void updatePaymentAfterSuccess(Payment payment, String paymentKey) {
         payment.updateAfterSuccess(paymentKey);
     }
+
+    // 주문 정보 찾기
+    public Order findOrderByApiId(String orderId) {
+        return orderRepository.findByApiId(orderId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+    }
+
+    // 결제 성공 후 리다이렉트 위치 반환
+    public URI getSuccessRedirectLocation(String orderId, CommonConfig commonConfig) {
+        Order order = findOrderByApiId(orderId);
+        String redirectUrl = commonConfig.getFrontendUrl() + "/article/" + order.getArticle().getApiId() + "/order/" + orderId;
+        return URI.create(redirectUrl);
+    }
+
 }
