@@ -96,7 +96,8 @@ public class ArticleServiceTest {
                 "[Updated]Pre Article 1 desc",
                 articles.get(0).getApiId(),
                 ArticleStatus.EXPIRED,
-                null
+                null,
+                119000L
         );
 
         ArticleResponseDto responseDto = articleService.update(updateDto);
