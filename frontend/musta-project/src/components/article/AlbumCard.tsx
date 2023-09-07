@@ -6,11 +6,15 @@ import {
   Chip,
   Typography,
 } from '@mui/material';
-import { Article, getChipColorByArticleStatus } from '../../types/article.ts';
+import {
+  Article,
+  ArticleImpl,
+  getChipColorByArticleStatus,
+} from '../../types/article.ts';
 import { useNavigate } from 'react-router-dom';
 
 type AlbumCardProps = {
-  article: Article;
+  article: ArticleImpl;
   style: { margin: string; width: string };
   detail: string;
 };
@@ -34,13 +38,18 @@ export const AlbumCard = (props: AlbumCardProps) => {
       <CardActionArea>
         <CardMedia
           component="img"
-          // height="140"
           image={
-            !article.thumbnail
-              ? 'https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com'
-              : article.thumbnail
+            article.images.length == 0
+              ? 'https://via.placeholder.com/1920x1080.png?text=via%20placeholder'
+              : article.images[0].fullPath
           }
           alt="place holder image"
+          sx={{
+            // Width: '244px',
+            // maxHeight: '140px',
+            width: '244px',
+            height: '137px',
+          }}
         />
         <CardContent sx={{ paddingTop: 0 }}>
           <Chip
