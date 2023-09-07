@@ -27,13 +27,16 @@ public enum ErrorCode {
     DUPLICATION_USER(HttpStatus.NOT_FOUND.value(), "U001", "중복된 ID입니다."),
     DIFFERENT_PASSWORD(HttpStatus.NOT_FOUND.value(), "U002", "입력된 비밀번호가 다릅니다."),
 
-    //article
+    // article
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "ARTICLE_NOT_FOUND", "해당 게시글을 찾을 수 없습니다."),
     ARTICLE_USER_NOT_MATCH(HttpStatus.BAD_REQUEST.value(), "ARTICLE_USER_NOT_MATCH", "게시글 작성자가 아닙니다."),
     INVALID_ARTICLE_ORDER(HttpStatus.BAD_REQUEST.value(), "", "url path가 부정확합니다."),
     ARTICLE_PERMISSION_DENIED(HttpStatus.FORBIDDEN.value(), "", "판매자의 권한이 아닙니다."),
 
-    //order
+    // image
+    IMAGE_USER_NOT_MATCH(HttpStatus.BAD_REQUEST.value(), "IMAGE_USER_NOT_MATCH", "이미지를 등록한 유저가 아닙니다."),
+
+    // order
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "ORDER_NOT_FOUND", "해당 주문을 찾을 수 없습니다."),
     ORDER_PERMISSION_DENIED(HttpStatus.FORBIDDEN.value(), "", "판매자나 구매자가 아닙니다."),
 

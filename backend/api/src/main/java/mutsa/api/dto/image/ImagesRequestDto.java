@@ -6,15 +6,19 @@
 
 package mutsa.api.dto.image;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
 @Getter
 @Setter
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ImagesRequestDto {
     private String s3URL;
+    private String filename;
 }

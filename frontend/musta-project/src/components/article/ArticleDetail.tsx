@@ -5,7 +5,7 @@ import {
   Help,
   Share,
   ShoppingCart,
-  Sms
+  Sms,
 } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import ListAltIcon from '@mui/icons-material/ListAlt';
@@ -43,6 +43,8 @@ import { Chatroom } from '../../types/chat.ts';
 import { loadingTime } from '../../util/loadingUtil.ts';
 import ReviewListForm from '../review/ReviewListForm.tsx';
 import { formatPrice} from "../../util/formatPrice.ts";
+import { Carousel } from 'react-responsive-carousel';
+
 const baseUrl = 'http://localhost:8080/api/articles/';
 
 function getArticleApiId() {
@@ -100,6 +102,7 @@ export function ArticleDetail() {
     articleStatus: 'LIVE',
     createdDate: '1970-01-01 12:00:00',
     price: 1000,
+    images: null,
   });
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -123,6 +126,7 @@ export function ArticleDetail() {
         articleStatus: data.articleStatus,
         createdDate: data.createdDate,
         price: data.price,
+        images: data.images,
       });
       //  TODO DEBUG용
       setTimeout(() => setLoading(false), loadingTime);
@@ -169,10 +173,12 @@ export function ArticleDetail() {
       index: 'consumer',
       onClick: () => {
         console.log('onclick 채팅하기');
-        createChatroom(getArticleApiId()).then((response: { data: Chatroom; }) => {
-          const chatroom: Chatroom = response.data;
-          handleChatRoomClick(chatroom);
-        });
+        createChatroom(getArticleApiId()).then(
+          (response: { data: Chatroom }) => {
+            const chatroom: Chatroom = response.data;
+            handleChatRoomClick(chatroom);
+          }
+        );
       },
     },
     {
@@ -221,11 +227,38 @@ export function ArticleDetail() {
         <Skeleton variant="rounded" width={888.875} height={639.172} />
       ) : (
         <StyledCard>
-          <StyledCardMedia
-            component="img"
-            alt="place holder"
-            image="https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com"
-          />
+          {article.images.length == 0 ? (
+            <StyledCardMedia
+              component="img"
+              alt="place holder"
+              image="https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com"
+            />
+          ) : (
+            <Box>
+              <Carousel showArrows={true} infiniteLoop={true} selectedItem={0}>
+                {article.images.map((preview, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '300px', // Set the desired height
+                    }}>
+                    <img
+                      src={preview.fullPath}
+                      alt={`Image ${index}`}
+                      style={{
+                        maxWidth: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                      }}
+                    />
+                  </div>
+                ))}
+              </Carousel>
+            </Box>
+          )}
           <StyledCardContent>
             <Box
               sx={{
@@ -251,7 +284,9 @@ export function ArticleDetail() {
                 marginBottom: '16px', // Add some spacing
               }}>
               <Typography variant="h6">{article.username}</Typography>
-              <Typography variant="h6" style={{ fontWeight: 'bold', fontSize: '1.5em' }}>
+              <Typography
+                variant="h6"
+                style={{ fontWeight: 'bold', fontSize: '1.5em' }}>
                 {formatPrice(article.price)}
               </Typography>
               <Typography variant="body2">{article.createdDate}</Typography>
@@ -269,17 +304,19 @@ export function ArticleDetail() {
                 onOpen={handleOpen}
                 onClose={handleClose}
                 open={open}>
-                {actions.map((action) => (
-                  (action.index === 'seller' && article.username === authStore.userInfo?.username)
-                    || (action.index === 'consumer' && article.username != authStore.userInfo?.username)
-                    || (action.index === 'all') ? (
+                {actions.map((action) =>
+                  (action.index === 'seller' &&
+                    article.username === authStore.userInfo?.username) ||
+                  (action.index === 'consumer' &&
+                    article.username != authStore.userInfo?.username) ||
+                  action.index === 'all' ? (
                     <SpeedDialAction
                       key={action.name}
                       icon={action.icon}
                       onClick={action.onClick}
                     />
                   ) : null
-                ))}
+                )}
               </StyledSpeedDial>
             </Box>
             <Typography paragraph>{article.description}</Typography>

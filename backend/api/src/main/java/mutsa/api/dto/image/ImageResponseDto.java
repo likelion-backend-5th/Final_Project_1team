@@ -9,6 +9,7 @@ package mutsa.api.dto.image;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import mutsa.common.domain.models.image.Image;
 
 @Getter
 @Setter
@@ -16,7 +17,13 @@ import lombok.Setter;
 public class ImageResponseDto {
     private String apiId;
     private String refApiId;
-    private String path;
-    private String fileName;
-    private String userNickname;
+    private String fullPath;
+
+    public static ImageResponseDto to(Image entity) {
+        return ImageResponseDto.builder()
+                .apiId(entity.getApiId())
+                .refApiId(entity.getRefApiId())
+                .fullPath(entity.getPath() + "/" + entity.getFileName())
+                .build();
+    }
 }
