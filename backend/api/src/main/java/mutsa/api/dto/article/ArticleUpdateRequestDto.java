@@ -28,6 +28,6 @@ public class ArticleUpdateRequestDto {
     private String apiId;
     @NotNull
     private ArticleStatus articleStatus;
-    private List<String> images;
+    private List<ImagesRequestDto> images;
     private Long price;
 }

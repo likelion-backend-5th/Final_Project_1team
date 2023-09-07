@@ -19,6 +19,7 @@ import {
   postArticleHandler,
 } from '../../store/auth-action.tsx';
 import { useNavigate } from 'react-router-dom';
+import { uploadImagesToS3 } from '../../util/s3Client.ts';
 
 const StyledArticleDetail = styled('div')({
   display: 'flex',
@@ -50,7 +51,7 @@ export function ArticlePost() {
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
-  const [price, setPrice ] = useState(0);
+  const [price, setPrice] = useState(0);
   const navigate = useNavigate();
 
   const handleImageChange = (event) => {
@@ -69,32 +70,25 @@ export function ArticlePost() {
   };
 
   const handleSubmit = async () => {
-    // const apiFormData = new FormData();
-    // apiFormData.append('title', title);
-    // apiFormData.append('description', description);
-
-    //  s3 파일 전송하는 코드
-    // const s3FormData = new FormData();
-    // imageFiles.forEach((file) => {
-    //   apiFormData.append('images', file);
-    // });
-
     try {
-      let token = localStorage.getItem('token');
+      uploadImagesToS3(imageFiles, 'article').then((result) => {
+        if (result) {
+          console.log('All images uploaded successfully.');
+          console.log(result);
+          postArticleHandler(title, description, price, result).then(
+            (response) => {
+              if (response != null) {
+                console.log('Article posted successfully:', response.data);
+                navigate(`/article/detail/${response.data.apiId}`, {
+                  replace: false,
+                });
+                return;
+              }
 
-      token = token
-        ? token
-        : 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0';
-      postArticleHandler(title, description, price).then((response) => {
-        if (response != null) {
-          console.log('Article posted successfully:', response.data);
-          navigate(`/article/detail/${response.data.apiId}`, {
-            replace: false,
-          });
-          return;
+              console.log('Response Data is null');
+            }
+          );
         }
-
-        console.log('Response Data is null');
       });
     } catch (error) {
       console.error('Error posting article:', error);
@@ -128,12 +122,12 @@ export function ArticlePost() {
         </Box>
         <Box>
           <StyledTextField
-              id="article-price"
-              label="판매 가격"
-              type={"number"}
-              value={price}
-              inputProps={{min:0}} // Set maximum character length
-              onChange={(e) => setPrice(parseInt(e.target.value, 10))}
+            id="article-price"
+            label="판매 가격"
+            type={'number'}
+            value={price}
+            inputProps={{ min: 0 }} // Set maximum character length
+            onChange={(e) => setPrice(parseInt(e.target.value, 10))}
           />
         </Box>
         <Box>

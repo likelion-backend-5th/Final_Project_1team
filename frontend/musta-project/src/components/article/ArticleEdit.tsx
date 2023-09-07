@@ -83,7 +83,7 @@ export function ArticleEdit() {
   const [description, setDescription] = useState('');
   const [createdDate, setCreatedDate] = useState('');
   const [articleStatus, setArticleStatus] = useState('');
-  const [price, setPrice ] = useState(0);
+  const [price, setPrice] = useState(0);
   const navigate = useNavigate();
 
   const handleImageChange = (event) => {
@@ -148,42 +148,6 @@ export function ArticleEdit() {
         console.log('Image upload failed.');
       }
     });
-    //
-    // const params = {
-    //   Bucket: bucketName, // The name of the bucket. For example, 'sample-bucket-101'.
-    //   Key: 'sample_upload.txt', // The name of the object. For example, 'sample_upload.txt'.
-    //   Body: 'Hello world!', // The content of the object. For example, 'Hello world!".
-    // };
-    //
-    // const run = async () => {
-    //   // Create an Amazon S3 bucket.
-    //   try {
-    //     const data = await s3Client.send(
-    //       new CreateBucketCommand({ Bucket: params.Bucket })
-    //     );
-    //     console.log(data);
-    //     console.log('Successfully created a bucket called ', data.Location);
-    //     return data; // For unit tests.
-    //   } catch (err) {
-    //     console.log('Error', err);
-    //   }
-    //   // Create an object and upload it to the Amazon S3 bucket.
-    //   try {
-    //     const results = await s3Client.send(new PutObjectCommand(params));
-    //     console.log(
-    //       'Successfully created ' +
-    //         params.Key +
-    //         ' and uploaded it to ' +
-    //         params.Bucket +
-    //         '/' +
-    //         params.Key
-    //     );
-    //     return results; // For unit tests.
-    //   } catch (err) {
-    //     console.log('Error', err);
-    //   }
-    // };
-    // run();
   };
 
   const fetchData = async () => {
@@ -275,14 +239,14 @@ export function ArticleEdit() {
                 maxRows="1"
               />
               <TextField
-                  id="article-price"
-                  defaultValue={price}
-                  size="medium"
-                  inputProps={{min:0}} // Set maximum character length
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setPrice(parseInt(event.target.value, 10));
-                  }}
-                  maxRows="1"
+                id="article-price"
+                defaultValue={price}
+                size="medium"
+                inputProps={{ min: 0 }} // Set maximum character length
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setPrice(parseInt(event.target.value, 10));
+                }}
+                maxRows="1"
               />
             </Box>
             <Box
