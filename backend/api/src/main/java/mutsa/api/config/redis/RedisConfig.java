@@ -1,30 +1,29 @@
 package mutsa.api.config.redis;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.service.chat.RedisMessageSubscriber;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import mutsa.common.domain.models.user.User;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
-import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
+@RequiredArgsConstructor
 @Slf4j
 public class RedisConfig {
-    @Value("${spring.data.redis.host}")
-    private String host;
-
-    @Value("${spring.data.redis.port}")
-    private int port;
-
+    private final RedisProperties properties;
     /**
      * <p>yml 파일에 의해 포트와, 호스트가 자동으로 지정된다.
      * 연결시에 추가로 지정해야하는 경우는 @Value 읽어 지정하면 된다.
@@ -34,10 +33,11 @@ public class RedisConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
-        redisConfiguration.setHostName(host);
-        redisConfiguration.setPort(port);
 
-        return new LettuceConnectionFactory(redisConfiguration);
+        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisConfiguration);
+        lettuceConnectionFactory.afterPropertiesSet();//yml세팅으로 init
+
+        return lettuceConnectionFactory;
     }
 
     /**
@@ -47,10 +47,20 @@ public class RedisConfig {
      * @return
      */
     @Bean
-    @ConditionalOnMissingBean(name = "redisTemplate")
     @Primary
-    public StringRedisTemplate redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public StringRedisTemplate chatRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        //채팅을 불러오는 템플릿
         return new StringRedisTemplate(redisConnectionFactory);
+    }
+
+    @Bean
+    public RedisTemplate<String, User> userRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        //유저 캐싱 저장용
+        RedisTemplate<String, User> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<User>(User.class));
+        return redisTemplate;
     }
 
     /**
