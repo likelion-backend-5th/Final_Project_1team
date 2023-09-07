@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import ReportForm from './ReportForm.tsx';
+import axiosUtils from "../../uitls/axiosUtils.ts";
 
 type ReportParams = {
   resourceType: 'article' | 'review' | 'chat';
@@ -12,25 +13,18 @@ function ReportRegister() {
   const { resourceType, resourceApiId } = useParams<ReportParams>();
 
   const handleSubmit = async () => {
-    const response = await fetch(`http://localhost:8080/api/reports`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    try {
+      const response = await axiosUtils.post('/reports', {
         resourceType: resourceType,
         resourceApiId: resourceApiId,
         content: content,
-      }),
-    });
-
-    if (response.ok) {
+      });
       alert('신고가 등록되었습니다.');
-    } else {
+
+    } catch (error) {
       alert('신고 등록에 실패하였습니다.');
     }
   };
-
   return (
     <ReportForm
       content={content}
