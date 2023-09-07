@@ -6,6 +6,7 @@
 
 package mutsa.api.service.article;
 
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.article.ArticleCreateRequestDto;
 import mutsa.api.dto.article.ArticleUpdateRequestDto;
@@ -13,6 +14,7 @@ import mutsa.api.util.ArticleUtil;
 import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.filter.article.ArticleFilter;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.image.Image;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.repository.article.ArticleRepository;
@@ -56,10 +58,14 @@ public class ArticleModuleService {
         article.setDescription(updateDto.getDescription());
         article.setArticleStatus(updateDto.getArticleStatus());
 
-        //  TODO ImageService를 이용해서 Image파일 등록
-        //  Article 검색시에도 Image 파일 찾기
-
         return article;
+    }
+
+    @Transactional
+    public Article setImages(Article article, Collection<Image> imageCollection) {
+        article.addImages(imageCollection);
+
+        return articleRepository.save(article);
     }
 
     @Transactional
