@@ -11,6 +11,7 @@ type ReportParams = {
 function ReportRegister() {
   const [content, setContent] = useState('');
   const { resourceType, resourceApiId } = useParams<ReportParams>();
+  const navigate = useNavigate()
 
   const handleSubmit = async () => {
     try {
@@ -20,6 +21,8 @@ function ReportRegister() {
         content: content,
       });
       alert('신고가 등록되었습니다.');
+
+      navigate(`/article/detail/${resourceApiId}`);
 
     } catch (error) {
       alert('신고 등록에 실패하였습니다.');
