@@ -15,7 +15,7 @@ const ChatPage: React.FC = () => {
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const authorizationToken: string | null =
-    window.localStorage.getItem('token') || ''; // 또는 다른 기본값 설정
+    window.localStorage.getItem('accessToken') || ''; // 또는 다른 기본값 설정
 
   useEffect(() => {
     // 방 상세 정보

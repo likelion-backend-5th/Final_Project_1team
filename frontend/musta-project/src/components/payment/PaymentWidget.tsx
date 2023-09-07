@@ -10,10 +10,9 @@ const PaymentWidget: React.FC = () => {
     const failUrl = import.meta.env.VITE_TOSS_FAIL || '';
 
     useEffect(() => {
-        const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBcnRpY2xlQ29udHJvbGxlclRlc3RVc2VyMSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9hcGkvYXV0aC9sb2dpbiIsImF1dGhvcml0aWVzIjpbXX0.fkAwNZ-vvk99ZnsZI-C9pdgrQ3qMjLr1bqLjG8X7sg0';
         const fetchInfo = async () => {
             try {
-                const info = await fetchPaymentInfo(articleApiId!, token);
+                const info = await fetchPaymentInfo(articleApiId!);
                 setPaymentInfo(info);
                 console.log(info)
             } catch (error) {

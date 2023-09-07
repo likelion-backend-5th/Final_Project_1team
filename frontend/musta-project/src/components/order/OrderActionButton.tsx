@@ -1,11 +1,14 @@
 import React from 'react';
-import {Button} from '@mui/material';
+import { Button } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import useStores from '../../store/useStores';
 
 interface OrderActionButtonProps {
+    consumerName: string,
+    sellerName: string
     orderStatus: string;
     handleReviewClick: () => void;
     handleOrderCancellation: () => void;
@@ -14,15 +17,18 @@ interface OrderActionButtonProps {
 }
 
 const OrderActionButton: React.FC<OrderActionButtonProps> = ({
+    consumerName,
+    sellerName,
     orderStatus,
     handleReviewClick,
     handleOrderCancellation,
     handleOrderCompletionWithWaiting,
     handleOrderEnd,
 }) => {
+    const authStore = useStores().authStore;
     return (
         <div>
-            {orderStatus === 'END' && (
+            {orderStatus === 'END' && consumerName === authStore.userInfo?.username && (
                 <Button
                     style={{ margin: '0.5rem' }}
                     variant="outlined"
@@ -43,14 +49,16 @@ const OrderActionButton: React.FC<OrderActionButtonProps> = ({
                         onClick={handleOrderCancellation}>
                         주문 취소
                     </Button>
-                    <Button
-                        style={{ margin: '0.5rem' }}
-                        variant="outlined"
-                        color="success"
-                        startIcon={<HourglassTopIcon />}
-                        onClick={handleOrderCompletionWithWaiting}>
-                        주문 확인(주문 대기)
-                    </Button>
+                    {sellerName === authStore.userInfo?.username && (
+                        <Button
+                            style={{ margin: '0.5rem' }}
+                            variant="outlined"
+                            color="success"
+                            startIcon={<HourglassTopIcon />}
+                            onClick={handleOrderCompletionWithWaiting}>
+                            주문 확인(주문 대기)
+                        </Button>
+                    )}
                 </div>
             )}
 

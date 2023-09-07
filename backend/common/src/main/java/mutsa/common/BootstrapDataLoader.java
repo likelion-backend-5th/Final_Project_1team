@@ -183,8 +183,8 @@ public class BootstrapDataLoader {
 
     public void createAricleOrder() {
         User user1 = User.of(
-                "ArticleControllerTestUser1",
-                bCryptPasswordEncoder.encode("test"),
+                "qwer",
+                bCryptPasswordEncoder.encode("qwer"),
                 "auser1@gmail.com",
                 null,
                 null,
@@ -193,8 +193,8 @@ public class BootstrapDataLoader {
         user1 = userRepository.save(user1);
 
         User user2 = User.of(
-                "ArticleControllerTestUser2",
-                bCryptPasswordEncoder.encode("test"),
+                "asdf",
+                bCryptPasswordEncoder.encode("asdf"),
                 "user2@gmail.com",
                 null,
                 null,
@@ -204,7 +204,7 @@ public class BootstrapDataLoader {
 
         List<Article> articles = new ArrayList<>();
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 20; i++) {
             Article article = Article.builder()
                     .title("title-" + (i + 1))
                     .description("desc-" + (i + 1))
@@ -218,7 +218,7 @@ public class BootstrapDataLoader {
         articles = articleRepository.saveAll(articles);
 
         List<Order> orders = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 20; i++) {
             orders.add(orderRepository.save(Order.of(articles.get(i), i % 2 == 0 ? user2 : user1)));
         }
         orders = orderRepository.saveAll(orders);
