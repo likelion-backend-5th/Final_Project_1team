@@ -13,6 +13,7 @@ import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.user.User;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
 @Builder
@@ -23,10 +24,12 @@ import java.io.Serializable;
 public class Image extends BaseEntity implements Serializable {
     @Id
     @Column(name = "image_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String apiId;
+    @Builder.Default
+    private String apiId = UUID.randomUUID().toString();
 
     @Column(nullable = false)
     private String path;
@@ -41,4 +44,13 @@ public class Image extends BaseEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
+
+    @Column(nullable = false, name = "img_idx")
+    private Integer imgIdx;
+
+    @Enumerated(EnumType.STRING)
+    private ImageReference imageReference;
+
+    @Column(nullable = false)
+    private String refApiId;
 }

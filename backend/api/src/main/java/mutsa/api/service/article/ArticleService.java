@@ -11,9 +11,11 @@ import mutsa.api.dto.article.ArticleCreateRequestDto;
 import mutsa.api.dto.article.ArticleFilterDto;
 import mutsa.api.dto.article.ArticleResponseDto;
 import mutsa.api.dto.article.ArticleUpdateRequestDto;
+import mutsa.api.service.image.ImageModuleService;
 import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.filter.article.ArticleFilter;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.image.Image;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -24,13 +26,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleModuleService articleModuleService;
+    private final ImageModuleService imageModuleService;
 
     public ArticleResponseDto save(ArticleCreateRequestDto requestDto) {
-        return ArticleResponseDto.to(articleModuleService.save(requestDto));
+        Article article = articleModuleService.save(requestDto);
+
+        if (requestDto.getImages() == null || requestDto.getImages().isEmpty()) {
+            return ArticleResponseDto.to(article);
+        }
+
+        List<Image> images = imageModuleService.saveAll(requestDto.getImages(), article.getApiId());
+        return ArticleResponseDto.to(articleModuleService.setImages(article, images));
     }
 
     public ArticleResponseDto update(ArticleUpdateRequestDto updateDto) {
-        return ArticleResponseDto.to(articleModuleService.update(updateDto));
+        Article article = articleModuleService.update(updateDto);
+
+        if (updateDto.getImages() == null || updateDto.getImages().isEmpty()) {
+            return ArticleResponseDto.to(article);
+        }
+
+        //  기존에 있던 이미지는 논리 삭제 처리
+        imageModuleService.deleteByRefApiId(article.getApiId());
+        article = deleteImages(article);
+        List<Image> images = imageModuleService.saveAll(updateDto.getImages(), article.getApiId());
+        return ArticleResponseDto.to(articleModuleService.setImages(article, images));
+    }
+
+    protected Article deleteImages(Article article) {
+        return articleModuleService.deleteImages(article);
     }
 
     protected Article getByApiId(String apiId) {
@@ -106,12 +130,9 @@ public class ArticleService {
         ).map(ArticleResponseDto::to);
     }
 
-    public void deleteById(Long id) {
-        articleModuleService.deleteById(id);
-    }
-
     public void deleteByApiId(String apiId) {
         articleModuleService.deleteByApiId(apiId);
+        imageModuleService.deleteByRefApiId(apiId);
     }
 
     /**
@@ -122,6 +143,7 @@ public class ArticleService {
      */
     public void delete(String apiId) {
         articleModuleService.delete(apiId);
+        imageModuleService.deleteAllByRefId(apiId);
     }
 
     /**

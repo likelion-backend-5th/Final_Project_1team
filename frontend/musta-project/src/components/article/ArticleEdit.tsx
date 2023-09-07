@@ -83,7 +83,7 @@ export function ArticleEdit() {
   const [description, setDescription] = useState('');
   const [createdDate, setCreatedDate] = useState('');
   const [articleStatus, setArticleStatus] = useState('');
-  const [price, setPrice ] = useState(0);
+  const [price, setPrice] = useState(0);
   const navigate = useNavigate();
 
   const handleImageChange = (event) => {
@@ -102,12 +102,6 @@ export function ArticleEdit() {
   };
 
   const handleSubmit = async () => {
-    //  s3 파일 전송하는 코드
-    // const s3FormData = new FormData();
-    // imageFiles.forEach((file) => {
-    //   apiFormData.append('images', file);
-    // });
-
     //  1. 현재 로그인 상태인지 확인한다.
     //      - 로그인이 되어 있다면 다음 단계
     //      - 로그인이 되어 있지 않다면, 로그인 화면으로 이동
@@ -148,42 +142,6 @@ export function ArticleEdit() {
         console.log('Image upload failed.');
       }
     });
-    //
-    // const params = {
-    //   Bucket: bucketName, // The name of the bucket. For example, 'sample-bucket-101'.
-    //   Key: 'sample_upload.txt', // The name of the object. For example, 'sample_upload.txt'.
-    //   Body: 'Hello world!', // The content of the object. For example, 'Hello world!".
-    // };
-    //
-    // const run = async () => {
-    //   // Create an Amazon S3 bucket.
-    //   try {
-    //     const data = await s3Client.send(
-    //       new CreateBucketCommand({ Bucket: params.Bucket })
-    //     );
-    //     console.log(data);
-    //     console.log('Successfully created a bucket called ', data.Location);
-    //     return data; // For unit tests.
-    //   } catch (err) {
-    //     console.log('Error', err);
-    //   }
-    //   // Create an object and upload it to the Amazon S3 bucket.
-    //   try {
-    //     const results = await s3Client.send(new PutObjectCommand(params));
-    //     console.log(
-    //       'Successfully created ' +
-    //         params.Key +
-    //         ' and uploaded it to ' +
-    //         params.Bucket +
-    //         '/' +
-    //         params.Key
-    //     );
-    //     return results; // For unit tests.
-    //   } catch (err) {
-    //     console.log('Error', err);
-    //   }
-    // };
-    // run();
   };
 
   const fetchData = async () => {
@@ -195,7 +153,6 @@ export function ArticleEdit() {
       setDescription(data.description);
       setCreatedDate(data.createdDate);
       setArticleStatus(data.articleStatus);
-      //  TODO 기존에 있던 이미지 정보를 받아오는 것도 필요
       setOldImageFiles(data.images);
       setImagePreviews(oldImageFiles);
       setPrice(data.price);
@@ -234,11 +191,38 @@ export function ArticleEdit() {
         <Skeleton variant="rounded" width={888.875} height={639.172} />
       ) : (
         <StyledCard>
-          <StyledCardMedia
-            component="img"
-            alt="place holder"
-            image="https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com"
-          />
+          {oldImageFiles.length == 0 ? (
+            <StyledCardMedia
+              component="img"
+              alt="place holder"
+              image="https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com"
+            />
+          ) : (
+            <Box>
+              <Carousel showArrows={true} infiniteLoop={true} selectedItem={0}>
+                {oldImageFiles.map((preview, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '300px', // Set the desired height
+                    }}>
+                    <img
+                      src={preview.fullPath}
+                      alt={`Image ${index}`}
+                      style={{
+                        maxWidth: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                      }}
+                    />
+                  </div>
+                ))}
+              </Carousel>
+            </Box>
+          )}
           <StyledCardContent>
             <Box sx={{ marginBottom: '20px' }}>
               <Collapse in={alertOpen}>
@@ -275,14 +259,14 @@ export function ArticleEdit() {
                 maxRows="1"
               />
               <TextField
-                  id="article-price"
-                  defaultValue={price}
-                  size="medium"
-                  inputProps={{min:0}} // Set maximum character length
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                    setPrice(parseInt(event.target.value, 10));
-                  }}
-                  maxRows="1"
+                id="article-price"
+                defaultValue={price}
+                size="medium"
+                inputProps={{ min: 0 }} // Set maximum character length
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setPrice(parseInt(event.target.value, 10));
+                }}
+                maxRows="1"
               />
             </Box>
             <Box

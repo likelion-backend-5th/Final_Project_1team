@@ -43,6 +43,7 @@ public class ArticleResponseDto {
                 .articleStatus(entity.getArticleStatus())
                 .createdDate(entity.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
                 .price(entity.getPrice())
+                .images(entity.getImages().stream().map(ImageResponseDto::to).toList())
                 .build();
     }
 

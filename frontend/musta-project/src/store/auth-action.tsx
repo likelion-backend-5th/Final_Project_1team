@@ -125,10 +125,11 @@ export const postArticleHandler = (
   // token: string,
   title: string,
   description: string,
-  price: number
+  price: number,
+  images: { s3URL: string; filename: string }[]
 ) => {
   const URL = `/articles`;
-  const articleRequestObject = { title, description, price };
+  const articleRequestObject = { title, description, price, images };
   return axiosUtils.post(URL, articleRequestObject);
 };
 
@@ -137,7 +138,7 @@ export const putArticleHandler = (
   description: string,
   apiId: string,
   articleStatus: ArticleStatus,
-  images: string[],
+  images: { s3URL: string; filename: string }[],
   price: number
 ) => {
   const URL = `/articles`;
