@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
+import mutsa.common.domain.models.payment.PayType;
+import mutsa.common.domain.models.payment.Payment;
 import mutsa.common.domain.models.report.Report;
 import mutsa.common.domain.models.review.Review;
 import mutsa.common.domain.models.user.Authority;
@@ -24,6 +26,7 @@ import mutsa.common.domain.models.user.UserRole;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.member.MemberRepository;
 import mutsa.common.repository.order.OrderRepository;
+import mutsa.common.repository.payment.PaymentRepository;
 import mutsa.common.repository.report.ReportRepository;
 import mutsa.common.repository.review.ReviewRepository;
 import mutsa.common.repository.user.AuthorityRepository;
@@ -48,6 +51,7 @@ public class BootstrapDataLoader {
     private final OrderRepository orderRepository;
     private final ReviewRepository reviewRepository;
     private final ReportRepository reportRepository;
+    private final PaymentRepository paymentRepository;
 
     public void createAdminUser() {
         createRoleAuthority();
@@ -218,10 +222,16 @@ public class BootstrapDataLoader {
         articles = articleRepository.saveAll(articles);
 
         List<Order> orders = new ArrayList<>();
+        List<Payment> payments = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            orders.add(orderRepository.save(Order.of(articles.get(i), i % 2 == 0 ? user2 : user1)));
+            Order order = Order.of(articles.get(i), i % 2 == 0 ? user2 : user1);
+            Payment payment = Payment.of(PayType.CARD, articles.get(i), order);
+            payment.setOrder(order);
+            orders.add(order);
+            payments.add(payment);
         }
         orders = orderRepository.saveAll(orders);
+        payments = paymentRepository.saveAll(payments);
 
         List<Review> reviews = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
