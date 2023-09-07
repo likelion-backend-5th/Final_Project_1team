@@ -17,7 +17,7 @@ import java.util.Set;
 @Slf4j
 @RequiredArgsConstructor
 public class ChatRedisRepository {
-    private final StringRedisTemplate redisTemplate;
+    private final StringRedisTemplate chatRedisTemplate;
     public static final String ROOM_KEY = "room:%s";
 
     /**
@@ -29,7 +29,7 @@ public class ChatRedisRepository {
      */
     public Set<String> getMessages(String roomId, int offset, int size) {
         String roomNameKey = String.format(ROOM_KEY, roomId);
-        Set<String> messages = redisTemplate.opsForZSet().reverseRange(roomNameKey, offset, offset + size);
+        Set<String> messages = chatRedisTemplate.opsForZSet().reverseRange(roomNameKey, offset, offset + size);
         log.info(String.format("Received messages by roomId:%s, offset:%s, size:%s ", roomId, offset, size));
         return messages;
     }
@@ -42,7 +42,7 @@ public class ChatRedisRepository {
         String roomKey = String.format(ROOM_KEY, message.getChatroomId());
         String saveMessage = gson.toJson(message);//(레디스에 toString으로 저장한다)
         //시간을 더블형으로 변환하여 저장(score 에 해당하여 해당 컬럼 기준으로 정렬하여 조회할 수 있음)
-        redisTemplate.opsForZSet().add(roomKey, saveMessage, getTimeToDouble(message.getCreatedAt()));
+        chatRedisTemplate.opsForZSet().add(roomKey, saveMessage, getTimeToDouble(message.getCreatedAt()));
     }
 
     public double getTimeToDouble(LocalDateTime createdAt) {

@@ -24,10 +24,12 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Slf4j
 public class RedisConfig {
     private final RedisProperties properties;
+
     /**
      * <p>yml 파일에 의해 포트와, 호스트가 자동으로 지정된다.
      * 연결시에 추가로 지정해야하는 경우는 @Value 읽어 지정하면 된다.
      * 사실 아래 빈 파일이 없어도 자동으로 레디스 커넥션을 만들어서 지정해준다.</p>
+     *
      * @return
      */
     @Bean
@@ -40,6 +42,12 @@ public class RedisConfig {
         return lettuceConnectionFactory;
     }
 
+    @Bean
+    @Primary
+    public StringRedisTemplate redisTemplate(RedisConnectionFactory connectionFactory) {
+        return new StringRedisTemplate(connectionFactory);
+    }
+
     /**
      * 레디스 서버와의 상호작용을 위한 텤플릿
      *
@@ -47,7 +55,6 @@ public class RedisConfig {
      * @return
      */
     @Bean
-    @Primary
     public StringRedisTemplate chatRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         //채팅을 불러오는 템플릿
         return new StringRedisTemplate(redisConnectionFactory);
