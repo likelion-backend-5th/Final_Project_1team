@@ -102,12 +102,6 @@ export function ArticleEdit() {
   };
 
   const handleSubmit = async () => {
-    //  s3 파일 전송하는 코드
-    // const s3FormData = new FormData();
-    // imageFiles.forEach((file) => {
-    //   apiFormData.append('images', file);
-    // });
-
     //  1. 현재 로그인 상태인지 확인한다.
     //      - 로그인이 되어 있다면 다음 단계
     //      - 로그인이 되어 있지 않다면, 로그인 화면으로 이동
@@ -159,7 +153,6 @@ export function ArticleEdit() {
       setDescription(data.description);
       setCreatedDate(data.createdDate);
       setArticleStatus(data.articleStatus);
-      //  TODO 기존에 있던 이미지 정보를 받아오는 것도 필요
       setOldImageFiles(data.images);
       setImagePreviews(oldImageFiles);
       setPrice(data.price);

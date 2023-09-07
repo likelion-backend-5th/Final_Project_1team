@@ -68,6 +68,7 @@ export const AlbumCard = (props: AlbumCardProps) => {
           <Typography variant="h6" gutterBottom>
             {article.title}
           </Typography>
+          <Typography variant="h6">{article.price}</Typography>
           <Typography
             variant="body2"
             color="text.secondary"
