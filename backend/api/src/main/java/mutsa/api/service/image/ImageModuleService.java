@@ -21,6 +21,7 @@ import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.image.ImageRepository;
 import mutsa.common.repository.user.UserRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class ImageModuleService {
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public List<Image> saveAll(List<ImagesRequestDto> imagesRequestDtos, String articleApiId) {
         User currentUser = userRepository
                 .findByUsername(SecurityUtil.getCurrentUsername())
@@ -51,5 +53,12 @@ public class ImageModuleService {
 
         images = imageRepository.saveAll(images);
         return images;
+    }
+
+    @Transactional
+    public void deleteByRefApiId(String refApiId) {
+        List<Image> images = imageRepository.getAllByRefApiId(refApiId);
+
+        images.forEach(image -> image.setStatus(Status.DELETED));
     }
 }

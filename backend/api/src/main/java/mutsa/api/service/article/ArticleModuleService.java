@@ -189,4 +189,10 @@ public class ArticleModuleService {
 
         return articles;
     }
+
+    @Transactional
+    public Article deleteImages(Article article) {
+        article.setImages(new ArrayList<>());
+        return articleRepository.save(article);
+    }
 }

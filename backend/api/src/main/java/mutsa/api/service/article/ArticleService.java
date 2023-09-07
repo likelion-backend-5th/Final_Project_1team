@@ -46,8 +46,15 @@ public class ArticleService {
             return ArticleResponseDto.to(article);
         }
 
+        //  기존에 있던 이미지는 논리 삭제 처리
+        imageModuleService.deleteByRefApiId(article.getApiId());
+        article = deleteImages(article);
         List<Image> images = imageModuleService.saveAll(updateDto.getImages(), article.getApiId());
         return ArticleResponseDto.to(articleModuleService.setImages(article, images));
+    }
+
+    protected Article deleteImages(Article article) {
+        return articleModuleService.deleteImages(article);
     }
 
     protected Article getByApiId(String apiId) {

@@ -52,7 +52,7 @@ public class Article extends BaseEntity implements Serializable {
     @Builder.Default
     private ArticleStatus articleStatus = ArticleStatus.LIVE;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY)
     @Builder.Default
     private List<Image> images = new ArrayList<>();
 
