@@ -5,6 +5,7 @@ import { Box, Container, Grid, Paper, Table, TableBody, TableCell, TableRow, Typ
 import { getOrderHandler } from '../../store/auth-action';
 import { getFormattedDate, getFormattedTime } from '../../util/dateUtil';
 import axiosUtils from '../../uitls/axiosUtils';
+import { formatPrice } from "../../util/formatPrice.ts";
 
 import BackButton from '../../components/BackButton';
 import OrderStatusBadge from '../../components/order/OrderStatusBadge';
@@ -127,6 +128,10 @@ const OrderDetailPage: React.FC = () => {
                   >
                     {orderDetailResponse.articleTitle}
                   </span></TableCell>
+              </TableRow>
+              <TableRow>
+                <StyledTableCell variant="head">결제 금액</StyledTableCell>
+                <TableCell>{formatPrice(orderDetailResponse.amount)}</TableCell>
               </TableRow>
               <TableRow>
                 <StyledTableCell variant="head">주문 상태</StyledTableCell>

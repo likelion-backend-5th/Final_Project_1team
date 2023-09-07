@@ -10,6 +10,7 @@ interface OrderDetailResponse {
   sellerName: string;
   date: string;
   orderStatus: OrderStatus;
+  amount: number;
 }
 interface OrderResponse {
   orderApiId: string;
@@ -19,6 +20,7 @@ interface OrderResponse {
   date: string;
   articleTitle: string;
   orderStatus: OrderStatus;
+  amount: number;
 }
 
 interface OrderResponseDto {
