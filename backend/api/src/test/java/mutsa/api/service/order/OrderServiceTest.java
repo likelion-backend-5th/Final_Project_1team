@@ -3,6 +3,7 @@ package mutsa.api.service.order;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.api.ApiApplication;
 import mutsa.api.dto.CustomPage;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderFilterDto;
@@ -10,10 +11,13 @@ import mutsa.api.dto.order.OrderStatusRequestDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
+import mutsa.common.domain.models.payment.PayType;
+import mutsa.common.domain.models.payment.Payment;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.dto.order.OrderResponseDto;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
+import mutsa.common.repository.payment.PaymentRepository;
 import mutsa.common.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +30,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+//@SpringBootTest
+@SpringBootTest(classes = ApiApplication.class)
 @ActiveProfiles("test")
 @Transactional
 @Slf4j
@@ -41,6 +46,8 @@ class OrderServiceTest {
     private ArticleRepository articleRepository;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     private User seller, consumer;
     private Article article, article2;
@@ -56,6 +63,7 @@ class OrderServiceTest {
                 .title("Pre Article 1")
                 .description("Pre Article 1 desc")
                 .user(seller)
+                .price(12900L)
                 .build();
 
         article = articleRepository.save(article);
@@ -74,6 +82,8 @@ class OrderServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
+        Payment payment = Payment.of(PayType.CARD, article, order);
+        paymentRepository.save(payment);
 
         //when
         OrderDetailResponseDto detailOrder = orderService.findDetailOrder(article.getApiId(), savedOrder.getApiId(), seller.getUsername());
@@ -81,6 +91,7 @@ class OrderServiceTest {
         //then
         assertThat(detailOrder.getArticleApiId()).isEqualTo(savedOrder.getArticle().getApiId());
         assertThat(detailOrder.getConsumerName()).isEqualTo(savedOrder.getUser().getUsername());
+        assertThat(detailOrder.getAmount()).isEqualTo(payment.getAmount());
     }
 
     @Test
@@ -159,6 +170,8 @@ class OrderServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
+        Payment payment = Payment.of(PayType.CARD, article, order);
+        paymentRepository.save(payment);
         entityManager.flush();
         entityManager.clear();
 

@@ -9,9 +9,12 @@ import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
+import mutsa.common.domain.models.payment.PayType;
+import mutsa.common.domain.models.payment.Payment;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
+import mutsa.common.repository.payment.PaymentRepository;
 import mutsa.common.repository.user.UserRepository;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
@@ -60,6 +63,8 @@ class OrderControllerTest {
     private ArticleRepository articleRepository;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     private static MockedStatic<SecurityUtil> securityUtilMockedStatic;
 
@@ -87,6 +92,7 @@ class OrderControllerTest {
                 .title("Pre Article 1")
                 .description("Pre Article 1 desc")
                 .user(seller)
+                .price(129000L)
                 .build();
 
         article = articleRepository.save(article);
@@ -123,6 +129,8 @@ class OrderControllerTest {
     void getDetailOrder() throws Exception {
         Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
+        Payment payment = Payment.of(PayType.CARD, article, savedOrder1);
+        paymentRepository.save(payment);
 
         //given
         when(SecurityUtil.getCurrentUsername()).thenReturn(consumer.getUsername());
@@ -252,6 +260,8 @@ class OrderControllerTest {
     @Test
     void updateOrder() throws Exception {
         Order savedOrder = orderRepository.save(Order.of(article, consumer));
+        Payment payment = Payment.of(PayType.CARD, article, savedOrder);
+        paymentRepository.save(payment);
         entityManager.flush();
         entityManager.clear();
 
