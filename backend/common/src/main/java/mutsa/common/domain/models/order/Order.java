@@ -53,7 +53,7 @@ public class Order extends BaseEntity implements Serializable {
     @Builder.Default
     private Status status = ACTIVE;
 
-    @OneToOne(mappedBy = "order")
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Payment payment;
 
     public static Order of(Article article, User user) {
@@ -100,6 +100,10 @@ public class Order extends BaseEntity implements Serializable {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
 
     @Override

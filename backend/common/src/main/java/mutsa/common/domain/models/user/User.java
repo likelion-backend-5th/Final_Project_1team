@@ -1,5 +1,7 @@
 package mutsa.common.domain.models.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseTimeEntity;
@@ -22,6 +24,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "user")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User extends BaseTimeEntity implements Serializable {
 
     @Id
@@ -55,6 +58,7 @@ public class User extends BaseTimeEntity implements Serializable {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @Builder.Default
+    @JsonIgnore
     private final OAuth2Type oAuth2Type = OAuth2Type.GOOGLE;
 
     @Builder.Default
@@ -73,15 +77,18 @@ public class User extends BaseTimeEntity implements Serializable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private final Set<UserRole> userRoles = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Article> articles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = LAZY)
+    @JsonIgnore
     @Builder.Default
     private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<Order> orders = new ArrayList<>();
 
     public void updatePassword(String encodePassword) {
