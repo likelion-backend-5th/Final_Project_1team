@@ -19,6 +19,11 @@ const ContentsDiv = styled('div')`
   display: flex;
 `;
 
+function getReviewApiId() {
+  const pathnames = location.pathname.split('/');
+  return `${pathnames.pop()}`;
+}
+
 const ReviewItem = ({ reviewApiId }: any) => {
   const navigate = useNavigate();
   const authStore = useStores().authStore;
@@ -70,8 +75,10 @@ const ReviewItem = ({ reviewApiId }: any) => {
   };
 
   const handleReportClick = () => {
-    // 여기에 신고 기능 연결하시면 됩니다
     console.log('버튼이 클릭되었습니다.');
+    const type = "review";
+    const id = getReviewApiId();
+    navigate(`/report/${type}/${id}`);
   };
 
   const deleteHandler = async () => {
