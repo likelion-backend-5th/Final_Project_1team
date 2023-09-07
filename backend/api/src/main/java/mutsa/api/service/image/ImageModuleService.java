@@ -61,4 +61,21 @@ public class ImageModuleService {
 
         images.forEach(image -> image.setStatus(Status.DELETED));
     }
+
+    @Transactional
+    public void deleteAllByRefId(String refApiId) {
+        User currentUser = userRepository
+                .findByUsername(SecurityUtil.getCurrentUsername())
+                .orElseThrow(() -> new BusinessException(ErrorCode.SECURITY_CONTEXT_ERROR));
+
+        List<Image> images = imageRepository.getAllByRefApiId(refApiId);
+
+        images.forEach(image -> {
+            if (!image.getUser().equals(currentUser)) {
+                throw new BusinessException(ErrorCode.IMAGE_USER_NOT_MATCH);
+            }
+
+            image.setStatus(Status.DELETED);
+        });
+    }
 }

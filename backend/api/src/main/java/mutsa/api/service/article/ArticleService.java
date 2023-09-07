@@ -130,12 +130,9 @@ public class ArticleService {
         ).map(ArticleResponseDto::to);
     }
 
-    public void deleteById(Long id) {
-        articleModuleService.deleteById(id);
-    }
-
     public void deleteByApiId(String apiId) {
         articleModuleService.deleteByApiId(apiId);
+        imageModuleService.deleteByRefApiId(apiId);
     }
 
     /**
@@ -146,6 +143,7 @@ public class ArticleService {
      */
     public void delete(String apiId) {
         articleModuleService.delete(apiId);
+        imageModuleService.deleteAllByRefId(apiId);
     }
 
     /**
