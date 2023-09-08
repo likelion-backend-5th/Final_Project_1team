@@ -14,6 +14,7 @@ import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useStores from '../../store/useStores';
 import NavMenu from './NavMenu';
+import { useAlert } from '../hook/useAlert';
 
 const pages = [
   ['Home', '/home'],
@@ -39,7 +40,7 @@ const Navigation = () => {
     null
   );
   const navigate = useNavigate();
-
+  const { openAlert } = useAlert();
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -60,17 +61,25 @@ const Navigation = () => {
     navigate(path); // 해당 경로로 페이지 이동
   };
 
-  useEffect(() => {
-    if (localStorage.getItem('accessToken') == null) {
-      return;
-    }
-    try {
-      authStore.findUserInfo();
-    } catch (error) {
-      localStorage.remove('accessToken');
-    }
-    return () => { };
-  }, []);
+  // useEffect(() => {
+  //   if (localStorage.getItem('accessToken') == null) {
+  //     return;
+  //   }
+  //   try {
+  //     authStore
+  //       .findUserInfo()
+  //       .then((res) => {
+  //         authStore.userInfo = res.data;
+  //         navigate('/');
+  //       })
+  //       .catch((res) =>
+  //         openAlert({ state: 'error', message: res.data.message })
+  //       );
+  //   } catch (error) {
+  //     localStorage.remove('accessToken');
+  //   }
+  //   return () => {};
+  // }, []);
 
   return (
     <AppBar position="static" color="inherit" elevation={0}>
@@ -108,7 +117,6 @@ const Navigation = () => {
                 display: { xs: 'block', md: 'none' },
               }}
               color="black">
-
               <NavMenu pages={pages} handleCloseNavMenu={handleCloseNavMenu} />
             </Menu>
           </Box>
@@ -129,32 +137,35 @@ const Navigation = () => {
               </Link>
             </Box>
           )) || (
-              <Box>
-                <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="Remy Sharp" src="/img/monkey.jpg" />
-                    {authStore.userInfo?.username}
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  sx={{ mt: '45px' }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}>
-                  <NavMenu pages={settings} handleCloseNavMenu={handleCloseUserMenu} />
-                </Menu>
-              </Box>
-            )}
+            <Box>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Remy Sharp" src="/img/monkey.jpg" />
+                  {authStore.userInfo?.username}
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}>
+                <NavMenu
+                  pages={settings}
+                  handleCloseNavMenu={handleCloseUserMenu}
+                />
+              </Menu>
+            </Box>
+          )}
         </Toolbar>
       </Container>
     </AppBar>
