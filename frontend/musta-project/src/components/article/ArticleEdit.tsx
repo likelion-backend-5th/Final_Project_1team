@@ -153,8 +153,9 @@ export function ArticleEdit() {
   };
 
   const fetchData = async () => {
-    try {
-      axiosUtils.get(`/articles/${getArticleApiId()}`).then((response) => {
+    axiosUtils
+      .get(`/articles/${getArticleApiId()}`)
+      .then((response) => {
         console.log(response);
         if (authStore.userInfo?.username !== response.data.username) {
           alert('게시글 작성자가 아닙니다.');
@@ -175,15 +176,15 @@ export function ArticleEdit() {
           response.data.articleStatus === 'LIVE' ? '공개' : '비공개'
         );
         setTimeout(() => setLoading(false), loadingTime);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        alert('존재하지 않는 게시글 입니다.');
+        navigate(`/article`, {
+          replace: false,
+        });
+        return;
       });
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      alert('존재하지 않는 게시글 입니다.');
-      navigate(`/article`, {
-        replace: false,
-      });
-      return;
-    }
   };
 
   useEffect(() => {
