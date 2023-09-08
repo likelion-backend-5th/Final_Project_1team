@@ -6,6 +6,7 @@ import useStores from './store/useStores';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Navigation from './components/organisms/Navigation';
 import UserRouter from './router/UserRouter';
+import CustomAlert from './components/base/CustomAlert';
 
 const StyledMain = styled.main`
   display: block;
@@ -29,6 +30,7 @@ function App() {
           <UserRouter />
         </StyledMain>
         <Footer />
+        <CustomAlert />
       </Provider>
     </GoogleOAuthProvider>
   );
