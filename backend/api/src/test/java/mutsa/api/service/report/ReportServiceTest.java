@@ -2,6 +2,7 @@ package mutsa.api.service.report;
 
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.dto.report.ReportRegisterDto;
 import mutsa.api.dto.report.ReportResponseDto;
 import mutsa.api.dto.report.ReportUpdateStatusDto;
@@ -20,10 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest(classes = ApiApplication.class)
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
 @ActiveProfiles("test")
 @Transactional
 @Slf4j

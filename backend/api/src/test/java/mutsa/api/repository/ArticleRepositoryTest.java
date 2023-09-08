@@ -6,6 +6,8 @@
 
 package mutsa.api.repository;
 
+import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.common.domain.filter.article.ArticleFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.user.User;
@@ -27,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@SpringBootTest
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ActiveProfiles("test")
 @Transactional

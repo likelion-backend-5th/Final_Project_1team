@@ -6,11 +6,12 @@
 
 package mutsa.api.controller.article;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.dto.article.ArticleCreateRequestDto;
 import mutsa.api.dto.article.ArticleResponseDto;
 import mutsa.api.dto.article.ArticleUpdateRequestDto;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.operation.preprocess.Preprocessors;
@@ -39,7 +41,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -50,8 +51,9 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
 @ActiveProfiles("test")
+@Import(TestRedisConfiguration.class)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @Transactional
@@ -140,7 +142,7 @@ public class ArticleControllerTest {
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         mockMvc.perform(get("/api/articles/{articleApiId}", entity.getApiId())
-                                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
@@ -165,12 +167,12 @@ public class ArticleControllerTest {
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         MvcResult mvcResult = mockMvc.perform(get("/api/articles")
-                                                      .param("page", String.valueOf(0))
-                                                      .param("size", String.valueOf(10))
-                                                      .param("order", "ASC")
-                                                      .param("articleStatus", ArticleStatus.LIVE.toString())
-                                                      .param("status", Status.ACTIVE.toString())
-                                                      .contentType(MediaType.APPLICATION_JSON))
+                        .param("page", String.valueOf(0))
+                        .param("size", String.valueOf(10))
+                        .param("order", "ASC")
+                        .param("articleStatus", ArticleStatus.LIVE.toString())
+                        .param("status", Status.ACTIVE.toString())
+                        .contentType(MediaType.APPLICATION_JSON))
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
@@ -194,13 +196,13 @@ public class ArticleControllerTest {
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         MvcResult mvcResult = mockMvc.perform(get("/api/articles")
-                                                      .param("page", String.valueOf(0))
-                                                      .param("size", String.valueOf(10))
-                                                      .param("order", "ASC")
-                                                      .param("articleStatus", ArticleStatus.LIVE.toString())
-                                                      .param("status", Status.ACTIVE.toString())
-                                                      .param("title", "title-1")
-                                                      .contentType(MediaType.APPLICATION_JSON))
+                        .param("page", String.valueOf(0))
+                        .param("size", String.valueOf(10))
+                        .param("order", "ASC")
+                        .param("articleStatus", ArticleStatus.LIVE.toString())
+                        .param("status", Status.ACTIVE.toString())
+                        .param("title", "title-1")
+                        .contentType(MediaType.APPLICATION_JSON))
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
@@ -226,13 +228,13 @@ public class ArticleControllerTest {
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         MvcResult mvcResult = mockMvc.perform(get("/api/articles")
-                                                      .param("page", String.valueOf(0))
-                                                      .param("size", String.valueOf(10))
-                                                      .param("order", "ASC")
-                                                      .param("articleStatus", ArticleStatus.LIVE.toString())
-                                                      .param("status", Status.ACTIVE.toString())
-                                                      .param("description", "desc-1")
-                                                      .contentType(MediaType.APPLICATION_JSON))
+                        .param("page", String.valueOf(0))
+                        .param("size", String.valueOf(10))
+                        .param("order", "ASC")
+                        .param("articleStatus", ArticleStatus.LIVE.toString())
+                        .param("status", Status.ACTIVE.toString())
+                        .param("description", "desc-1")
+                        .contentType(MediaType.APPLICATION_JSON))
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
@@ -258,13 +260,13 @@ public class ArticleControllerTest {
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         MvcResult mvcResult = mockMvc.perform(get("/api/articles")
-                                                      .param("page", String.valueOf(0))
-                                                      .param("size", String.valueOf(10))
-                                                      .param("order", "ASC")
-                                                      .param("articleStatus", ArticleStatus.LIVE.toString())
-                                                      .param("status", Status.ACTIVE.toString())
-                                                      .param("username", "ArticleControllerTestUser1")
-                                                      .contentType(MediaType.APPLICATION_JSON))
+                        .param("page", String.valueOf(0))
+                        .param("size", String.valueOf(10))
+                        .param("order", "ASC")
+                        .param("articleStatus", ArticleStatus.LIVE.toString())
+                        .param("status", Status.ACTIVE.toString())
+                        .param("username", "ArticleControllerTestUser1")
+                        .contentType(MediaType.APPLICATION_JSON))
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
@@ -306,10 +308,10 @@ public class ArticleControllerTest {
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         MvcResult mvcResult = mockMvc.perform(post("/api/articles")
-                                                      .content(objectMapper.writeValueAsString(
-                                                              articleCreateRequestDto
-                                                      ))
-                                                      .contentType(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(
+                                articleCreateRequestDto
+                        ))
+                        .contentType(MediaType.APPLICATION_JSON))
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
@@ -339,10 +341,10 @@ public class ArticleControllerTest {
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         MvcResult mvcResult = mockMvc.perform(put("/api/articles")
-                                                      .content(objectMapper.writeValueAsString(
-                                                              articleUpdateRequestDto
-                                                      ))
-                                                      .contentType(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(
+                                articleUpdateRequestDto
+                        ))
+                        .contentType(MediaType.APPLICATION_JSON))
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
@@ -366,7 +368,7 @@ public class ArticleControllerTest {
         when(SecurityUtil.getCurrentUsername()).thenReturn(user1.getUsername());
 
         mockMvc.perform(delete("/api/articles/{articleApiId}", articles.get(0).getApiId())
-                                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
 
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(MockMvcRestDocumentation.document(
