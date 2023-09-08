@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.dto.CustomPage;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderFilterDto;
@@ -20,18 +21,19 @@ import mutsa.common.repository.order.OrderRepository;
 import mutsa.common.repository.payment.PaymentRepository;
 import mutsa.common.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-//@SpringBootTest
-@SpringBootTest(classes = ApiApplication.class)
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
 @ActiveProfiles("test")
 @Transactional
 @Slf4j
@@ -48,7 +50,8 @@ class OrderServiceTest {
     private EntityManager entityManager;
     @Autowired
     private PaymentRepository paymentRepository;
-
+    @Autowired
+    private RedisTemplate<String, User> userRedisTemplate;
     private User seller, consumer;
     private Article article, article2;
 
@@ -75,6 +78,13 @@ class OrderServiceTest {
                 .build();
 
         article2 = articleRepository.save(article2);
+
+    }
+
+    @AfterEach
+    public void tearDown() {
+        // Redis 데이터 삭제
+        userRedisTemplate.getConnectionFactory().getConnection().flushAll();
     }
 
     @Test
@@ -82,11 +92,12 @@ class OrderServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
-        Payment payment = Payment.of(PayType.CARD, article, order);
+        Payment payment = Payment.of(PayType.CARD, article, savedOrder);
+        payment.setOrder(savedOrder);
         paymentRepository.save(payment);
 
         //when
-        OrderDetailResponseDto detailOrder = orderService.findDetailOrder(article.getApiId(), savedOrder.getApiId(), seller.getUsername());
+        OrderDetailResponseDto detailOrder = orderService.findDetailOrder(article.getApiId(), savedOrder.getApiId(), consumer.getUsername());
 
         //then
         assertThat(detailOrder.getArticleApiId()).isEqualTo(savedOrder.getArticle().getApiId());

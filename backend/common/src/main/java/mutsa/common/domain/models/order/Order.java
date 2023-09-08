@@ -2,6 +2,7 @@ package mutsa.common.domain.models.order;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import mutsa.common.domain.models.BaseEntity;
 import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
@@ -27,6 +28,7 @@ import static mutsa.common.domain.models.Status.ACTIVE;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SQLDelete(sql = "UPDATE `order` SET status = 'DELETED' WHERE order_id = ?")
 @Where(clause = "status = 'ACTIVE' ")
+@Slf4j
 public class Order extends BaseEntity implements Serializable {
 
     @Id
@@ -93,7 +95,9 @@ public class Order extends BaseEntity implements Serializable {
     }
 
     public void validSellerOrConsumerId(User user) {
-        if (!Objects.equals(this.user.getId(), user.getId()) && !Objects.equals(this.article.getUser().getId(), user.getId())) {
+        Long userId = user.getId();
+        log.info("{} {}, {} {}",this.user.getId(), userId,this.article.getUser().getId(), userId);
+        if (!Objects.equals(this.user.getId(), userId) && !Objects.equals(this.article.getUser().getId(), userId)) {
             throw new BusinessException(ErrorCode.ORDER_PERMISSION_DENIED);
         }
     }

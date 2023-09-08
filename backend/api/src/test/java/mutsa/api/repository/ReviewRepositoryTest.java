@@ -1,12 +1,8 @@
 package mutsa.api.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 import jakarta.transaction.Transactional;
-import java.util.Optional;
 import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.service.article.ArticleModuleService;
 import mutsa.api.service.user.UserModuleService;
 import mutsa.common.domain.models.Status;
@@ -23,7 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(classes = ApiApplication.class)
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
 @ActiveProfiles("test")
 @Transactional
 public class ReviewRepositoryTest {
@@ -45,10 +47,10 @@ public class ReviewRepositoryTest {
         when(userModuleService.getByApiId(any())).thenReturn(user);
 
         article = Article.builder()
-            .apiId("test1234")
-            .title("testTitle")
-            .description("testDescription")
-            .build();
+                .apiId("test1234")
+                .title("testTitle")
+                .description("testDescription")
+                .build();
         when(articleModuleService.getByApiId(any())).thenReturn(article);
     }
 
