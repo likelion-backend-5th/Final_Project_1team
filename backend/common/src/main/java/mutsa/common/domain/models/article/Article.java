@@ -39,8 +39,9 @@ public class Article extends BaseEntity implements Serializable {
 
     private String thumbnail;
 
-    @Column
-    private Long price;
+    @Column(nullable = false)
+    @Builder.Default
+    private Long price = 0L;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -76,21 +76,4 @@ public class ArticleController {
         articleService.delete(apiId);
         return ResponseEntity.ok().body(null);
     }
-
-    //  DEBUG 디버깅용 테스트 메소드
-    @PostMapping("/dummy-article")
-    public ResponseEntity<List<ArticleResponseDto>> createDummyArticle(
-            @RequestParam(value = "amount", defaultValue = "1") Integer count
-    ) {
-        return ResponseEntity.ok(articleService.saveDummyArticles(count));
-    }
-
-    //  DEBUG 디버깅용 테스트 메소드
-    @DeleteMapping("/{articleApiId}/test")
-    public ResponseEntity<?> deleteArticleTest(
-            @PathVariable("articleApiId") String apiId
-    ) {
-        articleService.deleteByApiId(apiId);
-        return ResponseEntity.ok().body(null);
-    }
 }

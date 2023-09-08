@@ -145,14 +145,4 @@ public class ArticleService {
         articleModuleService.delete(apiId);
         imageModuleService.deleteAllByRefId(apiId);
     }
-
-    /**
-     * 테스트용 더미 게시글 생성 메소드
-     *
-     * @param count 게시글 생성 수, 최소 1이상 이어야 동작
-     * @return
-     */
-    public List<ArticleResponseDto> saveDummyArticles(Integer count) {
-        return articleModuleService.saveDummyArticles(count).stream().map(ArticleResponseDto::to).toList();
-    }
 }
