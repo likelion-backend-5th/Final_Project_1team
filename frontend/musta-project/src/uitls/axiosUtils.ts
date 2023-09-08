@@ -32,6 +32,14 @@ export default class axiosUtils {
     });
   };
 
+  static patch = (url: string, data?: any): any => {
+    return axiosInstance.request({
+      method: 'patch',
+      url: '/api' + url,
+      data: data,
+    });
+  };
+
   static put = (url: string, data?: any): any => {
     return axiosInstance.request({
       method: 'put',

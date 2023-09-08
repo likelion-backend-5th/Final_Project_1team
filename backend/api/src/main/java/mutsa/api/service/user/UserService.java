@@ -19,6 +19,7 @@ import mutsa.api.util.CookieUtil;
 import mutsa.api.util.JwtTokenProvider;
 import mutsa.api.util.JwtTokenProvider.JWTInfo;
 import mutsa.common.domain.models.user.Authority;
+import mutsa.common.domain.models.user.Member;
 import mutsa.common.domain.models.user.Role;
 import mutsa.common.domain.models.user.RoleStatus;
 import mutsa.common.domain.models.user.User;
@@ -26,6 +27,7 @@ import mutsa.common.domain.models.user.UserRole;
 import mutsa.common.dto.user.UserInfoDto;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
+import mutsa.common.repository.member.MemberRepository;
 import mutsa.common.repository.user.RoleRepository;
 import mutsa.common.repository.user.UserRepository;
 import mutsa.common.repository.user.UserRoleRepository;
@@ -46,6 +48,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void signUp(SignUpUserDto signUpUserDto) {
@@ -56,6 +59,8 @@ public class UserService {
         signUpUserDto.setPassword(bCryptPasswordEncoder.encode(signUpUserDto.getPassword()));
 
         User newUser = SignUpUserDto.from(signUpUserDto);
+        Member newMember = Member.of(signUpUserDto.getNickname());
+        newUser.addMember(newMember);
         Role role = roleRepository.findByValue(RoleStatus.ROLE_USER)
             .orElseThrow(() -> new BusinessException(ErrorCode.UNKNOWN_ROLE));
 
@@ -63,6 +68,7 @@ public class UserService {
         userRole.addUser(newUser);
 
         userRepository.save(newUser);
+        memberRepository.save(newMember);
         userRoleRepository.save(userRole);
     }
 
@@ -107,14 +113,11 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void changePassword(CustomPrincipalDetails user, PasswordChangeDto passwordChangeDto) {
         User findUser = findUsername(user.getUsername());
 
-        if (findUser.getPassword()
-            .equals(encodedPassword(passwordChangeDto.getPassword()))) {
-            throw new BusinessException(ErrorCode.DIFFERENT_PASSWORD);
-        }
-
+        isSameCurrentPassword(passwordChangeDto, findUser);
         if (!isSamePassword(passwordChangeDto.getNewPassword(),
             passwordChangeDto.getNewPasswordCheck())) {
             throw new BusinessException(ErrorCode.DIFFERENT_PASSWORD);
@@ -125,6 +128,13 @@ public class UserService {
         }
 
         findUser.updatePassword(bCryptPasswordEncoder.encode(passwordChangeDto.getNewPassword()));
+    }
+
+    private void isSameCurrentPassword(PasswordChangeDto passwordChangeDto, User findUser) {
+        if (findUser.getPassword()
+            .equals(encodedPassword(passwordChangeDto.getPassword()))) {
+            throw new BusinessException(ErrorCode.DIFFERENT_PASSWORD);
+        }
     }
 
     private String encodedPassword(String password) {

@@ -12,6 +12,7 @@ import lombok.Setter;
 public class UserInfoDto {
     private String username;
     private String apiId;
+    private String nickname;
     private String image_url;
     private String zipcode;
     private String city;

@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,15 +38,18 @@ public class UserController {
     @GetMapping("/info")
     @PreAuthorize("hasAuthority('user.read')")
     public ResponseEntity<UserInfoDto> findUserInfo(@AuthenticationPrincipal UserDetails user) {
-        return new ResponseEntity(userService.findUserInfo(user.getUsername()),
+        if (user == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return new ResponseEntity<>(userService.findUserInfo(user.getUsername()),
             HttpStatus.OK);
     }
 
-    @PutMapping("/change-password")
+    @PatchMapping("/password")
     @PreAuthorize("hasAuthority('user.update')")
     public ResponseEntity changePassword(@AuthenticationPrincipal CustomPrincipalDetails user,
-        @RequestBody PasswordChangeDto passwordChangeDto) {
+        @Validated @RequestBody PasswordChangeDto passwordChangeDto) {
         userService.changePassword(user, passwordChangeDto);
-        return new ResponseEntity(HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

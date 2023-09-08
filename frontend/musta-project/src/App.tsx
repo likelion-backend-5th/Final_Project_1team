@@ -7,6 +7,8 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import Navigation from './components/organisms/Navigation';
 import UserRouter from './router/UserRouter';
 import CustomAlert from './components/base/CustomAlert';
+import { useEffect } from 'react';
+import { removeRefershToken } from './uitls/cookies';
 
 const StyledMain = styled.main`
   display: block;
@@ -22,6 +24,10 @@ const StyledMain = styled.main`
 function App() {
   const useStore = useStores();
 
+  useEffect(() => {
+    localStorage.clear();
+    removeRefershToken();
+  }, []);
   return (
     <GoogleOAuthProvider clientId="446534610656-14r63n2kho9aggjkp8ebi1rgods392uj.apps.googleusercontent.com">
       <Provider {...useStore}>

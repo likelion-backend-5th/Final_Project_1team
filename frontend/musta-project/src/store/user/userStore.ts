@@ -23,6 +23,7 @@ type signupform = {
   username: string;
   password: string;
   checkPassword: string;
+  nickname: string;
   email: string;
   phoneNumber: string;
   address?: { zipcode: string; city: string; street?: string };
@@ -55,22 +56,21 @@ export default class userStore {
       password: password,
     };
 
-    return await userRepository
-      .login(loginform)
-      .then((res: any) => {
-        if (200 <= res.status && res.status < 400) {
-          console.log(res.data.accessToken);
-          localStorage.setItem('accessToken', res.data.accessToken);
-          this.userInfo = {
-            ...this.userInfo,
-            username: res.data.username,
-            accessToken: res.data.accessToken,
-          };
-        }
-      })
-      .catch((err: any) => {
-        Promise.reject(err);
-      });
+    return await userRepository.login(loginform);
+    // .then((res: any) => {
+    //   if (200 <= res.status && res.status < 400) {
+    //     console.log(res.data.accessToken);
+    //     localStorage.setItem('accessToken', res.data.accessToken);
+    //     this.userInfo = {
+    //       ...this.userInfo,
+    //       username: res.data.username,
+    //       accessToken: res.data.accessToken,
+    //     };
+    //   }
+    // })
+    // .catch((err: any) => {
+    //   Promise.reject(err);
+    // });
   };
 
   handleSignup = async (data: FormData) => {
@@ -79,6 +79,7 @@ export default class userStore {
       password: data.get('password') as string,
       checkPassword: data.get('check_password') as string,
       email: data.get('email') as string,
+      nickname: data.get('nickname') as string,
       phoneNumber: data.get('phoneNumber') as string,
     };
 
@@ -93,10 +94,24 @@ export default class userStore {
       };
     }
 
-    const res = await userRepository
-      .signup(signupform)
-      .then((res: AxiosResponse) => {})
-      .catch((res: AxiosResponse) => {});
+    return await userRepository.signup(signupform);
+  };
+
+  changePassword = async (data: FormData) => {
+    const passwordForm = {
+      password: data.get('password') as string,
+      newPassword: data.get('newPassword') as string,
+      newPasswordCheck: data.get('newPasswordCheck') as string,
+    };
+
+    return await userRepository
+      .changePassword(passwordForm)
+      .then((res: AxiosResponse) => {
+        return res;
+      })
+      .catch((res: AxiosResponse) => {
+        return Promise.reject(res);
+      });
   };
 
   setAddress = ({ zipcode, city }: { zipcode: string; city: string }) => {

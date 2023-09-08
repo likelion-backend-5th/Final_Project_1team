@@ -28,17 +28,17 @@ const ReviewItem = ({ reviewApiId }: any) => {
   const navigate = useNavigate();
   const authStore = useStores().authStore;
 
-  useEffect(() => {
-    if (localStorage.getItem('accessToken') == null) {
-      return;
-    }
-    try {
-      authStore.findUserInfo();
-    } catch (error) {
-      localStorage.remove('accessToken');
-    }
-    return () => {};
-  }, []);
+  // useEffect(() => {
+  //   if (localStorage.getItem('accessToken') == null) {
+  //     return;
+  //   }
+  //   try {
+  //     authStore.findUserInfo();
+  //   } catch (error) {
+  //     localStorage.remove('accessToken');
+  //   }
+  //   return () => {};
+  // }, []);
 
   const [detailReview, setDetailReview] = useState<Review>();
 
@@ -76,7 +76,7 @@ const ReviewItem = ({ reviewApiId }: any) => {
 
   const handleReportClick = () => {
     console.log('버튼이 클릭되었습니다.');
-    const type = "review";
+    const type = 'review';
     const id = getReviewApiId();
     navigate(`/report/${type}/${id}`);
   };
