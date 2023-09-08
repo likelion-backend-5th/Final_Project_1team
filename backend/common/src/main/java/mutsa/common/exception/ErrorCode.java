@@ -56,7 +56,8 @@ public enum ErrorCode {
     PAYMENT_ALREADY_APPROVED(HttpStatus.BAD_REQUEST.value(), "PAYMENT_ALREADY_APPROVED", "이미 인가된 결제입니다."),
 
     CHAT_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "CHAT_NOTFOUND","해당 채팅을 찾지 못했습니다." ),
-    INVALID_ROOM_REQUEST(HttpStatus.BAD_REQUEST.value(), "INVALID_REQUEST", "자신의 글에 채팅방을 만들 수 없습니다." );
+    INVALID_ROOM_REQUEST(HttpStatus.BAD_REQUEST.value(), "INVALID_REQUEST", "자신의 글에 채팅방을 만들 수 없습니다." ),
+    CHATROOM_PERMISSION_DENIED(HttpStatus.FORBIDDEN.value(), "CRR001", "접근권한이 없는 채팅방 입니다." );
 
     private final int status;
     private final String code;
