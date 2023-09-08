@@ -1,24 +1,12 @@
 package mutsa.api.controller.review;
 
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
-import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.models.article.Article;
@@ -30,16 +18,13 @@ import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
 import mutsa.common.repository.review.ReviewRepository;
 import mutsa.common.repository.user.UserRepository;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.operation.preprocess.Preprocessors;
@@ -48,14 +33,22 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(classes = ApiApplication.class)
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
 @ActiveProfiles("test")
 @Transactional
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @Slf4j
 public class ReviewControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -68,6 +61,8 @@ public class ReviewControllerTest {
     private ReviewRepository reviewRepository;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     private static MockedStatic<SecurityUtil> securityUtilMockedStatic;
 
@@ -98,15 +93,21 @@ public class ReviewControllerTest {
         seller = userRepository.save(seller);
 
         article = Article.builder()
-            .title("Pre Article 1")
-            .description("Pre Article 1 desc")
-            .user(seller)
-            .build();
+                .title("Pre Article 1")
+                .description("Pre Article 1 desc")
+                .user(seller)
+                .build();
         article = articleRepository.save(article);
 
         order = Order.of(article, reviewer1);
         order.setOrderStatus(OrderStatus.END);
         order = orderRepository.save(order);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        // Redis 데이터 삭제
+        redisTemplate.getConnectionFactory().getConnection().flushDb();
     }
 
     @DisplayName("후기 생성")
@@ -122,19 +123,19 @@ public class ReviewControllerTest {
         // when
         // then
         mockMvc.perform(post("/api/article/{articleApiId}/order/{orderApiId}/review", article.getApiId(), order.getApiId())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(toJson(reviewRequestDto)))
-            .andDo(MockMvcResultHandlers.print())
-            .andDo(MockMvcRestDocumentation.document(
-                "api/review/후기 생성",
-                Preprocessors.preprocessRequest(prettyPrint()),
-                Preprocessors.preprocessResponse(prettyPrint())
-            ))
-            .andExpectAll(
-                status().is2xxSuccessful(),
-                content().contentType(MediaType.APPLICATION_JSON),
-                jsonPath("username").value(reviewer1.getUsername())
-            );
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(reviewRequestDto)))
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document(
+                        "api/review/후기 생성",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint())
+                ))
+                .andExpectAll(
+                        status().is2xxSuccessful(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("username").value(reviewer1.getUsername())
+                );
 
         assertThat(reviewRepository.findAll().size()).isEqualTo(1);
     }
@@ -148,19 +149,19 @@ public class ReviewControllerTest {
         // when
         // then
         mockMvc.perform(get("/api/review/{reviewApiId}", review.getApiId())
-                .contentType(MediaType.APPLICATION_JSON))
-            .andDo(MockMvcResultHandlers.print())
-            .andDo(MockMvcRestDocumentation.document(
-                "api/review/후기 단일 조회",
-                Preprocessors.preprocessRequest(prettyPrint()),
-                Preprocessors.preprocessResponse(prettyPrint())
-            ))
-            .andExpectAll(
-                status().is2xxSuccessful(),
-                content().contentType(MediaType.APPLICATION_JSON),
-                jsonPath("apiId").value(review.getApiId()),
-                jsonPath("username").value(reviewer1.getUsername())
-            );
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document(
+                        "api/review/후기 단일 조회",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint())
+                ))
+                .andExpectAll(
+                        status().is2xxSuccessful(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("apiId").value(review.getApiId()),
+                        jsonPath("username").value(reviewer1.getUsername())
+                );
     }
 
     @DisplayName("후기 전체 조회(페이징)")
@@ -173,20 +174,20 @@ public class ReviewControllerTest {
         // when
         // then
         mockMvc.perform(get("/api/article/{articleApiId}/review", article.getApiId())
-                .contentType(MediaType.APPLICATION_JSON))
-            .andDo(MockMvcResultHandlers.print())
-            .andDo(MockMvcRestDocumentation.document(
-                "api/review/후기 전체 조회",
-                Preprocessors.preprocessRequest(prettyPrint()),
-                Preprocessors.preprocessResponse(prettyPrint())
-            ))
-            .andExpectAll(
-                status().is2xxSuccessful(),
-                content().contentType(MediaType.APPLICATION_JSON),
-                jsonPath("totalPages").value(1),
-                jsonPath("totalElements").value(2),
-                jsonPath("sort.sorted").value(true)
-            );
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document(
+                        "api/review/후기 전체 조회",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint())
+                ))
+                .andExpectAll(
+                        status().is2xxSuccessful(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("totalPages").value(1),
+                        jsonPath("totalElements").value(2),
+                        jsonPath("sort.sorted").value(true)
+                );
     }
 
     @DisplayName("후기 수정")
@@ -202,20 +203,20 @@ public class ReviewControllerTest {
         // when
         // then
         mockMvc.perform(put("/api/review/{reviewApiId}", review.getApiId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(updateDto)))
-            .andDo(MockMvcResultHandlers.print())
-            .andDo(MockMvcRestDocumentation.document(
-                "api/review/후기 수정",
-                Preprocessors.preprocessRequest(prettyPrint()),
-                Preprocessors.preprocessResponse(prettyPrint())
-            ))
-            .andExpectAll(
-                status().is2xxSuccessful(),
-                content().contentType(MediaType.APPLICATION_JSON),
-                jsonPath("content").value("updated Content"),
-                jsonPath("point").value(3)
-            );
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(updateDto)))
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document(
+                        "api/review/후기 수정",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint())
+                ))
+                .andExpectAll(
+                        status().is2xxSuccessful(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("content").value("updated Content"),
+                        jsonPath("point").value(3)
+                );
     }
 
     @DisplayName("후기 삭제")
@@ -229,18 +230,18 @@ public class ReviewControllerTest {
         // when
         // then
         mockMvc.perform(delete("/api/review/{reviewApiId}", review.getApiId())
-                .contentType(MediaType.APPLICATION_JSON))
-            .andDo(MockMvcResultHandlers.print())
-            .andDo(MockMvcRestDocumentation.document(
-                "api/review/후기 삭제",
-                Preprocessors.preprocessRequest(prettyPrint()),
-                Preprocessors.preprocessResponse(prettyPrint())
-            ))
-            .andExpectAll(
-                status().is2xxSuccessful(),
-                content().contentType(MediaType.APPLICATION_JSON),
-                jsonPath("message").value("후기를 삭제했습니다.")
-            );
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(MockMvcRestDocumentation.document(
+                        "api/review/후기 삭제",
+                        Preprocessors.preprocessRequest(prettyPrint()),
+                        Preprocessors.preprocessResponse(prettyPrint())
+                ))
+                .andExpectAll(
+                        status().is2xxSuccessful(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("message").value("후기를 삭제했습니다.")
+                );
     }
 
     private static byte[] toJson(Object object) throws IOException {

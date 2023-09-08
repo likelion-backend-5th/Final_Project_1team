@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.dto.order.OrderDetailResponseDto;
 import mutsa.api.dto.order.OrderStatusRequestDto;
 import mutsa.common.domain.filter.order.OrderFilter;
@@ -37,7 +38,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = ApiApplication.class)
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
 @ActiveProfiles("test")
 @Transactional
 @Slf4j

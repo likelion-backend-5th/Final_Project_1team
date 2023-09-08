@@ -15,6 +15,9 @@ java {
 }
 
 configurations {
+    all {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -79,7 +82,7 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:3.6.0'
 
     //test-embedded-redis
-    testImplementation 'it.ozimov:embedded-redis:0.7.1'
+    testImplementation 'it.ozimov:embedded-redis:0.7.3'
 
     //restdocs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
