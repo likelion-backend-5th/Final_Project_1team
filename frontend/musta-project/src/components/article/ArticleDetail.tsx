@@ -157,6 +157,12 @@ export function ArticleDetail() {
     navigate(`/article/detail/${id}/payment`);
   };
 
+  const   handleReportClick = () => {
+    const type = "article";
+    const id = getArticleApiId();
+    navigate(`/report/${type}/${id}`);
+  };
+
   const actions = [
     {
       icon: <ShoppingCart color="primary" />,
@@ -187,6 +193,7 @@ export function ArticleDetail() {
       index: 'consumer',
       onClick: () => {
         console.log('onClick 신고하기');
+        handleReportClick();
       },
     },
     {
