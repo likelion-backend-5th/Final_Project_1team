@@ -5,6 +5,15 @@ export type Status = (typeof status)[number];
 export const articleStatus = ['LIVE', 'EXPIRED'] as const;
 export type ArticleStatus = (typeof articleStatus)[number];
 
+export const articleInputError = [
+  '제목을 비워둘 수 없습니다.',
+  '상세 내용을 비워둘 수 없습니다.',
+  '가격은 음수로 설정할 수 없습니다.',
+  '이미지 갯수는 최대 5개까지만 가능합니다.',
+  '',
+] as const;
+export type ArticleInputError = (typeof articleInputError)[number];
+
 export function getChipColorByArticleStatus(articleStatus: ArticleStatus) {
   if (articleStatus === 'LIVE') {
     return 'primary';

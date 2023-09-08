@@ -20,6 +20,7 @@ import {
 } from '../../store/auth-action.tsx';
 import { useNavigate } from 'react-router-dom';
 import { uploadImagesToS3 } from '../../util/s3Client.ts';
+import { ArticleInputError, articleInputError } from '../../types/article.ts';
 
 const StyledArticleDetail = styled('div')({
   display: 'flex',
@@ -50,6 +51,7 @@ export function ArticlePost() {
   const [description, setDescription] = useState('');
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [alertMsg, setAlertMsg] = useState<string>();
   const [alertOpen, setAlertOpen] = useState(false);
   const [price, setPrice] = useState(0);
   const navigate = useNavigate();
@@ -58,6 +60,7 @@ export function ArticlePost() {
     let newImageFiles = Array.from(event.target.files);
 
     if (newImageFiles.length > 5) {
+      setAlertMsg('이미지 갯수는 최대 5개까지만 가능합니다.');
       setAlertOpen(true);
       newImageFiles = newImageFiles.slice(0, 5);
     }
@@ -69,7 +72,35 @@ export function ArticlePost() {
     setImagePreviews(newImagePreviews);
   };
 
+  const checkInputValidation = () => {
+    let str = '';
+    let noError = true;
+
+    if (!title) {
+      str = str.concat('', '제목을 비워둘 수 없습니다.');
+      noError = false;
+    }
+
+    if (!description) {
+      str = str.concat('\n', '상세 내용을 비워둘 수 없습니다.');
+      noError = false;
+    }
+
+    if (price < 0) {
+      str = str.concat('\n', '가격은 음수로 설정할 수 없습니다.');
+      noError = false;
+    }
+
+    setAlertMsg(str);
+    return noError;
+  };
+
   const handleSubmit = async () => {
+    if (!checkInputValidation()) {
+      setAlertOpen(true);
+      return;
+    }
+
     try {
       uploadImagesToS3(imageFiles, 'article').then((result) => {
         if (result) {
@@ -102,11 +133,12 @@ export function ArticlePost() {
           <Collapse in={alertOpen}>
             <Stack>
               <Alert
+                sx={{ whiteSpace: 'pre-line', textAlign: 'start' }}
                 severity="error"
                 onClose={() => {
                   setAlertOpen(false);
                 }}>
-                이미지 갯수는 최대 5개까지만 가능합니다.
+                {alertMsg}
               </Alert>
             </Stack>
           </Collapse>
