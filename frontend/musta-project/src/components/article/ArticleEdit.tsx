@@ -5,8 +5,10 @@ import {
   CardContent,
   CardMedia,
   Collapse,
+  FormControlLabel,
   Skeleton,
   Stack,
+  Switch,
   TextField,
   Typography,
 } from '@mui/material';
@@ -61,18 +63,9 @@ const StyledCardContent = styled(CardContent)({
 });
 
 const articleStatusListElement = [
-  ['최신순', '1', 'desc'],
-  ['오래된순', '2', 'asc'],
+  ['공개', '1', 'LIVE'],
+  ['비공개', '2', 'EXPIRED'],
 ];
-
-function mapArticleStatus(articleStatus: ArticleStatus) {
-  if (articleStatus === 'LIVE') {
-    return '공개';
-  }
-  if (articleStatus === 'EXPIRED') {
-    return '비공개';
-  }
-}
 
 export function ArticleEdit() {
   const [url, setURL] = useState(baseUrl + getArticleApiId());
@@ -88,6 +81,7 @@ export function ArticleEdit() {
   const [articleStatus, setArticleStatus] = useState('');
   const [price, setPrice] = useState(0);
   const [alertMsg, setAlertMsg] = useState<string>();
+  const [openLabel, setOpenLabel] = useState<string>();
   const navigate = useNavigate();
 
   const handleImageChange = (event) => {
@@ -164,24 +158,25 @@ export function ArticleEdit() {
       setOldImageFiles(data.images);
       setImagePreviews(oldImageFiles);
       setPrice(data.price);
-      articleStatusListElement.splice(0, articleStatusListElement.length);
-      articleStatusListElement.push([
-        mapArticleStatus(data.articleStatus as ArticleStatus),
-        '1',
-        data.articleStatus,
-      ]);
-      let index = 2;
-      for (let i = 0; i < articleStatus.length; i++) {
-        if (articleStatus[i] == (data.articleStatus as ArticleStatus)) {
-          continue;
-        }
-        articleStatusListElement.push([
-          mapArticleStatus(articleStatus[i] as ArticleStatus),
-          index.toString(),
-          articleStatus[i],
-        ]);
-        index++;
-      }
+      // articleStatusListElement.splice(0, articleStatusListElement.length);
+      // articleStatusListElement.push([
+      //   mapArticleStatus(data.articleStatus as ArticleStatus),
+      //   '1',
+      //   data.articleStatus,
+      // ]);
+      // let index = 2;
+      // for (let i = 0; i < articleStatus.length; i++) {
+      //   if (articleStatus == (data.articleStatus as ArticleStatus)) {
+      //     continue;
+      //   }
+      //   articleStatusListElement.push([
+      //     mapArticleStatus(articleStatus[i] as ArticleStatus),
+      //     index.toString(),
+      //     articleStatus[i],
+      //   ]);
+      //   index++;
+      // }
+      setOpenLabel(data.articleStatus === 'LIVE' ? '공개' : '비공개');
       setTimeout(() => setLoading(false), loadingTime);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -253,10 +248,6 @@ export function ArticleEdit() {
                 alignItems: 'center',
                 alignContent: 'center',
               }}>
-              <DropDown
-                elements={articleStatusListElement}
-                setValue={setArticleStatus}
-              />
               <TextField
                 id="article-title"
                 defaultValue={title}
@@ -286,6 +277,25 @@ export function ArticleEdit() {
                 marginBottom: '16px', // Add some spacing
               }}>
               <Typography variant="body2">{createdDate}</Typography>
+            </Box>
+            <Box>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={articleStatus === 'LIVE'}
+                    onChange={(event, checked) => {
+                      if (checked) {
+                        setArticleStatus('LIVE');
+                        setOpenLabel('공개');
+                      } else {
+                        setArticleStatus('EXPIRED');
+                        setOpenLabel('비공개');
+                      }
+                    }}
+                  />
+                }
+                label={openLabel}
+              />
             </Box>
             <Box display="flex" justifyContent="center" marginTop="10px">
               <TextField
