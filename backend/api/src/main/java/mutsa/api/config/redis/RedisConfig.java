@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import mutsa.api.service.chat.RedisMessageSubscriber;
 import mutsa.common.domain.models.user.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -25,6 +26,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Profile("!test")
 @Slf4j
 public class RedisConfig {
+    private final RedisProperties properties;
     @Value("${spring.data.redis.host}")
     private String host;
     @Value("${spring.data.redis.port}")
@@ -40,8 +42,8 @@ public class RedisConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
-        redisConfiguration.setPort(port);
         redisConfiguration.setHostName(host);
+        redisConfiguration.setPort(port);
 
         LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisConfiguration);
         lettuceConnectionFactory.afterPropertiesSet();//yml세팅으로 init

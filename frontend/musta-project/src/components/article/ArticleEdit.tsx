@@ -5,14 +5,19 @@ import {
   CardContent,
   CardMedia,
   Collapse,
+  FormControlLabel,
   Skeleton,
   Stack,
+  Switch,
   TextField,
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import { ArticleStatus } from '../../types/article.ts';
+import {
+  ArticleStatus,
+  checkArticleInputValidation,
+} from '../../types/article.ts';
 import axios from 'axios';
 import { styled } from '@mui/material/styles';
 import { loadingTime } from '../../util/loadingUtil.ts';
@@ -23,8 +28,13 @@ import { InsertPhoto } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import { putArticleHandler } from '../../store/auth-action.tsx';
 import { uploadImagesToS3, bucketName, s3Client } from '../../util/s3Client.ts';
+import axiosUtils from '../../uitls/axiosUtils.ts';
+import userStore from '../../store/user/userStore.ts';
+import useStore from '../../store/useStores.ts';
+import useStores from '../../store/useStores.ts';
 
-const baseUrl = 'http://localhost:8080/api/articles/';
+// const baseUrl = 'http://localhost:8080/api/articles/';
+const baseUrl = import.meta.env.VITE_API + '/api/articles/';
 
 function getArticleApiId() {
   const pathnames = location.pathname.split('/');
@@ -58,18 +68,9 @@ const StyledCardContent = styled(CardContent)({
 });
 
 const articleStatusListElement = [
-  ['최신순', '1', 'desc'],
-  ['오래된순', '2', 'asc'],
+  ['공개', '1', 'LIVE'],
+  ['비공개', '2', 'EXPIRED'],
 ];
-
-function mapArticleStatus(articleStatus: ArticleStatus) {
-  if (articleStatus === 'LIVE') {
-    return '공개';
-  }
-  if (articleStatus === 'EXPIRED') {
-    return '비공개';
-  }
-}
 
 export function ArticleEdit() {
   const [url, setURL] = useState(baseUrl + getArticleApiId());
@@ -84,12 +85,16 @@ export function ArticleEdit() {
   const [createdDate, setCreatedDate] = useState('');
   const [articleStatus, setArticleStatus] = useState('');
   const [price, setPrice] = useState(0);
+  const [alertMsg, setAlertMsg] = useState<string>();
+  const [openLabel, setOpenLabel] = useState<string>();
   const navigate = useNavigate();
+  const { userStore, authStore } = useStores();
 
   const handleImageChange = (event) => {
     let newImageFiles = Array.from(event.target.files);
 
     if (newImageFiles.length > 5) {
+      setAlertMsg('이미지 갯수는 최대 5개까지만 가능합니다.');
       setAlertOpen(true);
       newImageFiles = newImageFiles.slice(0, 5);
     }
@@ -101,15 +106,18 @@ export function ArticleEdit() {
     setImagePreviews(newImagePreviews);
   };
 
+  const validation = () => {
+    const str = checkArticleInputValidation(title, description, price);
+
+    setAlertMsg(str);
+    return !str;
+  };
+
   const handleSubmit = async () => {
-    //  1. 현재 로그인 상태인지 확인한다.
-    //      - 로그인이 되어 있다면 다음 단계
-    //      - 로그인이 되어 있지 않다면, 로그인 화면으로 이동
-    //  2. s3에 파일을 업로드한다.
-    //      - 중복 파일인 경우는 아예 고려 X
-    //        - 해쉬 등을 사용해서 중복 파일 검사를 시도해볼 수 있지만, 현재는 고려 x
-    //  3. 업로드한 파일의 url 리스트를 api 서버에 전송
-    //  4. api 서버에서는 전송받은 url 리스트를 db에 저장
+    if (!validation()) {
+      setAlertOpen(true);
+      return;
+    }
 
     uploadImagesToS3(imageFiles, 'article').then((result) => {
       if (result) {
@@ -146,38 +154,34 @@ export function ArticleEdit() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(url);
-      const data = response.data;
-      setApiId(data.apiId);
-      setTitle(data.title);
-      setDescription(data.description);
-      setCreatedDate(data.createdDate);
-      setArticleStatus(data.articleStatus);
-      setOldImageFiles(data.images);
-      setImagePreviews(oldImageFiles);
-      setPrice(data.price);
-      articleStatusListElement.splice(0, articleStatusListElement.length);
-      articleStatusListElement.push([
-        mapArticleStatus(data.articleStatus as ArticleStatus),
-        '1',
-        data.articleStatus,
-      ]);
-      let index = 2;
-      for (let i = 0; i < articleStatus.length; i++) {
-        if (articleStatus[i] == (data.articleStatus as ArticleStatus)) {
-          continue;
-        }
-        articleStatusListElement.push([
-          mapArticleStatus(articleStatus[i] as ArticleStatus),
-          index.toString(),
-          articleStatus[i],
-        ]);
-        index++;
-      }
-      setTimeout(() => setLoading(false), loadingTime);
+      axiosUtils.get(`/articles/${getArticleApiId()}`).then((response) => {
+        console.log(response);
+        userStore.getUserInfo().then((result) => {
+          if (result.data.username !== response.data.username) {
+            alert('게시글 작성자가 아닙니다.');
+            return;
+          }
+        });
+        setApiId(response.data.apiId);
+        setTitle(response.data.title);
+        setDescription(response.data.description);
+        setCreatedDate(response.data.createdDate);
+        setArticleStatus(response.data.articleStatus);
+        setOldImageFiles(response.data.images);
+        setImagePreviews(oldImageFiles);
+        setPrice(response.data.price);
+        setOpenLabel(
+          response.data.articleStatus === 'LIVE' ? '공개' : '비공개'
+        );
+        setTimeout(() => setLoading(false), loadingTime);
+      });
     } catch (error) {
       console.error('Error fetching data:', error);
-      setLoading(false);
+      alert('존재하지 않는 게시글 입니다.');
+      navigate(`/article`, {
+        replace: false,
+      });
+      return;
     }
   };
 
@@ -228,11 +232,12 @@ export function ArticleEdit() {
               <Collapse in={alertOpen}>
                 <Stack>
                   <Alert
+                    sx={{ whiteSpace: 'pre-line', textAlign: 'start' }}
                     severity="error"
                     onClose={() => {
                       setAlertOpen(false);
                     }}>
-                    이미지 갯수는 최대 5개까지만 가능합니다.
+                    {alertMsg}
                   </Alert>
                 </Stack>
               </Collapse>
@@ -244,10 +249,6 @@ export function ArticleEdit() {
                 alignItems: 'center',
                 alignContent: 'center',
               }}>
-              <DropDown
-                elements={articleStatusListElement}
-                setValue={setArticleStatus}
-              />
               <TextField
                 id="article-title"
                 defaultValue={title}
@@ -277,6 +278,25 @@ export function ArticleEdit() {
                 marginBottom: '16px', // Add some spacing
               }}>
               <Typography variant="body2">{createdDate}</Typography>
+            </Box>
+            <Box>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={articleStatus === 'LIVE'}
+                    onChange={(event, checked) => {
+                      if (checked) {
+                        setArticleStatus('LIVE');
+                        setOpenLabel('공개');
+                      } else {
+                        setArticleStatus('EXPIRED');
+                        setOpenLabel('비공개');
+                      }
+                    }}
+                  />
+                }
+                label={openLabel}
+              />
             </Box>
             <Box display="flex" justifyContent="center" marginTop="10px">
               <TextField

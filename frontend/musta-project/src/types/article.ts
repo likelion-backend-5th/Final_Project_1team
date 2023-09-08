@@ -5,6 +5,15 @@ export type Status = (typeof status)[number];
 export const articleStatus = ['LIVE', 'EXPIRED'] as const;
 export type ArticleStatus = (typeof articleStatus)[number];
 
+export const articleInputError = [
+  '제목을 비워둘 수 없습니다.',
+  '상세 내용을 비워둘 수 없습니다.',
+  '가격은 음수로 설정할 수 없습니다.',
+  '이미지 갯수는 최대 5개까지만 가능합니다.',
+  '',
+] as const;
+export type ArticleInputError = (typeof articleInputError)[number];
+
 export function getChipColorByArticleStatus(articleStatus: ArticleStatus) {
   if (articleStatus === 'LIVE') {
     return 'primary';
@@ -18,7 +27,7 @@ export function getChipColorByArticleStatus(articleStatus: ArticleStatus) {
 }
 
 export interface Article {
-  id: string;
+  apiId: string;
   title: string;
   description: string;
   username: string;
@@ -32,7 +41,7 @@ export interface Article {
 
 export class ArticleImpl implements Article {
   constructor(
-    public id: string,
+    public apiId: string,
     public title: string,
     public description: string,
     public username: string,
@@ -76,4 +85,26 @@ export interface ArticlePaginationData {
   totalPage: number;
   currentPageItemCount: number;
   contents: Article[];
+}
+
+export function checkArticleInputValidation(
+  title: string,
+  description: string,
+  price: number
+) {
+  let str = '';
+
+  if (!title) {
+    str = str.concat('', '제목을 비워둘 수 없습니다.');
+  }
+
+  if (!description) {
+    str = str.concat('\n', '상세 내용을 비워둘 수 없습니다.');
+  }
+
+  if (price < 0) {
+    str = str.concat('\n', '가격은 음수로 설정할 수 없습니다.');
+  }
+
+  return str;
 }

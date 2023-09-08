@@ -12,6 +12,7 @@ import {
   getChipColorByArticleStatus,
 } from '../../types/article.ts';
 import { useNavigate } from 'react-router-dom';
+import { formatPrice } from '../../util/formatPrice.ts';
 
 type AlbumCardProps = {
   article: ArticleImpl;
@@ -68,14 +69,14 @@ export const AlbumCard = (props: AlbumCardProps) => {
           <Typography variant="h6" gutterBottom>
             {article.title}
           </Typography>
-          <Typography variant="h6">{article.price}</Typography>
+          <Typography variant="h6">{formatPrice(article.price)}</Typography>
           <Typography
             variant="body2"
             color="text.secondary"
             sx={{ marginBottom: 1 }}>
             작성자: {article.username}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography noWrap variant="body2" color="text.secondary">
             {article.description}
           </Typography>
         </CardContent>
