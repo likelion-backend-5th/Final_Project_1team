@@ -1,5 +1,7 @@
-package mutsa.api.config.redis;
+package mutsa.api.config;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.service.chat.RedisMessageSubscriber;
@@ -19,32 +21,92 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.util.StringUtils;
+import redis.embedded.RedisServer;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 @Configuration
 @RequiredArgsConstructor
-@Profile("!test")
+@Profile("test")
 @Slf4j
-public class RedisConfig {
-    @Value("${spring.data.redis.host}")
-    private String host;
+public class TestRedisConfiguration {
     @Value("${spring.data.redis.port}")
     private int port;
+    private RedisServer redisServer;
+
+    @PostConstruct
+    public void redisServer() throws IOException {
+        redisServer = new RedisServer(isRedisRunning() ? findAvailablePort() : port);
+        redisServer.start();
+    }
+
+    @PreDestroy
+    public void stopRedis() {
+        if (redisServer != null) {
+            redisServer.stop();
+        }
+    }
 
     /**
-     * <p>yml 파일에 의해 포트와, 호스트가 자동으로 지정된다.
-     * 연결시에 추가로 지정해야하는 경우는 @Value 읽어 지정하면 된다.
-     * 사실 아래 빈 파일이 없어도 자동으로 레디스 커넥션을 만들어서 지정해준다.</p>
-     *
-     * @return
+     * Embedded Redis가 현재 실행중인지 확인
      */
+    private boolean isRedisRunning() throws IOException {
+        return isRunning(executeGrepProcessCommand(port));
+    }
+
+    /**
+     * 현재 PC/서버에서 사용가능한 포트 조회
+     */
+    public int findAvailablePort() throws IOException {
+
+        for (int port = 10000; port <= 65535; port++) {
+            Process process = executeGrepProcessCommand(port);
+            if (!isRunning(process)) {
+                return port;
+            }
+        }
+
+        throw new IllegalArgumentException("Not Found Available port: 10000 ~ 65535");
+    }
+
+    /**
+     * 해당 port를 사용중인 프로세스 확인하는 sh 실행
+     */
+    private Process executeGrepProcessCommand(int port) throws IOException {
+        String command = String.format("netstat -nat | grep LISTEN|grep %d", port);
+        String[] shell = {"/bin/sh", "-c", command};
+        return Runtime.getRuntime().exec(shell);
+    }
+
+    /**
+     * 해당 Process가 현재 실행중인지 확인
+     */
+    private boolean isRunning(Process process) {
+        String line;
+        StringBuilder pidInfo = new StringBuilder();
+
+        try (BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+
+            while ((line = input.readLine()) != null) {
+                pidInfo.append(line);
+            }
+
+        } catch (Exception e) {
+        }
+
+        return StringUtils.hasText(pidInfo.toString());
+    }
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
-        redisConfiguration.setPort(port);
-        redisConfiguration.setHostName(host);
 
         LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisConfiguration);
         lettuceConnectionFactory.afterPropertiesSet();//yml세팅으로 init
+
         return lettuceConnectionFactory;
     }
 
@@ -54,12 +116,7 @@ public class RedisConfig {
         return new StringRedisTemplate(connectionFactory);
     }
 
-    /**
-     * 레디스 서버와의 상호작용을 위한 텤플릿
-     *
-     * @param redisConnectionFactory
-     * @return
-     */
+
     @Bean
     public StringRedisTemplate chatRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         //채팅을 불러오는 템플릿
@@ -76,23 +133,13 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-    /**
-     * 실제 메세지를 처리하는 비즈니스 로직
-     *
-     * @return
-     */
+
     @Bean
     MessageListenerAdapter messageListener(RedisMessageSubscriber redisMessageSubscriber) {
         return new MessageListenerAdapter(redisMessageSubscriber);
     }
 
-    /**
-     * 발행된 메세지 처리를 위한 리스너를 설정한다.
-     *
-     * @param redisConnectionFactory
-     * @param messageListener
-     * @return
-     */
+
     @Bean
     RedisMessageListenerContainer redisContainer(
             RedisConnectionFactory redisConnectionFactory,
