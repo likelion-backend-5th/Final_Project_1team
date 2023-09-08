@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import mutsa.api.config.jwt.JwtConfig;
 import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.api.dto.auth.AccessTokenResponse;
+import mutsa.api.dto.user.PasswordChangeDto;
 import mutsa.api.dto.user.SignUpUserDto;
 import mutsa.api.util.CookieUtil;
 import mutsa.api.util.JwtTokenProvider;
@@ -97,6 +98,43 @@ public class UserService {
         return userRepository.findUserInfo(username);
     }
 
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        CustomPrincipalDetails user = (CustomPrincipalDetails) SecurityContextHolder.getContext().getAuthentication()
+            .getPrincipal();
+
+        if (user != null) {
+            CookieUtil.removeCookie(request, response, CookieUtil.REFRESH_TOKEN);
+        }
+    }
+
+    public void changePassword(CustomPrincipalDetails user, PasswordChangeDto passwordChangeDto) {
+        User findUser = findUsername(user.getUsername());
+
+        if (findUser.getPassword()
+            .equals(encodedPassword(passwordChangeDto.getPassword()))) {
+            throw new BusinessException(ErrorCode.DIFFERENT_PASSWORD);
+        }
+
+        if (!isSamePassword(passwordChangeDto.getNewPassword(),
+            passwordChangeDto.getNewPasswordCheck())) {
+            throw new BusinessException(ErrorCode.DIFFERENT_PASSWORD);
+        }
+
+        if (isSamePassword(passwordChangeDto.getPassword(), passwordChangeDto.getNewPassword())) {
+            throw new BusinessException(ErrorCode.SAME_PASSOWRD);
+        }
+
+        findUser.updatePassword(bCryptPasswordEncoder.encode(passwordChangeDto.getNewPassword()));
+    }
+
+    private String encodedPassword(String password) {
+        return bCryptPasswordEncoder.encode(password);
+    }
+
+    private boolean isSamePassword(String password, String newPassword) {
+        return password.equals(newPassword);
+    }
+
     private User fromJwtInfo(JWTInfo jwtInfo) {
         return findUsername(jwtInfo.getUsername());
     }
@@ -106,12 +144,4 @@ public class UserService {
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public void logout(HttpServletRequest request, HttpServletResponse response) {
-        CustomPrincipalDetails user = (CustomPrincipalDetails) SecurityContextHolder.getContext().getAuthentication()
-            .getPrincipal();
-
-        if (user != null) {
-            CookieUtil.removeCookie(request, response, CookieUtil.REFRESH_TOKEN);
-        }
-    }
 }

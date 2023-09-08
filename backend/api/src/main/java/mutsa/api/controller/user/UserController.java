@@ -3,6 +3,8 @@ package mutsa.api.controller.user;
 import jakarta.validation.Valid;
 import java.net.http.HttpResponse;
 import lombok.RequiredArgsConstructor;
+import mutsa.api.config.security.CustomPrincipalDetails;
+import mutsa.api.dto.user.PasswordChangeDto;
 import mutsa.api.dto.user.SignUpUserDto;
 import mutsa.api.service.user.UserService;
 import mutsa.api.util.UserUtil;
@@ -20,11 +22,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
+
     private final UserService userService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUpUser(@RequestBody @Valid SignUpUserDto signUpDto) {
-        if(UserUtil.diffPassword(signUpDto.getPassword(), signUpDto.getCheckPassword())){
+        if (UserUtil.diffPassword(signUpDto.getPassword(), signUpDto.getCheckPassword())) {
             throw new BusinessException(ErrorCode.DIFFERENT_PASSWORD);
         }
         userService.signUp(signUpDto);
@@ -36,5 +39,13 @@ public class UserController {
     public ResponseEntity<UserInfoDto> findUserInfo(@AuthenticationPrincipal UserDetails user) {
         return new ResponseEntity(userService.findUserInfo(user.getUsername()),
             HttpStatus.OK);
+    }
+
+    @PutMapping("/change-password")
+    @PreAuthorize("hasAuthority('user.update')")
+    public ResponseEntity changePassword(@AuthenticationPrincipal CustomPrincipalDetails user,
+        @RequestBody PasswordChangeDto passwordChangeDto) {
+        userService.changePassword(user, passwordChangeDto);
+        return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 }
