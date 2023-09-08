@@ -18,7 +18,6 @@ const Articles = () => {
 
   return (
     <Container>
-      <h3>Articles</h3>
       <Box
         sx={{
           display: 'flex',
