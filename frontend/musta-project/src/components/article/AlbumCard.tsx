@@ -76,7 +76,7 @@ export const AlbumCard = (props: AlbumCardProps) => {
             sx={{ marginBottom: 1 }}>
             작성자: {article.username}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography noWrap variant="body2" color="text.secondary">
             {article.description}
           </Typography>
         </CardContent>
