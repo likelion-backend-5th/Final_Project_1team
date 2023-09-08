@@ -4,6 +4,8 @@ package mutsa.api.controller.order;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.dto.order.OrderStatusRequestDto;
 import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.models.article.Article;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.operation.preprocess.Preprocessors;
@@ -45,12 +48,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
-@SpringBootTest
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
+@ActiveProfiles("test")
+@Transactional
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-@Transactional
-@ActiveProfiles("test")
 @Slf4j
 class OrderControllerTest {
     @Autowired
@@ -65,6 +67,8 @@ class OrderControllerTest {
     private EntityManager entityManager;
     @Autowired
     private PaymentRepository paymentRepository;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     private static MockedStatic<SecurityUtil> securityUtilMockedStatic;
 
@@ -80,6 +84,7 @@ class OrderControllerTest {
     public static void afterAll() {
         securityUtilMockedStatic.close();
     }
+
 
     @BeforeEach
     public void init() {
@@ -98,6 +103,11 @@ class OrderControllerTest {
         article = articleRepository.save(article);
     }
 
+    @AfterEach
+    public void tearDown() {
+        // Redis 데이터 삭제
+        redisTemplate.getConnectionFactory().getConnection().flushDb();
+    }
 
     @DisplayName("주문 생성")
     @Test
