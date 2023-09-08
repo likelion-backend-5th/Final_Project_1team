@@ -86,3 +86,25 @@ export interface ArticlePaginationData {
   currentPageItemCount: number;
   contents: Article[];
 }
+
+export function checkArticleInputValidation(
+  title: string,
+  description: string,
+  price: number
+) {
+  let str = '';
+
+  if (!title) {
+    str = str.concat('', '제목을 비워둘 수 없습니다.');
+  }
+
+  if (!description) {
+    str = str.concat('\n', '상세 내용을 비워둘 수 없습니다.');
+  }
+
+  if (price < 0) {
+    str = str.concat('\n', '가격은 음수로 설정할 수 없습니다.');
+  }
+
+  return str;
+}

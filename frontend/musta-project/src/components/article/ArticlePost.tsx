@@ -20,7 +20,11 @@ import {
 } from '../../store/auth-action.tsx';
 import { useNavigate } from 'react-router-dom';
 import { uploadImagesToS3 } from '../../util/s3Client.ts';
-import { ArticleInputError, articleInputError } from '../../types/article.ts';
+import {
+  ArticleInputError,
+  articleInputError,
+  checkArticleInputValidation,
+} from '../../types/article.ts';
 
 const StyledArticleDetail = styled('div')({
   display: 'flex',
@@ -72,31 +76,15 @@ export function ArticlePost() {
     setImagePreviews(newImagePreviews);
   };
 
-  const checkInputValidation = () => {
-    let str = '';
-    let noError = true;
-
-    if (!title) {
-      str = str.concat('', '제목을 비워둘 수 없습니다.');
-      noError = false;
-    }
-
-    if (!description) {
-      str = str.concat('\n', '상세 내용을 비워둘 수 없습니다.');
-      noError = false;
-    }
-
-    if (price < 0) {
-      str = str.concat('\n', '가격은 음수로 설정할 수 없습니다.');
-      noError = false;
-    }
+  const validation = () => {
+    const str = checkArticleInputValidation(title, description, price);
 
     setAlertMsg(str);
-    return noError;
+    return !str;
   };
 
   const handleSubmit = async () => {
-    if (!checkInputValidation()) {
+    if (!validation()) {
       setAlertOpen(true);
       return;
     }

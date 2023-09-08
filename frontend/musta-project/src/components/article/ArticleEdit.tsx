@@ -12,7 +12,10 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
-import { ArticleStatus } from '../../types/article.ts';
+import {
+  ArticleStatus,
+  checkArticleInputValidation,
+} from '../../types/article.ts';
 import axios from 'axios';
 import { styled } from '@mui/material/styles';
 import { loadingTime } from '../../util/loadingUtil.ts';
@@ -84,12 +87,14 @@ export function ArticleEdit() {
   const [createdDate, setCreatedDate] = useState('');
   const [articleStatus, setArticleStatus] = useState('');
   const [price, setPrice] = useState(0);
+  const [alertMsg, setAlertMsg] = useState<string>();
   const navigate = useNavigate();
 
   const handleImageChange = (event) => {
     let newImageFiles = Array.from(event.target.files);
 
     if (newImageFiles.length > 5) {
+      setAlertMsg('이미지 갯수는 최대 5개까지만 가능합니다.');
       setAlertOpen(true);
       newImageFiles = newImageFiles.slice(0, 5);
     }
@@ -101,15 +106,18 @@ export function ArticleEdit() {
     setImagePreviews(newImagePreviews);
   };
 
+  const validation = () => {
+    const str = checkArticleInputValidation(title, description, price);
+
+    setAlertMsg(str);
+    return !str;
+  };
+
   const handleSubmit = async () => {
-    //  1. 현재 로그인 상태인지 확인한다.
-    //      - 로그인이 되어 있다면 다음 단계
-    //      - 로그인이 되어 있지 않다면, 로그인 화면으로 이동
-    //  2. s3에 파일을 업로드한다.
-    //      - 중복 파일인 경우는 아예 고려 X
-    //        - 해쉬 등을 사용해서 중복 파일 검사를 시도해볼 수 있지만, 현재는 고려 x
-    //  3. 업로드한 파일의 url 리스트를 api 서버에 전송
-    //  4. api 서버에서는 전송받은 url 리스트를 db에 저장
+    if (!validation()) {
+      setAlertOpen(true);
+      return;
+    }
 
     uploadImagesToS3(imageFiles, 'article').then((result) => {
       if (result) {
@@ -228,11 +236,12 @@ export function ArticleEdit() {
               <Collapse in={alertOpen}>
                 <Stack>
                   <Alert
+                    sx={{ whiteSpace: 'pre-line', textAlign: 'start' }}
                     severity="error"
                     onClose={() => {
                       setAlertOpen(false);
                     }}>
-                    이미지 갯수는 최대 5개까지만 가능합니다.
+                    {alertMsg}
                   </Alert>
                 </Stack>
               </Collapse>
