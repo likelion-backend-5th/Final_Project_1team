@@ -158,6 +158,9 @@ export function ArticleEdit() {
         console.log(response);
         if (authStore.userInfo?.username !== response.data.username) {
           alert('게시글 작성자가 아닙니다.');
+          navigate(`/article`, {
+            replace: false,
+          });
           return;
         }
         setApiId(response.data.apiId);
