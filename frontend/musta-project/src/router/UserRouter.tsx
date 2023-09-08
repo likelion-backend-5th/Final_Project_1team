@@ -23,6 +23,8 @@ import PaymentWidget from '../components/payment/PaymentWidget.tsx';
 import ChatPage from '../pages/chat/ChatPage.tsx';
 import ChatRoomList from '../components/chat/ChatRoomList.tsx';
 import SignUpForm from '../components/auth/SignUpForm.tsx';
+// import UserPage from '../pages/user/UserPage.tsx';
+import SignUpSuccessForm from '../components/auth/SignUpSuccessForm.tsx';
 
 const UserRouter = () => {
   return (
@@ -30,6 +32,8 @@ const UserRouter = () => {
       <Route path="/" element={<MainPage />} />
       <Route path="/login" element={<LoginForm />} />
       <Route path="/signup" element={<SignUpForm />} />
+      {/* <Route path="/user" element={<UserPage />} /> */}
+      <Route path="/signup/success" element={<SignUpSuccessForm />} />
 
       <Route
         path="/hello"

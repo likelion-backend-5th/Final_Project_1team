@@ -24,7 +24,7 @@ type signupform = {
   password: string;
   checkPassword: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   address?: { zipcode: string; city: string; street?: string };
 };
 
@@ -42,16 +42,6 @@ export default class userStore {
   userRepository = userRepository;
   getUserInfo = async () => {
     this.userInfo;
-  };
-
-  logout = async () => {
-    this.userInfo = {
-      username: '',
-      accessToken: '',
-    };
-
-    localStorage.removeItem('accessToken');
-    removeRefershToken();
   };
 
   login = async (data: FormData) => {
@@ -83,15 +73,13 @@ export default class userStore {
       });
   };
 
-  handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const data = new FormData(e.currentTarget);
+  handleSignup = async (data: FormData) => {
     const signupform: signupform = {
       username: (data.get('id') as string).toLowerCase(),
       password: data.get('password') as string,
       checkPassword: data.get('check_password') as string,
       email: data.get('email') as string,
-      phone: data.get('phone') as string,
+      phoneNumber: data.get('phoneNumber') as string,
     };
 
     if (
@@ -107,12 +95,7 @@ export default class userStore {
 
     const res = await userRepository
       .signup(signupform)
-      .then((res: AxiosResponse) => {
-        if (res.status < 300 && res.status >= 200) {
-          const navigate = useNavigate();
-          navigate('');
-        }
-      })
+      .then((res: AxiosResponse) => {})
       .catch((res: AxiosResponse) => {});
   };
 

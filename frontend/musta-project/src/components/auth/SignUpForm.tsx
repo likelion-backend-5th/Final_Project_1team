@@ -13,6 +13,7 @@ import useStores from '../../store/useStores';
 import userStore from '../../store/user/userStore';
 import AddressPost from '../atoms/AddressPost';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 const SignUpForm = () => {
   const userStore: userStore = useStores().userStore;
@@ -29,9 +30,22 @@ const SignUpForm = () => {
   const passwordRegex = new RegExp(/^[a-zA-Z0-9!@#$%^&*]{8,24}$/);
   const idRegex = new RegExp(/^[a-zA-Z0-9]{8,24}$/);
   const phoneRegex = new RegExp(/01[016789]-[^0][0-9]{2,3}-[0-9]{3,4}/);
+
+  const navigate = useNavigate();
   useEffect(() => {
     return () => {};
   }, []);
+  const handleEvent = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+
+    await userStore
+      .handleSignup(data)
+      .then(() => {
+        navigate('/signUp/success');
+      })
+      .catch();
+  };
 
   return (
     <Box
@@ -49,11 +63,7 @@ const SignUpForm = () => {
       <Typography component="h1" variant="h5">
         회원가입
       </Typography>
-      <Box
-        component="form"
-        noValidate
-        onSubmit={userStore.handleSignup}
-        sx={{ mt: 3 }}>
+      <Box component="form" noValidate onSubmit={handleEvent} sx={{ mt: 3 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
@@ -124,10 +134,10 @@ const SignUpForm = () => {
               required
               fullWidth
               error={!phoneRegex.test(phone as string)}
-              name="phone"
+              name="phoneNumber"
               label="핸드폰"
-              id="phone"
-              autoComplete="phone"
+              id="phoneNumber"
+              autoComplete="phoneNumber"
               onChange={(e) => {
                 setPhone(e.target.value);
               }}
