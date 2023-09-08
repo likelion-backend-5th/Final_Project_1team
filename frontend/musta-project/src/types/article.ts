@@ -27,7 +27,7 @@ export function getChipColorByArticleStatus(articleStatus: ArticleStatus) {
 }
 
 export interface Article {
-  id: string;
+  apiId: string;
   title: string;
   description: string;
   username: string;
@@ -41,7 +41,7 @@ export interface Article {
 
 export class ArticleImpl implements Article {
   constructor(
-    public id: string,
+    public apiId: string,
     public title: string,
     public description: string,
     public username: string,

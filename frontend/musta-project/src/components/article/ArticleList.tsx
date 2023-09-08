@@ -82,10 +82,10 @@ export const ArticleList = forwardRef((props, ref) => {
         if (index < articleArrayList.length) {
           row.push(
             <AlbumCard
-              key={articleArrayList[index].id}
+              key={articleArrayList[index].apiId}
               article={articleArrayList[index]}
               style={{ margin: '10px', width: '250px' }} // 간격과 카드 크기 조정
-              detail={articleArrayList[index].id}
+              detail={articleArrayList[index].apiId}
             />
           );
         } else {

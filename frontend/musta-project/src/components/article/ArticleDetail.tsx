@@ -42,10 +42,12 @@ import {
 import { Chatroom } from '../../types/chat.ts';
 import { loadingTime } from '../../util/loadingUtil.ts';
 import ReviewListForm from '../review/ReviewListForm.tsx';
-import { formatPrice} from "../../util/formatPrice.ts";
+import { formatPrice } from '../../util/formatPrice.ts';
 import { Carousel } from 'react-responsive-carousel';
+import axiosUtils from '../../uitls/axiosUtils.ts';
 
-const baseUrl = 'http://localhost:8080/api/articles/';
+// const baseUrl = 'http://localhost:8080/api/articles/';
+const baseUrl = import.meta.env.VITE_API + '/api/articles/';
 
 function getArticleApiId() {
   const pathnames = location.pathname.split('/');
@@ -114,25 +116,29 @@ export function ArticleDetail() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(url);
-      const data = response.data;
-      setAritcle({
-        apiId: data.apiId,
-        title: data.title,
-        description: data.description,
-        username: data.username,
-        thumbnail: data.thumbnail,
-        status: data.status,
-        articleStatus: data.articleStatus,
-        createdDate: data.createdDate,
-        price: data.price,
-        images: data.images,
+      axiosUtils.get(`/articles/${getArticleApiId()}`).then((response) => {
+        setAritcle({
+          apiId: response.data.apiId,
+          title: response.data.title,
+          description: response.data.description,
+          username: response.data.username,
+          thumbnail: response.data.thumbnail,
+          status: response.data.status,
+          articleStatus: response.data.articleStatus,
+          createdDate: response.data.createdDate,
+          price: response.data.price,
+          images: response.data.images,
+        });
+        //  TODO DEBUG용
+        setTimeout(() => setLoading(false), loadingTime);
       });
-      //  TODO DEBUG용
-      setTimeout(() => setLoading(false), loadingTime);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setLoading(false);
+      alert('존재하지 않는 게시글 입니다.');
+      navigate(`/article`, {
+        replace: false,
+      });
+      return;
     }
   };
 
@@ -157,8 +163,8 @@ export function ArticleDetail() {
     navigate(`/article/detail/${id}/payment`);
   };
 
-  const   handleReportClick = () => {
-    const type = "article";
+  const handleReportClick = () => {
+    const type = 'article';
     const id = getArticleApiId();
     navigate(`/report/${type}/${id}`);
   };

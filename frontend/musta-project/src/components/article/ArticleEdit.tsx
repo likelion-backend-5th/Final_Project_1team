@@ -28,8 +28,13 @@ import { InsertPhoto } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import { putArticleHandler } from '../../store/auth-action.tsx';
 import { uploadImagesToS3, bucketName, s3Client } from '../../util/s3Client.ts';
+import axiosUtils from '../../uitls/axiosUtils.ts';
+import userStore from '../../store/user/userStore.ts';
+import useStore from '../../store/useStores.ts';
+import useStores from '../../store/useStores.ts';
 
-const baseUrl = 'http://localhost:8080/api/articles/';
+// const baseUrl = 'http://localhost:8080/api/articles/';
+const baseUrl = import.meta.env.VITE_API + '/api/articles/';
 
 function getArticleApiId() {
   const pathnames = location.pathname.split('/');
@@ -83,6 +88,7 @@ export function ArticleEdit() {
   const [alertMsg, setAlertMsg] = useState<string>();
   const [openLabel, setOpenLabel] = useState<string>();
   const navigate = useNavigate();
+  const { userStore, authStore } = useStores();
 
   const handleImageChange = (event) => {
     let newImageFiles = Array.from(event.target.files);
@@ -148,39 +154,34 @@ export function ArticleEdit() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(url);
-      const data = response.data;
-      setApiId(data.apiId);
-      setTitle(data.title);
-      setDescription(data.description);
-      setCreatedDate(data.createdDate);
-      setArticleStatus(data.articleStatus);
-      setOldImageFiles(data.images);
-      setImagePreviews(oldImageFiles);
-      setPrice(data.price);
-      // articleStatusListElement.splice(0, articleStatusListElement.length);
-      // articleStatusListElement.push([
-      //   mapArticleStatus(data.articleStatus as ArticleStatus),
-      //   '1',
-      //   data.articleStatus,
-      // ]);
-      // let index = 2;
-      // for (let i = 0; i < articleStatus.length; i++) {
-      //   if (articleStatus == (data.articleStatus as ArticleStatus)) {
-      //     continue;
-      //   }
-      //   articleStatusListElement.push([
-      //     mapArticleStatus(articleStatus[i] as ArticleStatus),
-      //     index.toString(),
-      //     articleStatus[i],
-      //   ]);
-      //   index++;
-      // }
-      setOpenLabel(data.articleStatus === 'LIVE' ? '공개' : '비공개');
-      setTimeout(() => setLoading(false), loadingTime);
+      axiosUtils.get(`/articles/${getArticleApiId()}`).then((response) => {
+        console.log(response);
+        userStore.getUserInfo().then((result) => {
+          if (result.data.username !== response.data.username) {
+            alert('게시글 작성자가 아닙니다.');
+            return;
+          }
+        });
+        setApiId(response.data.apiId);
+        setTitle(response.data.title);
+        setDescription(response.data.description);
+        setCreatedDate(response.data.createdDate);
+        setArticleStatus(response.data.articleStatus);
+        setOldImageFiles(response.data.images);
+        setImagePreviews(oldImageFiles);
+        setPrice(response.data.price);
+        setOpenLabel(
+          response.data.articleStatus === 'LIVE' ? '공개' : '비공개'
+        );
+        setTimeout(() => setLoading(false), loadingTime);
+      });
     } catch (error) {
       console.error('Error fetching data:', error);
-      setLoading(false);
+      alert('존재하지 않는 게시글 입니다.');
+      navigate(`/article`, {
+        replace: false,
+      });
+      return;
     }
   };
 
