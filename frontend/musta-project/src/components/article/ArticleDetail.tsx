@@ -115,8 +115,9 @@ export function ArticleDetail() {
   const handleCloseMoveEdit = () => setMoveToEditPage(false);
 
   const fetchData = async () => {
-    try {
-      axiosUtils.get(`/articles/${getArticleApiId()}`).then((response) => {
+    axiosUtils
+      .get(`/articles/${getArticleApiId()}`)
+      .then((response) => {
         setAritcle({
           apiId: response.data.apiId,
           title: response.data.title,
@@ -131,15 +132,15 @@ export function ArticleDetail() {
         });
         //  TODO DEBUG용
         setTimeout(() => setLoading(false), loadingTime);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        alert('존재하지 않는 게시글 입니다.');
+        navigate(`/article`, {
+          replace: false,
+        });
+        return;
       });
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      alert('존재하지 않는 게시글 입니다.');
-      navigate(`/article`, {
-        replace: false,
-      });
-      return;
-    }
   };
 
   const navigate = useNavigate();

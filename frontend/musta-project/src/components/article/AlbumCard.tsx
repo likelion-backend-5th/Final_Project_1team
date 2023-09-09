@@ -32,7 +32,7 @@ export const AlbumCard = (props: AlbumCardProps) => {
 
   return (
     <Card
-      sx={{ maxWidth: style.width, margin: style.margin }}
+      sx={{ maxWidth: style.width, margin: style.margin, boxShadow: 6 }}
       onClick={() => {
         navigate(`/article/detail/${props.detail}`, { replace: false });
       }}>
