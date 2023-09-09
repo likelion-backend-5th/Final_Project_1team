@@ -3,6 +3,7 @@ package mutsa.common.repository.chatroomUser;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
+import lombok.extern.slf4j.Slf4j;
 import mutsa.common.customRepository.Querydsl4RepositorySupport;
 import mutsa.common.domain.models.chatroom.Chatroom;
 import mutsa.common.domain.models.chatroomUser.ChatroomUser;
@@ -13,6 +14,7 @@ import mutsa.common.dto.chatroom.ChatroomUserResult;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class ChatroomUserRepositoryImpl extends Querydsl4RepositorySupport implements ChatroomUserRepositoryCustom {
     public ChatroomUserRepositoryImpl() {
         super(ChatroomUser.class);
@@ -21,8 +23,8 @@ public class ChatroomUserRepositoryImpl extends Querydsl4RepositorySupport imple
 
     @Override
     public Optional<Chatroom> findByChatroomWithUsers(User user1, User user2) {
-        QChatroomUser chatroomUser = QChatroomUser.chatroomUser;
-
+        log.info("ChatroomUserRepositoryImpl.findByChatroomWithUsers");
+        QChatroomUser chatroomUser = new QChatroomUser("chatroomUser");
         JPQLQuery<Chatroom> query = select(chatroomUser.chatroom)
                 .from(chatroomUser)
                 .where(chatroomUser.user.in(user1, user2))
@@ -35,9 +37,9 @@ public class ChatroomUserRepositoryImpl extends Querydsl4RepositorySupport imple
 
     @Override
     public List<ChatroomUserResult> findByUser(User user) {
+        log.info("ChatroomUserRepositoryImpl.findByUser");
         QChatroomUser chatroomUser1 = new QChatroomUser("chatroomUser1");
         QChatroomUser chatroomUser2 = new QChatroomUser("chatroomUser2");
-
         JPAQuery<ChatroomUserResult> query = select(Projections.constructor(ChatroomUserResult.class,
                 chatroomUser2.user.username,
                 chatroomUser2.chatroom.apiId))

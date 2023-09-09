@@ -7,11 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @EnableJpaRepositories(
-        basePackages = "mutsa.common.repository",
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.REGEX,
-                pattern = "mutsa\\.common\\.repository\\.redis\\..*"
-        )
+        basePackages = "mutsa.common.repository"
 )
 public class JpaConfig {
 }
