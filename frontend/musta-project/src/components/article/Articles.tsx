@@ -23,6 +23,12 @@ const Articles = () => {
           display: 'flex',
           justifyContent: 'space-between',
           marginX: '10px',
+          background: '#ffffff',
+          marginTop: '10px',
+          padding: '10px',
+          borderRadius: '15px',
+          border: '1px solid #d0d0d0',
+          // boxShadow: 4,
         }}>
         <Button variant="contained" startIcon={<AddBox />} href="/article/post">
           글쓰기

@@ -25,7 +25,12 @@ export default function SearchInputMui(props: SearchInputMuiProps) {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}>
       <DropDown
         elements={filterElements}
         order={props.order}
