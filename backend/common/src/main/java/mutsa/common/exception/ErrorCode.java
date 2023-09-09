@@ -26,6 +26,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "USER_NOT_FOUND", "해당 유저를 찾을 수 없습니다."),
     DUPLICATION_USER(HttpStatus.NOT_FOUND.value(), "U001", "중복된 ID입니다."),
     DIFFERENT_PASSWORD(HttpStatus.NOT_FOUND.value(), "U002", "입력된 비밀번호가 다릅니다."),
+    SAME_PASSOWRD(HttpStatus.NOT_FOUND.value(), "U003", "현재 비밀번호와 새 비밀번호가 같습니다."),
 
     // article
     ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "ARTICLE_NOT_FOUND", "해당 게시글을 찾을 수 없습니다."),

@@ -1,10 +1,12 @@
 import { makeAutoObservable } from 'mobx';
 import authRepository from '../../reppository/authRepository';
 import { removeRefershToken } from '../../uitls/cookies';
+import { AxiosResponse } from 'axios';
 
 type userInfo = {
   username: string;
   image_url: string;
+  nickname: string;
   apiId: string;
   zipcode: string;
   city: string;
@@ -21,12 +23,12 @@ export default class authStore {
   authRepository = authRepository;
 
   findUserInfo = async () => {
-    const res = await authRepository
+    return await authRepository
       .findUserInfo()
-      .then((res) => {
+      .then((res: AxiosResponse) => {
         this.userInfo = res.data;
       })
-      .catch((error) => Promise.reject(error));
+      .catch((error: AxiosResponse) => Promise.reject(error));
   };
 
   logout = async () => {

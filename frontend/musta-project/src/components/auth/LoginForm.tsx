@@ -18,12 +18,15 @@ import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import axiosUtils from '../../uitls/axiosUtils';
 import authStore from '../../store/user/authStore';
 import { useNavigate, useNavigation } from 'react-router-dom';
+import { useAlert } from '../hook/useAlert';
 
 const LoginForm = (props: any): JSX.Element => {
   const { userStore, authStore } = useStores();
   const [id, setId] = useState<String>('');
   const [password, setPassword] = useState<String>('');
   const navigate = useNavigate();
+  const { openAlert } = useAlert();
+
   const handleEvent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
@@ -33,15 +36,27 @@ const LoginForm = (props: any): JSX.Element => {
     }
     await userStore
       .login(data)
-      .then(async () => {
-        await authStore
-          .findUserInfo()
-          .then(() => {
-            navigate('/');
-          })
-          .catch();
+      .then(async (res) => {
+        if (200 <= res.status && res.status < 400) {
+          localStorage.setItem('accessToken', res.data.accessToken);
+          userStore.userInfo = {
+            ...userStore.userInfo,
+            username: res.data.username,
+            accessToken: res.data.accessToken,
+          };
+        }
       })
-      .catch();
+      .catch((res) => {
+        return openAlert({ state: 'error', message: res.data.message });
+      });
+    await authStore
+      .findUserInfo()
+      .then((res) => {
+        navigate('/');
+      })
+      .catch((res) => {
+        return openAlert({ state: 'error', message: res.data.message });
+      });
   };
 
   const googleLogin = useGoogleLogin({

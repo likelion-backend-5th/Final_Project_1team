@@ -23,8 +23,9 @@ type signupform = {
   username: string;
   password: string;
   checkPassword: string;
+  nickname: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   address?: { zipcode: string; city: string; street?: string };
 };
 
@@ -44,16 +45,6 @@ export default class userStore {
     this.userInfo;
   };
 
-  logout = async () => {
-    this.userInfo = {
-      username: '',
-      accessToken: '',
-    };
-
-    localStorage.removeItem('accessToken');
-    removeRefershToken();
-  };
-
   login = async (data: FormData) => {
     const username: string | undefined = data.get('id')?.toString();
     const password: string | undefined = data.get('password')?.toString();
@@ -65,33 +56,31 @@ export default class userStore {
       password: password,
     };
 
-    return await userRepository
-      .login(loginform)
-      .then((res: any) => {
-        if (200 <= res.status && res.status < 400) {
-          console.log(res.data.accessToken);
-          localStorage.setItem('accessToken', res.data.accessToken);
-          this.userInfo = {
-            ...this.userInfo,
-            username: res.data.username,
-            accessToken: res.data.accessToken,
-          };
-        }
-      })
-      .catch((err: any) => {
-        Promise.reject(err);
-      });
+    return await userRepository.login(loginform);
+    // .then((res: any) => {
+    //   if (200 <= res.status && res.status < 400) {
+    //     console.log(res.data.accessToken);
+    //     localStorage.setItem('accessToken', res.data.accessToken);
+    //     this.userInfo = {
+    //       ...this.userInfo,
+    //       username: res.data.username,
+    //       accessToken: res.data.accessToken,
+    //     };
+    //   }
+    // })
+    // .catch((err: any) => {
+    //   Promise.reject(err);
+    // });
   };
 
-  handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const data = new FormData(e.currentTarget);
+  handleSignup = async (data: FormData) => {
     const signupform: signupform = {
       username: (data.get('id') as string).toLowerCase(),
       password: data.get('password') as string,
       checkPassword: data.get('check_password') as string,
       email: data.get('email') as string,
-      phone: data.get('phone') as string,
+      nickname: data.get('nickname') as string,
+      phoneNumber: data.get('phoneNumber') as string,
     };
 
     if (
@@ -105,15 +94,24 @@ export default class userStore {
       };
     }
 
-    const res = await userRepository
-      .signup(signupform)
+    return await userRepository.signup(signupform);
+  };
+
+  changePassword = async (data: FormData) => {
+    const passwordForm = {
+      password: data.get('password') as string,
+      newPassword: data.get('newPassword') as string,
+      newPasswordCheck: data.get('newPasswordCheck') as string,
+    };
+
+    return await userRepository
+      .changePassword(passwordForm)
       .then((res: AxiosResponse) => {
-        if (res.status < 300 && res.status >= 200) {
-          const navigate = useNavigate();
-          navigate('');
-        }
+        return res;
       })
-      .catch((res: AxiosResponse) => {});
+      .catch((res: AxiosResponse) => {
+        return Promise.reject(res);
+      });
   };
 
   setAddress = ({ zipcode, city }: { zipcode: string; city: string }) => {

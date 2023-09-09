@@ -1,11 +1,13 @@
 package mutsa.common.repository.user;
 
 
+import static mutsa.common.domain.models.user.QMember.*;
 import static mutsa.common.domain.models.user.QUser.user;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import mutsa.common.customRepository.Querydsl4RepositorySupport;
+import mutsa.common.domain.models.user.QMember;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.dto.user.UserInfoDto;
 import org.springframework.util.StringUtils;
@@ -22,11 +24,13 @@ public class CustomUserRepositoryImpl extends Querydsl4RepositorySupport impleme
             Projections.constructor(UserInfoDto.class,
                 user.username,
                 user.apiId,
+                member.nickName,
                 user.imageUrl,
                 user.address.zipcode,
                 user.address.city,
                 user.address.street))
             .from(user)
+            .join(user.member, member)
             .where(username(username))
             .fetchOne();
     }

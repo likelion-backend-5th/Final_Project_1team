@@ -23,6 +23,13 @@ import PaymentWidget from '../components/payment/PaymentWidget.tsx';
 import ChatPage from '../pages/chat/ChatPage.tsx';
 import ChatRoomList from '../components/chat/ChatRoomList.tsx';
 import SignUpForm from '../components/auth/SignUpForm.tsx';
+// import UserPage from '../pages/user/UserPage.tsx';
+import SignUpSuccessForm from '../components/auth/SignUpSuccessForm.tsx';
+import ProfileForm from '../components/user/ProfileForm.tsx';
+import UserPage from '../pages/user/UserPage.tsx';
+import ChangePasswordForm from '../components/user/ChangePasswordFrom.tsx';
+import ReviewForm from '../components/user/ReviewForm.tsx';
+import OrderForm from '../components/user/OrderForm.tsx';
 
 const UserRouter = () => {
   return (
@@ -30,6 +37,39 @@ const UserRouter = () => {
       <Route path="/" element={<MainPage />} />
       <Route path="/login" element={<LoginForm />} />
       <Route path="/signup" element={<SignUpForm />} />
+      <Route path="/signup/success" element={<SignUpSuccessForm />} />
+      <Route
+        path="/user/profile"
+        element={
+          <UserPage>
+            <ProfileForm />
+          </UserPage>
+        }
+      />
+      <Route
+        path="/user/reviews"
+        element={
+          <UserPage>
+            <ReviewForm />
+          </UserPage>
+        }
+      />
+      <Route
+        path="/user/password/edit"
+        element={
+          <UserPage>
+            <ChangePasswordForm />
+          </UserPage>
+        }
+      />
+      <Route
+        path="/user/orders"
+        element={
+          <UserPage>
+            <OrderForm />
+          </UserPage>
+        }
+      />
 
       <Route
         path="/hello"
@@ -92,6 +132,7 @@ const UserRouter = () => {
       />
       <Route path="/chatrooms" element={<ChatRoomList />} />
       <Route path="/chatroom/:roomId" element={<ChatPage />} />
+      <Route path="/*" element={<Error404Page />} />
     </Routes>
   );
 };

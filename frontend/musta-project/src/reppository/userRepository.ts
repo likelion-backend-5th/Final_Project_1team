@@ -10,6 +10,14 @@ class userRepsoitory {
   signup = (data: any) => {
     return axiosUtils.post('/user/signup', data);
   };
+
+  changePassword = (passwordForm: {
+    password: string;
+    newPassword: string;
+    newPasswordCheck: string;
+  }) => {
+    return axiosUtils.patch('/user/password', passwordForm);
+  };
 }
 
 export default new userRepsoitory();
