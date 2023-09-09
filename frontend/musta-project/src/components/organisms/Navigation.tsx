@@ -62,25 +62,25 @@ const Navigation = () => {
     navigate(path); // 해당 경로로 페이지 이동
   };
 
-  // useEffect(() => {
-  //   if (localStorage.getItem('accessToken') == null) {
-  //     return;
-  //   }
-  //   try {
-  //     authStore
-  //       .findUserInfo()
-  //       .then((res) => {
-  //         authStore.userInfo = res.data;
-  //         navigate('/');
-  //       })
-  //       .catch((res) =>
-  //         openAlert({ state: 'error', message: res.data.message })
-  //       );
-  //   } catch (error) {
-  //     localStorage.remove('accessToken');
-  //   }
-  //   return () => {};
-  // }, []);
+  useEffect(() => {
+    if (localStorage.getItem('accessToken') == null) {
+      return;
+    }
+    try {
+      authStore
+        .findUserInfo()
+        .then((res) => {
+          authStore.userInfo = res.data;
+          navigate('/');
+        })
+        .catch((res) =>
+          openAlert({ state: 'error', message: res.data.message })
+        );
+    } catch (error) {
+      localStorage.remove('accessToken');
+    }
+    return () => {};
+  }, []);
 
   return (
     <AppBar position="static" color="inherit" elevation={0}>
