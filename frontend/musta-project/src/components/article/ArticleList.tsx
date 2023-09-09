@@ -128,7 +128,7 @@ export const ArticleList = forwardRef((props, ref) => {
           <Box>{createAlbumRows()}</Box>
         )}
       </Box>
-      <Box display="flex" justifyContent="center" marginTop="20px">
+      <Box display="flex" justifyContent="center" marginY="20px">
         <Pagination
           color="primary"
           size="medium"
