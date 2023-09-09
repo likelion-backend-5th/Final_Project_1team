@@ -9,13 +9,13 @@ import mutsa.api.service.article.ArticleModuleService;
 import mutsa.api.service.user.UserModuleService;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.chatroom.Chatroom;
-import mutsa.common.domain.models.chatroom.ChatroomUser;
+import mutsa.common.domain.models.chatroomUser.ChatroomUser;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.dto.chatroom.ChatroomUserResult;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.chatroom.ChatroomRepository;
-import mutsa.common.repository.chatroom.ChatroomUserRepository;
+import mutsa.common.repository.chatroomUser.ChatroomUserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -3,6 +3,7 @@ package mutsa.common.domain.models.chatroom;
 import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
+import mutsa.common.domain.models.chatroomUser.ChatroomUser;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,12 +24,13 @@ public class Chatroom extends BaseEntity implements Serializable {
     private String articleApiId;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "chatroom")
+    @Builder.Default
     private List<ChatroomUser> users = new ArrayList<>();
 
     public static Chatroom of(String articleApiId) {
         return Chatroom.builder()
-            .articleApiId(articleApiId)
-            .build();
+                .articleApiId(articleApiId)
+                .build();
     }
 
     public void setArticleApiId(String articleApiId) {

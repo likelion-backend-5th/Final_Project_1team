@@ -1,18 +1,15 @@
 package mutsa.api.repository.chatroom;
 
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import mutsa.api.ApiApplication;
 import mutsa.api.config.TestRedisConfiguration;
 import mutsa.common.domain.models.chatroom.Chatroom;
-import mutsa.common.domain.models.chatroom.ChatroomUser;
+import mutsa.common.domain.models.chatroomUser.ChatroomUser;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.dto.chatroom.ChatroomUserResult;
 import mutsa.common.repository.chatroom.ChatroomRepository;
-import mutsa.common.repository.chatroom.ChatroomUserRepository;
+import mutsa.common.repository.chatroomUser.ChatroomUserRepository;
 import mutsa.common.repository.user.UserRepository;
-
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +57,7 @@ class ChatroomUserRepositoryTest {
 
         //then
         Assertions.assertThat(result.isPresent()).isTrue();
-        Assertions.assertThat( result.get().getArticleApiId()).isEqualTo("chatroom1");
+        Assertions.assertThat(result.get().getArticleApiId()).isEqualTo("chatroom1");
     }
 
     @Test
