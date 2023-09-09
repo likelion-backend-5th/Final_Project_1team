@@ -5,7 +5,12 @@ import {
   CardContent,
   CardMedia,
   Collapse,
+  FormControl,
   FormControlLabel,
+  InputAdornment,
+  InputLabel,
+  InputLabel,
+  OutlinedInput,
   Skeleton,
   Stack,
   Switch,
@@ -32,6 +37,8 @@ import axiosUtils from '../../uitls/axiosUtils.ts';
 import userStore from '../../store/user/userStore.ts';
 import useStore from '../../store/useStores.ts';
 import useStores from '../../store/useStores.ts';
+import { priceValidation, textValidation } from '../../util/validationUtil.ts';
+import { formatPrice } from '../../util/formatPrice.ts';
 
 // const baseUrl = 'http://localhost:8080/api/articles/';
 const baseUrl = import.meta.env.VITE_API + '/api/articles/';
@@ -89,6 +96,9 @@ export function ArticleEdit() {
   const [openLabel, setOpenLabel] = useState<string>();
   const navigate = useNavigate();
   const { userStore, authStore } = useStores();
+  const [errorTitle, setErrorTitle] = useState<boolean>(false);
+  const [errorPrice, setErrorPrice] = useState<boolean>(false);
+  const [errorDescription, setErrorDescription] = useState<boolean>(false);
 
   const handleImageChange = (event) => {
     let newImageFiles = Array.from(event.target.files);
@@ -191,6 +201,29 @@ export function ArticleEdit() {
     fetchData();
   }, []);
 
+  const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    !textValidation(event.target.value)
+      ? setErrorTitle(true)
+      : setErrorTitle(false);
+    setTitle(event.target.value);
+  };
+
+  const onChangePrice = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value.replace();
+
+    !priceValidation(event.target.value)
+      ? setErrorPrice(true)
+      : setErrorPrice(false);
+    setPrice(event.target.value);
+  };
+
+  const onChangeDescription = (event: React.ChangeEvent<HTMLInputElement>) => {
+    !textValidation(event.target.value)
+      ? setErrorDescription(true)
+      : setErrorDescription(false);
+    setDescription(event.target.value);
+  };
+
   return (
     <StyledArticleDetail>
       {loading ? (
@@ -255,22 +288,29 @@ export function ArticleEdit() {
                 id="article-title"
                 defaultValue={title}
                 size="medium"
+                label="제목"
                 inputProps={{ maxLength: 100, 'aria-rowcount': 5 }} // Set maximum character length
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setTitle(event.target.value);
-                }}
+                onChange={onChangeTitle}
+                error={errorTitle}
                 maxRows="1"
+                sx={{ marginY: '10px' }}
               />
-              <TextField
-                id="article-price"
-                defaultValue={price}
-                size="medium"
-                inputProps={{ min: 0 }} // Set maximum character length
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setPrice(parseInt(event.target.value, 10));
-                }}
-                maxRows="1"
-              />
+              <FormControl sx={{ marginY: '10px' }}>
+                <InputLabel htmlFor="article-price">가격</InputLabel>
+                <OutlinedInput
+                  id="article-price"
+                  defaultValue={price}
+                  size="medium"
+                  onChange={onChangePrice}
+                  label="가격"
+                  startAdornment={
+                    <InputAdornment position="start">￦</InputAdornment>
+                  }
+                  value={price}
+                  error={errorPrice}
+                  maxRows="1"
+                />
+              </FormControl>
             </Box>
             <Box
               sx={{
@@ -307,10 +347,11 @@ export function ArticleEdit() {
                 size="medium"
                 inputProps={{ maxLength: 255, 'aria-rowcount': 5 }} // Set maximum character length
                 multiline
+                rows={5}
+                label="내용"
                 fullWidth={true}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setDescription(event.target.value);
-                }}
+                error={errorDescription}
+                onChange={onChangeDescription}
                 sx={{ marginBottom: '10px' }}
               />
             </Box>

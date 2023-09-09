@@ -8,6 +8,10 @@ import {
   Stack,
   Alert,
   Collapse,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
 } from '@mui/material';
 import axios from 'axios';
 import { InsertPhoto } from '@mui/icons-material';
@@ -25,6 +29,7 @@ import {
   articleInputError,
   checkArticleInputValidation,
 } from '../../types/article.ts';
+import { priceValidation, textValidation } from '../../util/validationUtil.ts';
 
 const StyledArticleDetail = styled('div')({
   display: 'flex',
@@ -45,7 +50,6 @@ const StyledCard = styled(Card)({
 
 const StyledTextField = styled(TextField)({
   marginBottom: '15px',
-  width: '100%', // Expand to full width
 });
 
 // ... (이전 코드)
@@ -59,6 +63,9 @@ export function ArticlePost() {
   const [alertOpen, setAlertOpen] = useState(false);
   const [price, setPrice] = useState(0);
   const navigate = useNavigate();
+  const [errorTitle, setErrorTitle] = useState<boolean>(false);
+  const [errorPrice, setErrorPrice] = useState<boolean>(false);
+  const [errorDescription, setErrorDescription] = useState<boolean>(false);
 
   const handleImageChange = (event) => {
     let newImageFiles = Array.from(event.target.files);
@@ -114,6 +121,29 @@ export function ArticlePost() {
     }
   };
 
+  const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    !textValidation(event.target.value)
+      ? setErrorTitle(true)
+      : setErrorTitle(false);
+    setTitle(event.target.value);
+  };
+
+  const onChangePrice = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value.replace();
+
+    !priceValidation(event.target.value)
+      ? setErrorPrice(true)
+      : setErrorPrice(false);
+    setPrice(event.target.value);
+  };
+
+  const onChangeDescription = (event: React.ChangeEvent<HTMLInputElement>) => {
+    !textValidation(event.target.value)
+      ? setErrorDescription(true)
+      : setErrorDescription(false);
+    setDescription(event.target.value);
+  };
+
   return (
     <StyledArticleDetail>
       <StyledCard>
@@ -137,28 +167,39 @@ export function ArticlePost() {
             label="게시글 제목"
             value={title}
             inputProps={{ maxLength: 100, 'aria-rowcount': 5 }} // Set maximum character length
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={onChangeTitle}
+            error={errorTitle}
           />
         </Box>
         <Box>
-          <StyledTextField
-            id="article-price"
-            label="판매 가격"
-            type={'number'}
-            value={price}
-            inputProps={{ min: 0 }} // Set maximum character length
-            onChange={(e) => setPrice(parseInt(e.target.value, 10))}
-          />
+          <FormControl sx={{ marginY: '10px' }}>
+            <InputLabel htmlFor="article-price">가격</InputLabel>
+            <OutlinedInput
+              id="article-price"
+              defaultValue={price}
+              size="medium"
+              onChange={onChangePrice}
+              label="가격"
+              startAdornment={
+                <InputAdornment position="start">￦</InputAdornment>
+              }
+              value={price}
+              error={errorPrice}
+              maxRows="1"
+            />
+          </FormControl>
         </Box>
         <Box>
           <StyledTextField
             id="article-description"
             label="게시글 내용"
+            fullWidth
             multiline
-            rows={4}
+            rows={7}
             value={description}
             inputProps={{ maxLength: 255, 'aria-rowcount': 5 }} // Set maximum character length
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={onChangeDescription}
+            error={errorDescription}
           />
         </Box>
         <Box>
