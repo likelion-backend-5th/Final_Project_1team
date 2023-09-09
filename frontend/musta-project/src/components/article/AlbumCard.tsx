@@ -77,7 +77,9 @@ export const AlbumCard = (props: AlbumCardProps) => {
             작성자: {article.username}
           </Typography>
           <Typography noWrap variant="body2" color="text.secondary">
-            {article.description}
+            {article.description.length >= 15
+              ? article.description.slice(0, 15) + '...'
+              : article.description}
           </Typography>
         </CardContent>
       </CardActionArea>
