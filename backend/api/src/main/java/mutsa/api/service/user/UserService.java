@@ -100,8 +100,13 @@ public class UserService {
             .build();
     }
 
+//    public UserInfoDto findUserInfo(String username) {
+//        return userRepository.findUserInfo(username);
+//    }
+
     public UserInfoDto findUserInfo(String username) {
-        return userRepository.findUserInfo(username);
+        User byUsername = userModuleService.getByUsername(username);
+        return UserInfoDto.fromEntity(byUsername);
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response) {

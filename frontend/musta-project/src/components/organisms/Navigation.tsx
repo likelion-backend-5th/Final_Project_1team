@@ -15,6 +15,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import useStores from '../../store/useStores';
 import NavMenu from './NavMenu';
 import { useAlert } from '../hook/useAlert';
+import { Typography } from '@mui/material';
 
 const pages = [
   ['Home', '/home'],
@@ -61,25 +62,25 @@ const Navigation = () => {
     navigate(path); // 해당 경로로 페이지 이동
   };
 
-  // useEffect(() => {
-  //   if (localStorage.getItem('accessToken') == null) {
-  //     return;
-  //   }
-  //   try {
-  //     authStore
-  //       .findUserInfo()
-  //       .then((res) => {
-  //         authStore.userInfo = res.data;
-  //         navigate('/');
-  //       })
-  //       .catch((res) =>
-  //         openAlert({ state: 'error', message: res.data.message })
-  //       );
-  //   } catch (error) {
-  //     localStorage.remove('accessToken');
-  //   }
-  //   return () => {};
-  // }, []);
+  useEffect(() => {
+    if (localStorage.getItem('accessToken') == null) {
+      return;
+    }
+    try {
+      authStore
+        .findUserInfo()
+        .then((res) => {
+          authStore.userInfo = res.data;
+          navigate('/');
+        })
+        .catch((res) =>
+          openAlert({ state: 'error', message: res.data.message })
+        );
+    } catch (error) {
+      localStorage.remove('accessToken');
+    }
+    return () => {};
+  }, []);
 
   return (
     <AppBar position="static" color="inherit" elevation={0}>
@@ -138,10 +139,23 @@ const Navigation = () => {
             </Box>
           )) || (
             <Box>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/img/monkey.jpg" />
-                  {authStore.userInfo?.username}
+              <Tooltip title="">
+                <IconButton
+                  onClick={handleOpenUserMenu}
+                  disableRipple
+                  sx={{ borderRadius: '5px', outline: 0 }}>
+                  <Avatar
+                    alt="Remy Sharp"
+                    src="/img/monkey.jpg"
+                    sx={{ marginX: '10px' }}
+                  />
+                  <Typography>
+                    {/*// TODO 임시로 넣은 코드*/}
+                    {/*{authStore.userInfo?.username}*/}
+                    {!authStore.userInfo?.username
+                      ? 'User123'
+                      : authStore.userInfo?.username}
+                  </Typography>
                 </IconButton>
               </Tooltip>
               <Menu
@@ -157,6 +171,7 @@ const Navigation = () => {
                   vertical: 'top',
                   horizontal: 'right',
                 }}
+                autoFocus={false}
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}>
                 <NavMenu
