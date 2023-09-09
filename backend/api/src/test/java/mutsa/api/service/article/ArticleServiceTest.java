@@ -28,8 +28,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +58,7 @@ public class ArticleServiceTest {
             Article article = Article.builder()
                     .title("article-" + (i + 1))
                     .description("desc-" + (i + 1))
+                    .price((long) (i * 1000))
                     .user(user)
                     .build();
             articles.add(article);
@@ -81,12 +82,14 @@ public class ArticleServiceTest {
 
         requestDto.setTitle("Article1");
         requestDto.setDescription("Article1 Desc");
+        requestDto.setPrice(10000L);
 
         ArticleResponseDto responseDto = articleService.save(requestDto);
 
         assert responseDto != null;
         Assertions.assertEquals(requestDto.getTitle(), responseDto.getTitle());
         Assertions.assertEquals(requestDto.getDescription(), responseDto.getDescription());
+        Assertions.assertEquals(requestDto.getPrice(), responseDto.getPrice());
     }
 
     @Test

@@ -335,6 +335,7 @@ public class ArticleControllerTest {
         ArticleUpdateRequestDto articleUpdateRequestDto = new ArticleUpdateRequestDto();
         articleUpdateRequestDto.setTitle("test Article");
         articleUpdateRequestDto.setDescription("test Desc");
+        articleUpdateRequestDto.setPrice(10000L);
         articleUpdateRequestDto.setArticleStatus(ArticleStatus.EXPIRED);
         articleUpdateRequestDto.setApiId(articles.get(0).getApiId());
 
