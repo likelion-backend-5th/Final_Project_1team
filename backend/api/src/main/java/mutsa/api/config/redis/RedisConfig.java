@@ -69,6 +69,15 @@ public class RedisConfig {
     }
 
     @Bean
+    public RedisTemplate<String, String> refreshTokenTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+        return redisTemplate;
+    }
+
+    @Bean
     public RedisTemplate<String, User> userRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         //유저 캐싱 저장용
         RedisTemplate<String, User> redisTemplate = new RedisTemplate<>();

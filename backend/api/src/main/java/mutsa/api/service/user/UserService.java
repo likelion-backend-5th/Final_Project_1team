@@ -1,14 +1,8 @@
 package mutsa.api.service.user;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.config.jwt.JwtConfig;
 import mutsa.api.config.security.CustomPrincipalDetails;
@@ -18,16 +12,12 @@ import mutsa.api.dto.user.SignUpUserDto;
 import mutsa.api.util.CookieUtil;
 import mutsa.api.util.JwtTokenProvider;
 import mutsa.api.util.JwtTokenProvider.JWTInfo;
-import mutsa.common.domain.models.user.Authority;
-import mutsa.common.domain.models.user.Member;
-import mutsa.common.domain.models.user.Role;
-import mutsa.common.domain.models.user.RoleStatus;
-import mutsa.common.domain.models.user.User;
-import mutsa.common.domain.models.user.UserRole;
+import mutsa.common.domain.models.user.*;
 import mutsa.common.dto.user.UserInfoDto;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.member.MemberRepository;
+import mutsa.common.repository.redis.RefreshTokenRedisRepository;
 import mutsa.common.repository.user.RoleRepository;
 import mutsa.common.repository.user.UserRepository;
 import mutsa.common.repository.user.UserRoleRepository;
@@ -35,6 +25,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,6 +43,7 @@ public class UserService {
     private final UserRoleRepository userRoleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MemberRepository memberRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     @Transactional
     public void signUp(SignUpUserDto signUpUserDto) {
@@ -62,7 +57,7 @@ public class UserService {
         Member newMember = Member.of(signUpUserDto.getNickname());
         newUser.addMember(newMember);
         Role role = roleRepository.findByValue(RoleStatus.ROLE_USER)
-            .orElseThrow(() -> new BusinessException(ErrorCode.UNKNOWN_ROLE));
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNKNOWN_ROLE));
 
         UserRole userRole = UserRole.of(newUser, role);
         userRole.addUser(newUser);
@@ -72,32 +67,42 @@ public class UserService {
         userRoleRepository.save(userRole);
     }
 
-    public AccessTokenResponse validateRefreshTokenAndCreateAccessToken(String refreshToken,
-        HttpServletRequest request) {
-        Algorithm algorithm = jwtConfig.getEncodedSecretKey();
-        JWTInfo jwtInfo = null;
+    public AccessTokenResponse validateRefreshTokenAndCreateAccessToken(
+            String refreshToken,
+            HttpServletRequest request
+    ) {
         try {
-            //JWT 토큰 검증 실패하면 JWTVerificationException 발생
-            jwtInfo = JwtTokenProvider.decodeToken(algorithm, refreshToken);
+            // JWT 토큰 검증 실패하면 JWTVerificationException 발생
+            JWTInfo jwtInfo = JwtTokenProvider.decodeToken(jwtConfig.getEncodedSecretKey(), refreshToken);
+
+            // 저장된 리프레시 토큰 가져오기
+            String storedRefresh = refreshTokenRedisRepository.getRefreshToken(jwtInfo.getUsername())
+                    .orElseThrow(() -> new BusinessException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+
+            // 리프레시 토큰 비교
+            if (!refreshToken.equals(storedRefresh)) {
+                throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
+            }
+
+            User user = fromJwtInfo(jwtInfo);
+
+            List<String> authorities = user.getUserRoles().stream()
+                    .flatMap(userRole -> userRole.getRole().getAuthorities().stream())
+                    .map(Authority::getName)
+                    .collect(Collectors.toList());
+
+            String accessToken = JwtTokenProvider.createAccessToken(request, user.getUsername(),
+                    jwtConfig.getRefreshTokenExpire(), jwtConfig.getEncodedSecretKey(),
+                    authorities);
+
+            return AccessTokenResponse.builder()
+                    .accessToken(accessToken)
+                    .build();
+
         } catch (JWTVerificationException e) {
             throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        User user = fromJwtInfo(jwtInfo);
-
-        List<String> authorities = user.getUserRoles().stream().map(UserRole::getRole)
-            .map(Role::getAuthorities)
-            .flatMap(Set::stream)
-            .map(Authority::getName)
-            .collect(Collectors.toList());
-
-        String accessToken = JwtTokenProvider.createAccessToken(request, user.getUsername(),
-            jwtConfig.getRefreshTokenExpire(), algorithm,
-            authorities);
-
-        return AccessTokenResponse.builder()
-            .accessToken(accessToken)
-            .build();
     }
 
 //    public UserInfoDto findUserInfo(String username) {
@@ -111,10 +116,11 @@ public class UserService {
 
     public void logout(HttpServletRequest request, HttpServletResponse response) {
         CustomPrincipalDetails user = (CustomPrincipalDetails) SecurityContextHolder.getContext().getAuthentication()
-            .getPrincipal();
+                .getPrincipal();
 
         if (user != null) {
             CookieUtil.removeCookie(request, response, CookieUtil.REFRESH_TOKEN);
+            refreshTokenRedisRepository.removeRefreshToken(user.getUsername()); //저장소에서 삭제
         }
     }
 
@@ -124,7 +130,7 @@ public class UserService {
 
         isSameCurrentPassword(passwordChangeDto, findUser);
         if (!isSamePassword(passwordChangeDto.getNewPassword(),
-            passwordChangeDto.getNewPasswordCheck())) {
+                passwordChangeDto.getNewPasswordCheck())) {
             throw new BusinessException(ErrorCode.DIFFERENT_PASSWORD);
         }
 
@@ -137,7 +143,7 @@ public class UserService {
 
     private void isSameCurrentPassword(PasswordChangeDto passwordChangeDto, User findUser) {
         if (findUser.getPassword()
-            .equals(encodedPassword(passwordChangeDto.getPassword()))) {
+                .equals(encodedPassword(passwordChangeDto.getPassword()))) {
             throw new BusinessException(ErrorCode.DIFFERENT_PASSWORD);
         }
     }
@@ -156,7 +162,7 @@ public class UserService {
 
     private User findUsername(String username) {
         return userRepository.findByUsername(username)
-            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
 }

@@ -27,7 +27,6 @@ const settings = [
   ['Profile', '/profile'],
   ['Account', '/account'],
   ['Dashboard', '/dashboard'],
-  ['Logout', '/logout'],
   ['내가 주문한 목록', '/my/order/consume'],
   ['내가 판매한 목록', '/my/order/sell'],
   ['나의 채팅방', '/chatrooms'],
@@ -60,6 +59,11 @@ const Navigation = () => {
   const handlePageClick = (path: string) => {
     handleCloseNavMenu();
     navigate(path); // 해당 경로로 페이지 이동
+  };
+
+  const handleLogout = () => {
+    authStore.logout();
+    navigate("/");
   };
 
   useEffect(() => {
@@ -179,6 +183,7 @@ const Navigation = () => {
                   handleCloseNavMenu={handleCloseUserMenu}
                 />
               </Menu>
+              <button onClick={handleLogout}>로그아웃</button>
             </Box>
           )}
         </Toolbar>

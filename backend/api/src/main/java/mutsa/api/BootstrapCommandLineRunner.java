@@ -1,5 +1,6 @@
 package mutsa.api;
 
+import io.lettuce.core.api.sync.RedisCommands;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.common.BootstrapDataLoader;
@@ -24,6 +25,7 @@ public class BootstrapCommandLineRunner implements CommandLineRunner {
             bootStrapDataLoader.createAdminUser();
             bootStrapDataLoader.createAricleOrder();
             bootStrapDataLoader.createReport();
+            bootStrapDataLoader.clearRedisData();
         }
     }
 }
