@@ -33,6 +33,8 @@ import mutsa.common.repository.user.AuthorityRepository;
 import mutsa.common.repository.user.RoleRepository;
 import mutsa.common.repository.user.UserRepository;
 import mutsa.common.repository.user.UserRoleRepository;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +54,7 @@ public class BootstrapDataLoader {
     private final ReviewRepository reviewRepository;
     private final ReportRepository reportRepository;
     private final PaymentRepository paymentRepository;
-
+    private final RedisTemplate<String, String> redisTemplate;
     public void createAdminUser() {
         createRoleAuthority();
 
@@ -186,23 +188,27 @@ public class BootstrapDataLoader {
     }
 
     public void createAricleOrder() {
+        Member member1 = Member.of("qwer");
+        memberRepository.save(member1);
         User user1 = User.of(
                 "qwer",
                 bCryptPasswordEncoder.encode("qwer"),
                 "auser1@gmail.com",
                 null,
                 null,
-                null
+                member1
         );
-        user1 = userRepository.save(user1);
 
+        user1 = userRepository.save(user1);
+        Member member2 = Member.of("asdf");
+        memberRepository.save(member2);
         User user2 = User.of(
                 "asdf",
                 bCryptPasswordEncoder.encode("asdf"),
                 "user2@gmail.com",
                 null,
                 null,
-                null
+                member2
         );
         user2 = userRepository.save(user2);
 
@@ -275,5 +281,12 @@ public class BootstrapDataLoader {
         }
 
         reports = reportRepository.saveAll(reports);
+    }
+
+    public void clearRedisData() {
+        redisTemplate.execute((RedisCallback<Object>) connection -> {
+            connection.flushAll();
+            return null;
+        });
     }
 }
