@@ -1,9 +1,9 @@
-package mutsa.common.domain.models.chatroom;
+package mutsa.common.domain.models.chatroomUser;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
 import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
+import mutsa.common.domain.models.chatroom.Chatroom;
 import mutsa.common.domain.models.user.User;
 
 import java.io.Serializable;
@@ -37,10 +37,6 @@ public class ChatroomUser extends BaseEntity implements Serializable {
     }
 
     private void setChatroom(Chatroom chatroom) {
-        if (chatroom.getUsers() == null) {
-            chatroom.setUsers(new ArrayList<>()); // 사용자 목록이 없으면 새로운 목록 생성
-        }
-
         if (!chatroom.getUsers().contains(this)) {
             chatroom.getUsers().add(this);
         }

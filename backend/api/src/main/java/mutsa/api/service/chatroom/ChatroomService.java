@@ -9,13 +9,13 @@ import mutsa.api.service.article.ArticleModuleService;
 import mutsa.api.service.user.UserModuleService;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.chatroom.Chatroom;
-import mutsa.common.domain.models.chatroom.ChatroomUser;
+import mutsa.common.domain.models.chatroomUser.ChatroomUser;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.dto.chatroom.ChatroomUserResult;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.chatroom.ChatroomRepository;
-import mutsa.common.repository.chatroom.ChatroomUserRepository;
+import mutsa.common.repository.chatroomUser.ChatroomUserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +36,6 @@ public class ChatroomService {
     private final UserModuleService userModuleService;
 
     /**
-     *
      * @param dto
      * @param username
      * @return 이미 채팅방이 있는 경우는 기존의 방을 리턴, 아닌경우 새로운 방을 리턴한다
@@ -74,7 +73,6 @@ public class ChatroomService {
     }
 
     /**
-     *
      * @param username
      * @return 내가 속한 채팅방을 반환(상대방의 이름으로 된 채팅방)
      */
@@ -91,7 +89,6 @@ public class ChatroomService {
 
 
     /**
-     *
      * @param chatroomApiId
      * @param currentUsername
      * @return 채팅방을 찾고, 상대방의 이름으로 방 이름을 저장하여 반환한다.
@@ -100,19 +97,32 @@ public class ChatroomService {
     public ChatRoomDetailDto findChatroom(String chatroomApiId, String currentUsername) {
         Chatroom chatroom = getByApiId(chatroomApiId);
 
-        String otherName = "";
+        String otherName = null;
+        boolean foundCurrentUser = false;
+        boolean foundOtherUser = false;
+
         for (ChatroomUser user : chatroom.getUsers()) {
-            if (!user.getUser().getUsername().equals(currentUsername)) {
-                otherName = user.getUser().getUsername();
-            }else{
-                if (!otherName.equals(currentUsername)) {
-                    //에러 처리
+            String username = user.getUser().getUsername(); // 채팅방 내의 사람이름
+
+            if (username.equals(currentUsername)) {
+                foundCurrentUser = true; //본인
+            } else {
+                if (foundOtherUser) {
+                    // 이미 다른 사용자를 찾은 경우, 추가 다른 사용자를 찾았으므로 예외 처리
+                    throw new BusinessException(ErrorCode.CHATROOM_PERMISSION_DENIED);
                 }
+                otherName = username;
+                foundOtherUser = true;
             }
         }
-        Article article = articleModuleService.getByApiId(chatroom.getArticleApiId());
-        String seller = article.getUser().getUsername();
-        return ChatRoomDetailDto.fromEntity(chatroom, otherName, article.getTitle(), article.getDescription(), seller);
+
+        if (foundCurrentUser && foundOtherUser) { //본인과 다른사람이 있어야 한다.
+            Article article = articleModuleService.getByApiId(chatroom.getArticleApiId());
+            String seller = article.getUser().getUsername();
+            return ChatRoomDetailDto.fromEntity(chatroom, otherName, article.getTitle(), article.getDescription(), seller);
+        }
+
+        throw new BusinessException(ErrorCode.CHATROOM_PERMISSION_DENIED);
     }
 
     public Chatroom getByApiId(String apiId) {
