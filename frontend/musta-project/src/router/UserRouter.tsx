@@ -30,7 +30,11 @@ import UserPage from '../pages/user/UserPage.tsx';
 import ChangePasswordForm from '../components/user/ChangePasswordFrom.tsx';
 import ReviewForm from '../components/user/ReviewForm.tsx';
 import OrderForm from '../components/user/OrderForm.tsx';
+import React from 'react';
 
+const OauthRedirect = React.lazy(
+    () => import("../components/auth/OauthRedirect.tsx")
+  );
 const UserRouter = () => {
   return (
     <Routes>
@@ -133,6 +137,9 @@ const UserRouter = () => {
       <Route path="/chatrooms" element={<ChatRoomList />} />
       <Route path="/chatroom/:roomId" element={<ChatPage />} />
       <Route path="/*" element={<Error404Page />} />
+
+      <Route path="/oauth2-redirect" element={<OauthRedirect />} />
+
     </Routes>
   );
 };

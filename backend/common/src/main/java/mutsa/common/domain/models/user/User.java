@@ -71,10 +71,12 @@ public class User extends BaseTimeEntity implements Serializable {
 
     /* mapping table  */
     @OneToOne(mappedBy = "user", fetch = LAZY)
+    @JsonIgnore
     private Member member;
 
     @Singular
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
+    @JsonIgnore
     private final Set<UserRole> userRoles = new HashSet<>();
 
     @JsonIgnore
@@ -121,7 +123,7 @@ public class User extends BaseTimeEntity implements Serializable {
                 .username(username)
                 .password(encodedPassword)
                 .email(email)
-                .oauth2Username(oauth2Username == null ? "" : username)
+                .oauth2Username(oauth2Username == null ? "" : oauth2Username)
                 .imageUrl(StringUtils.hasText(imageUrl) ? imageUrl : "")
                 .build();
         user.addMember(member);

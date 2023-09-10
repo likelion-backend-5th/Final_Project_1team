@@ -1,7 +1,6 @@
 package mutsa.api.controller.user;
 
 import jakarta.validation.Valid;
-import java.net.http.HttpResponse;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.api.dto.user.PasswordChangeDto;
@@ -42,13 +41,13 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
         return new ResponseEntity<>(userService.findUserInfo(user.getUsername()),
-            HttpStatus.OK);
+                HttpStatus.OK);
     }
 
     @PatchMapping("/password")
     @PreAuthorize("hasAuthority('user.update')")
     public ResponseEntity changePassword(@AuthenticationPrincipal CustomPrincipalDetails user,
-        @Validated @RequestBody PasswordChangeDto passwordChangeDto) {
+                                         @Validated @RequestBody PasswordChangeDto passwordChangeDto) {
         userService.changePassword(user, passwordChangeDto);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }

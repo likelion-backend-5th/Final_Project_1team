@@ -1,22 +1,17 @@
 package mutsa.api.config.security.filter;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mutsa.api.config.jwt.JwtConfig;
-import mutsa.api.util.CookieUtil;
+import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.api.util.JwtTokenProvider;
 import mutsa.api.util.JwtTokenProvider.JWTInfo;
-import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.ErrorCode;
 import mutsa.common.exception.ErrorResponse;
@@ -39,7 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Component
 @RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
-    private final JwtConfig jwtConfig;
+    private final JwtTokenProvider jwtTokenProvider;
     private static final String BEARER = "Bearer ";
 
     @Override
@@ -52,20 +47,19 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         }
 
         if (token != null) {
-            Algorithm algorithm = Algorithm.HMAC256(jwtConfig.getSecretKey().getBytes());
             JWTInfo jwtInfo = null;
 
             try {
-                jwtInfo = JwtTokenProvider.decodeToken(algorithm, token);
-                log.debug(jwtInfo.toString());
+                jwtInfo = jwtTokenProvider.decodeToken(token);
+                log.info(jwtInfo.toString());
             } catch (TokenExpiredException e) {
-                log.debug("TokenExpiredException: ", e);
+                log.info("TokenExpiredException: ", e);
                 ErrorResponse er = ErrorResponse.of(ErrorCode.ACCESS_TOKEN_EXPIRED);
                 getAccessTokenExpired(response, er);
 
                 return;
             } catch (JWTVerificationException ignored) {
-                log.debug("JWTVerificationException: ", ignored);
+                log.info("JWTVerificationException: ", ignored);
             }
 
             if (jwtInfo != null && jwtInfo.getAuthorities() != null) {
@@ -86,21 +80,21 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                                 null,
                                 null,
                                 null,
-                            null
+                                null
                         ),
                         null
                 ),
                 null,
                 Arrays.stream(jwtInfo.getAuthorities())
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList()));
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList()));
     }
 
     private static void getAccessTokenExpired(HttpServletResponse response, ErrorResponse errorResponse) throws IOException {
         response.setStatus(errorResponse.getStatus());
         Map<String, String> body = new HashMap<>();
         body.put("message", errorResponse.getMessage());
-        body.put("status",Integer.toString(errorResponse.getStatus()));
+        body.put("status", Integer.toString(errorResponse.getStatus()));
         body.put("code", errorResponse.getCode());
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), body);
