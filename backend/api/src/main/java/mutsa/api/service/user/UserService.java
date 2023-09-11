@@ -20,6 +20,7 @@ import mutsa.common.domain.models.user.embedded.OAuth2Type;
 import mutsa.common.dto.user.UserInfoDto;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
+import mutsa.common.repository.cache.UserCacheRepository;
 import mutsa.common.repository.member.MemberRepository;
 import mutsa.common.repository.redis.RefreshTokenRedisRepository;
 import mutsa.common.repository.user.RoleRepository;
@@ -46,6 +47,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserModuleService userModuleService;
     private final UserRepository userRepository;
+    private final UserCacheRepository userCacheRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -174,12 +176,20 @@ public class UserService {
     }
 
     @Transactional
-    public LoginResponseDto login(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-                                  LoginRequest loginDto) throws IOException {
-        CustomPrincipalDetails customPrincipalDetails = customUserDetailsService.loadUserByUsername(
-                loginDto.getUsername());
+    public LoginResponseDto login(
+            HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse,
+            LoginRequest loginDto
+    ) throws IOException {
+        CustomPrincipalDetails principalDetails = customUserDetailsService.loadUserByUsername(loginDto.getUsername());
+        if (!bCryptPasswordEncoder.matches(loginDto.getPassword(), principalDetails.getPassword())) {
+            throw new BusinessException(ErrorCode.DIFFERENT_PASSWORD);
+        }
 
-        String accessToken = jwtTokenProvider.createAccessToken(httpServletRequest, customPrincipalDetails);
+        //로그인 시에 유저 캐시화
+        userCacheRepository.setUser(userModuleService.getByUsername(loginDto.getUsername()));
+
+        String accessToken = jwtTokenProvider.createAccessToken(httpServletRequest, principalDetails);
 
         if (!refreshTokenRedisRepository.getRefreshToken(loginDto.getUsername()).isPresent()) {
             String token = jwtTokenProvider.createRefreshToken(httpServletRequest, loginDto.getUsername());
@@ -187,7 +197,7 @@ public class UserService {
         }
         String refreshToken = refreshTokenRedisRepository.getRefreshToken(loginDto.getUsername()).get();
 
-        LoginResponseDto loginResponseDto = new LoginResponseDto(customPrincipalDetails.getUsername(), accessToken);
+        LoginResponseDto loginResponseDto = new LoginResponseDto(principalDetails.getUsername(), accessToken);
 
         ResponseCookie cookie = CookieUtil.createCookie(refreshToken);
         httpServletResponse.setStatus(200);
