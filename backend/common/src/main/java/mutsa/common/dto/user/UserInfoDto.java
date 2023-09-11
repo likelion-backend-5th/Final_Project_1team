@@ -7,6 +7,9 @@ import lombok.Setter;
 import mutsa.common.domain.models.user.User;
 import org.springframework.util.StringUtils;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static mutsa.common.dto.constants.ImageConstants.DEFAULT_AVATAR_IMAGE;
 
 @Getter
@@ -18,6 +21,7 @@ public class UserInfoDto {
     private String apiId;
     private String nickname;
     private String image_url;
+    private Set<String> role;
     private String zipcode;
     private String city;
     private String street;
@@ -31,13 +35,18 @@ public class UserInfoDto {
         userInfoDto.zipcode = null;
         userInfoDto.city = null;
         userInfoDto.street = null;
+        userInfoDto.role = byUsername.getUserRoles()
+                .stream()
+                .map(o -> o.getRole().getValue().name())
+                .collect(Collectors.toSet());
+
         return userInfoDto;
     }
 
     private static String getImage(String imageUrl) {
-        if(StringUtils.hasText(imageUrl)) {
+        if (StringUtils.hasText(imageUrl)) {
             return imageUrl;
         }
-        return  DEFAULT_AVATAR_IMAGE;
+        return DEFAULT_AVATAR_IMAGE;
     }
 }
