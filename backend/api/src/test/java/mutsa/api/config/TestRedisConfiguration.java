@@ -27,6 +27,7 @@ import redis.embedded.RedisServer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Locale;
 
 @Configuration
 @RequiredArgsConstructor
@@ -76,9 +77,18 @@ public class TestRedisConfiguration {
      * 해당 port를 사용중인 프로세스 확인하는 sh 실행
      */
     private Process executeGrepProcessCommand(int port) throws IOException {
-        String command = String.format("netstat -nat | grep LISTEN|grep %d", port);
-        String[] shell = {"/bin/sh", "-c", command};
-        return Runtime.getRuntime().exec(shell);
+        String os = System.getProperty("os.name").toLowerCase(Locale.ROOT);
+        if (os.contains("win")) {
+            String command = String.format("netstat -nao | find \"LISTEN\" | find \"%d\"", port);
+            String[] shell = {"cmd.exe", "/y", "/c", command};
+            return Runtime.getRuntime().exec(shell);
+        } else if (os.contains("linux") || os.contains("mac")) {
+            String command = String.format("netstat -nat | grep LISTEN|grep %d", port);
+            String[] shell = {"/bin/sh", "-c", command};
+            return Runtime.getRuntime().exec(shell);
+        } else {
+            throw new RuntimeException("해결되지 않은 OS 입니다. executeGrepProcessCommand() os 명령어 코드를 추가해주세요.");
+        }
     }
 
     /**
