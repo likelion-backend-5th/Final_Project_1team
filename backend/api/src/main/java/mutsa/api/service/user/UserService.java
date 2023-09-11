@@ -76,6 +76,7 @@ public class UserService {
 
     @Transactional
     public void signUpAuth(SignUpUserDto signUpUserDto, String oauthName, String picture) {
+        //추후에 oauth전용으로 따로 만들어서 관리해야함
         Optional<User> user = userRepository.findByUsername(signUpUserDto.getUsername());
         if (user.isPresent()) {
             throw new BusinessException(ErrorCode.DUPLICATION_USER);
@@ -90,6 +91,7 @@ public class UserService {
 
         UserRole userRole = UserRole.of(newUser, role);
         userRole.addUser(newUser);
+        newUser.getUserRoles().add(userRole);
 
         userRepository.save(newUser);
         memberRepository.save(newMember);

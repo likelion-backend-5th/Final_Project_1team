@@ -24,7 +24,8 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         String nameAttribute = "";
         // 사용할 데이터를 다시 정리하는 목적의 Map
         Map<String, Object> attributes = new HashMap<>();
-        // Kakao 로직
+
+        // Google 로직
         if (registrationId.equals("google")) {
             attributes.put("provider", "google");
             attributes.put("id", oAuth2User.getAttribute("id"));
