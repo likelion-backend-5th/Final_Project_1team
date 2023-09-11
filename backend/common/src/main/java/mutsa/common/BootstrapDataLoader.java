@@ -1,14 +1,6 @@
 package mutsa.common;
 
 import jakarta.persistence.EntityNotFoundException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.common.domain.models.article.Article;
@@ -17,12 +9,7 @@ import mutsa.common.domain.models.payment.PayType;
 import mutsa.common.domain.models.payment.Payment;
 import mutsa.common.domain.models.report.Report;
 import mutsa.common.domain.models.review.Review;
-import mutsa.common.domain.models.user.Authority;
-import mutsa.common.domain.models.user.Member;
-import mutsa.common.domain.models.user.Role;
-import mutsa.common.domain.models.user.RoleStatus;
-import mutsa.common.domain.models.user.User;
-import mutsa.common.domain.models.user.UserRole;
+import mutsa.common.domain.models.user.*;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.member.MemberRepository;
 import mutsa.common.repository.order.OrderRepository;
@@ -37,6 +24,8 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -55,6 +44,7 @@ public class BootstrapDataLoader {
     private final ReportRepository reportRepository;
     private final PaymentRepository paymentRepository;
     private final RedisTemplate<String, String> redisTemplate;
+
     public void createAdminUser() {
         createRoleAuthority();
 
@@ -130,7 +120,7 @@ public class BootstrapDataLoader {
         roleRepository.saveAll(Arrays.asList(userRole, adminRole));
     }
 
-    private void loadUser(Map<String, Object> attributes) {
+    private User loadUser(Map<String, Object> attributes) {
         String apiId = ((Integer) attributes.get("id")).toString();
         String login = (String) attributes.get("login");
         String email = (String) attributes.get("email");
@@ -143,7 +133,7 @@ public class BootstrapDataLoader {
 
         String username = login;
         Optional<User> userOptional = userRepository.findByUsername(username);
-        User user = signUpOrUpdateUser(login, email, imageUrl, username, password, userOptional,
+        return signUpOrUpdateUser(login, email, imageUrl, username, password, userOptional,
                 necessaryAttributes, role);
     }
 
@@ -188,29 +178,8 @@ public class BootstrapDataLoader {
     }
 
     public void createAricleOrder() {
-        Member member1 = Member.of("qwer");
-        memberRepository.save(member1);
-        User user1 = User.of(
-                "qwer",
-                bCryptPasswordEncoder.encode("qwer"),
-                "auser1@gmail.com",
-                null,
-                null,
-                member1
-        );
-
-        user1 = userRepository.save(user1);
-        Member member2 = Member.of("asdf");
-        memberRepository.save(member2);
-        User user2 = User.of(
-                "asdf",
-                bCryptPasswordEncoder.encode("asdf"),
-                "user2@gmail.com",
-                null,
-                null,
-                member2
-        );
-        user2 = userRepository.save(user2);
+        User user1 = createTestUser1();
+        User user2 = createTestUser2();
 
         List<Article> articles = new ArrayList<>();
 
@@ -219,7 +188,7 @@ public class BootstrapDataLoader {
                     .title("title-" + (i + 1))
                     .description("desc-" + (i + 1))
                     .user(i % 2 == 0 ? user1 : user2)
-                    .price(129000L)
+                    .price(i * 2000L)
                     .build();
 
             articles.add(article);
@@ -236,8 +205,8 @@ public class BootstrapDataLoader {
             orders.add(order);
             payments.add(payment);
         }
-        orders = orderRepository.saveAll(orders);
-        payments = paymentRepository.saveAll(payments);
+        orderRepository.saveAll(orders);
+        paymentRepository.saveAll(payments);
 
         List<Review> reviews = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
@@ -246,7 +215,31 @@ public class BootstrapDataLoader {
         for (int i = 0; i < 11; i++) {
             reviews.add(reviewRepository.save(Review.of(user1, articles.get(0), "testContent" + (i + 1), (int) (Math.random() * 5 + 1))));
         }
-        reviews = reviewRepository.saveAll(reviews);
+        reviewRepository.saveAll(reviews);
+    }
+
+    public User createTestUser1() {
+        Map<String, Object> testUser1 = new HashMap<>();
+        testUser1.put("id", 2);
+        testUser1.put("login", "qwer");
+        testUser1.put("password", "qwer");
+        testUser1.put("email", "qwer@gmail.com");
+        testUser1.put("image_url", "");
+        testUser1.put("role", RoleStatus.ROLE_USER);
+
+        return loadUser(testUser1);
+    }
+
+    public User createTestUser2() {
+        Map<String, Object> testUser2 = new HashMap<>();
+        testUser2.put("id", 3);
+        testUser2.put("login", "asdf");
+        testUser2.put("password", "asdf");
+        testUser2.put("email", "asdf@gmail.com");
+        testUser2.put("image_url", "");
+        testUser2.put("role", RoleStatus.ROLE_USER);
+
+        return loadUser(testUser2);
     }
 
     public void createReport() {

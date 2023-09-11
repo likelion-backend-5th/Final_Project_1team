@@ -29,8 +29,7 @@ function App() {
     // removeRefershToken();
   }, []);
   return (
-    <GoogleOAuthProvider clientId="446534610656-14r63n2kho9aggjkp8ebi1rgods392uj.apps.googleusercontent.com">
-      <Provider {...useStore}>
+   <Provider {...useStore}>
         <Navigation />
         <StyledMain>
           <UserRouter />
@@ -38,7 +37,6 @@ function App() {
         <Footer />
         <CustomAlert />
       </Provider>
-    </GoogleOAuthProvider>
   );
 }
 

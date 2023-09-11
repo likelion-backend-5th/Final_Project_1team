@@ -1,6 +1,5 @@
 package mutsa.api.controller.auth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +8,6 @@ import mutsa.api.dto.LoginResponseDto;
 import mutsa.api.dto.auth.AccessTokenResponse;
 import mutsa.api.dto.auth.LoginRequest;
 import mutsa.api.service.user.UserService;
-import mutsa.api.util.JwtTokenProvider;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
@@ -20,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
+import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -31,8 +29,9 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/auth/login")
-    public LoginResponseDto login(@Validated @RequestBody LoginRequest loginRequest) {
-        throw new IllegalStateException("this method shouldn't be call");
+    public ResponseEntity<LoginResponseDto> login(HttpServletRequest request, HttpServletResponse response, @Validated @RequestBody LoginRequest loginRequest) throws IOException {
+        LoginResponseDto login = userService.login(request, response, loginRequest);
+        return ResponseEntity.ok(login);
     }
 
     @PostMapping("/auth/logout")
@@ -57,13 +56,7 @@ public class AuthController {
             throw new BusinessException(ErrorCode.REFRESH_TOKEN_NOT_IN_COOKIE);
         }
 
-        String refreshToken = Arrays.stream(request.getCookies())
-                .filter(JwtTokenProvider::isCookieNameRefreshToken)
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElseThrow(() -> new BusinessException(ErrorCode.REFRESH_TOKEN_NOT_IN_COOKIE));
-
-
+        String refreshToken = userService.refreshToken(request);
         return userService.validateRefreshTokenAndCreateAccessToken(refreshToken, request);
     }
 

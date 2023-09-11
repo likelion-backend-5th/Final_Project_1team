@@ -57,13 +57,13 @@ public class User extends BaseTimeEntity implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @Builder.Default
     @JsonIgnore
-    private final OAuth2Type oAuth2Type = OAuth2Type.GOOGLE;
+    @Builder.Default
+    private OAuth2Type oAuth2Type = OAuth2Type.NONE;
 
     @Builder.Default
     @Column(nullable = false, length = 2)
-    private Boolean isOAuth2 = true;
+    private Boolean isOAuth2 = false;
 
     @Builder.Default
     @Column(nullable = false, length = 2)
@@ -71,10 +71,12 @@ public class User extends BaseTimeEntity implements Serializable {
 
     /* mapping table  */
     @OneToOne(mappedBy = "user", fetch = LAZY)
+    @JsonIgnore
     private Member member;
 
     @Singular
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
+    @JsonIgnore
     private final Set<UserRole> userRoles = new HashSet<>();
 
     @JsonIgnore
@@ -121,8 +123,24 @@ public class User extends BaseTimeEntity implements Serializable {
                 .username(username)
                 .password(encodedPassword)
                 .email(email)
-                .oauth2Username(oauth2Username == null ? "" : username)
+                .oauth2Username(oauth2Username == null ? "" : oauth2Username)
                 .imageUrl(StringUtils.hasText(imageUrl) ? imageUrl : "")
+                .build();
+        user.addMember(member);
+        return user;
+    }
+
+    public static User of(String username, String encodedPassword, String email,
+                          String oauth2Username, OAuth2Type oauthType, String imageUrl, Member member) {
+
+        User user = User.builder()
+                .username(username)
+                .password(encodedPassword)
+                .email(email)
+                .oauth2Username(oauth2Username == null ? "" : oauth2Username)
+                .oAuth2Type(oauthType)
+                .imageUrl(StringUtils.hasText(imageUrl) ? imageUrl : "")
+                .isOAuth2(true)
                 .build();
         user.addMember(member);
         return user;

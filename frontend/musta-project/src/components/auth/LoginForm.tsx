@@ -14,7 +14,7 @@ import userStore from '../../store/user/userStore';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
-import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 import axiosUtils from '../../uitls/axiosUtils';
 import authStore from '../../store/user/authStore';
 import { useNavigate, useNavigation } from 'react-router-dom';
@@ -59,21 +59,22 @@ const LoginForm = (props: any): JSX.Element => {
       });
   };
 
-  const googleLogin = useGoogleLogin({
-    scope: 'email profile',
-    onSuccess: async (code) => {
-      code = { ...code, state: 'success' };
-      axiosUtils
-        .oauth2Login('/login/oauth2/code/google', code)
-        .then((res: any) => {
-          console.log(res);
-        });
-    },
-    onError: (res) => {
-      console.error(res);
-    },
-    flow: 'auth-code',
-  });
+
+
+  // const googleLogin = useGoogleLogin({
+  //   scope: 'email profile',
+  //   onSuccess: async () => {
+  //     axiosUtils
+  //       .oauth2Login('/login/oauth2/code/google')
+  //       .then((res: any) => {
+  //         console.log(res);
+  //       });
+  //   },
+  //   onError: (res) => {
+  //     console.error(res);
+  //   },
+  //   flow: 'auth-code',
+  // });
 
   useEffect(() => {
     setId('');
@@ -140,7 +141,22 @@ const LoginForm = (props: any): JSX.Element => {
           Sign In
         </Button>
         <Grid item sx={{ mb: 2 }}>
-          <GoogleLogin size="large" ux_mode="popup" onSuccess={googleLogin} />
+          {/* <GoogleLogin size="large" ux_mode="popup" onSuccess={googleLogin} /> */}
+          <GoogleOAuthProvider clientId="446534610656-14r63n2kho9aggjkp8ebi1rgods392uj.apps.googleusercontent.com">
+            <GoogleLogin
+              onSuccess={(res) => {
+                console.log(res);
+              }}
+            />
+          </GoogleOAuthProvider>
+
+          <Button
+            style={{ marginRight: "1rem" }}
+            // 클릭 이벤트 수정해야 됨
+            onClick={() =>
+              (window.location.href = 'http://localhost:8080/oauth2/authorization/google')
+            }>구글 로그인 ( 백엔드 )</Button>
+
         </Grid>
         <Grid container>
           <Grid item xs>

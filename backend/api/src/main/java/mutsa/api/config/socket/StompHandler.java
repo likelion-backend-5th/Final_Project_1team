@@ -22,7 +22,7 @@ import java.util.Objects;
 @Slf4j
 public class StompHandler implements ChannelInterceptor {
 
-    private final JwtConfig jwtConfig;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -38,10 +38,9 @@ public class StompHandler implements ChannelInterceptor {
             String token = Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization"))
                 .substring(7);
 
-            Algorithm algorithm = Algorithm.HMAC256(jwtConfig.getSecretKey().getBytes());
             JwtTokenProvider.JWTInfo jwtInfo = null;
             try {
-                jwtInfo = JwtTokenProvider.decodeToken(algorithm, token);
+                jwtInfo = jwtTokenProvider.decodeToken(token);
                 log.debug(jwtInfo.toString());
             } catch (TokenExpiredException e) {
                 log.debug("TokenExpiredException: ", e);

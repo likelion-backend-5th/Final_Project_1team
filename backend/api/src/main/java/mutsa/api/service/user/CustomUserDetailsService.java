@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserCacheRepository userCacheRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public CustomPrincipalDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userCacheRepository.getUser(username).orElseGet(() ->
                 userRepository.findByUsername(username).orElseThrow(() ->
                         new UsernameNotFoundException("not found username:" + username)));
