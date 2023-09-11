@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.api.dto.user.PasswordChangeDto;
+import mutsa.api.dto.user.SignUpOauthUserDto;
 import mutsa.api.dto.user.SignUpUserDto;
 import mutsa.api.service.user.UserService;
 import mutsa.api.util.UserUtil;
@@ -49,6 +50,14 @@ public class UserController {
     public ResponseEntity changePassword(@AuthenticationPrincipal CustomPrincipalDetails user,
                                          @Validated @RequestBody PasswordChangeDto passwordChangeDto) {
         userService.changePassword(user, passwordChangeDto);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+
+    @PostMapping("oauth/signup")
+    public ResponseEntity signUpOauthUser(@AuthenticationPrincipal CustomPrincipalDetails user,
+                                         @Validated @RequestBody SignUpOauthUserDto signupAuthUserDto) {
+        userService.signUpAuth(user, signupAuthUserDto);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

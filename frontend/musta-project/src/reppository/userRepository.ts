@@ -11,6 +11,11 @@ class userRepsoitory {
     return axiosUtils.post('/user/signup', data);
   };
 
+
+  oauthSignup = (data: any) => {
+    return axiosUtils.post('/user/oauth/signup', data);
+  };
+
   changePassword = (passwordForm: {
     password: string;
     newPassword: string;
