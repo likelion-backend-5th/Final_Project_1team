@@ -17,7 +17,6 @@ import mutsa.api.util.CookieUtil;
 import mutsa.api.util.JwtTokenProvider;
 import mutsa.api.util.JwtTokenProvider.JWTInfo;
 import mutsa.common.domain.models.user.*;
-import mutsa.common.domain.models.user.embedded.Address;
 import mutsa.common.domain.models.user.embedded.OAuth2Type;
 import mutsa.common.dto.user.UserInfoDto;
 import mutsa.common.exception.BusinessException;
@@ -150,7 +149,7 @@ public class UserService {
 
 
     public UserInfoDto findUserInfo(String username) {
-        log.info(username);
+        log.info("findUserInfo {}", username);
         User byUsername = userModuleService.getByUsername(username);
         return UserInfoDto.fromEntity(byUsername);
     }

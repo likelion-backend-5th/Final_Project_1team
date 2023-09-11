@@ -22,7 +22,7 @@ const OauthRedirect = () => {
 
       authStore.findUserInfo()
         .then((res) => {
-          if (isNewUser) {
+          if (isNewUser==='true') {
             console.log('isNewUser')
             navigate('/oauth-signup');
           } else {
