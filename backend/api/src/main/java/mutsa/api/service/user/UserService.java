@@ -11,11 +11,13 @@ import mutsa.api.dto.LoginResponseDto;
 import mutsa.api.dto.auth.AccessTokenResponse;
 import mutsa.api.dto.auth.LoginRequest;
 import mutsa.api.dto.user.PasswordChangeDto;
+import mutsa.api.dto.user.SignUpOauthUserDto;
 import mutsa.api.dto.user.SignUpUserDto;
 import mutsa.api.util.CookieUtil;
 import mutsa.api.util.JwtTokenProvider;
 import mutsa.api.util.JwtTokenProvider.JWTInfo;
 import mutsa.common.domain.models.user.*;
+import mutsa.common.domain.models.user.embedded.Address;
 import mutsa.common.domain.models.user.embedded.OAuth2Type;
 import mutsa.common.dto.user.UserInfoDto;
 import mutsa.common.exception.BusinessException;
@@ -78,7 +80,7 @@ public class UserService {
     }
 
     @Transactional
-    public void signUpAuth(SignUpUserDto signUpUserDto, String oauthName, String picture, OAuth2Type oAuth2Type) {
+    public void signUp(SignUpUserDto signUpUserDto, String oauthName, String picture, OAuth2Type oAuth2Type) {
         //추후에 oauth전용으로 따로 만들어서 관리해야함
         Optional<User> user = userRepository.findByUsername(signUpUserDto.getUsername());
         if (user.isPresent()) {
@@ -99,6 +101,7 @@ public class UserService {
         memberRepository.save(newMember);
         userRoleRepository.save(userRole);
     }
+
 
     public AccessTokenResponse validateRefreshTokenAndCreateAccessToken(
             String refreshToken,
@@ -138,9 +141,13 @@ public class UserService {
 
     }
 
-//    public UserInfoDto findUserInfo(String username) {
-//        return userRepository.findUserInfo(username);
-//    }
+    @Transactional
+    public void signUpAuth(CustomPrincipalDetails customPrincipalDetails, SignUpOauthUserDto signupAuthUserDto) {
+        User user = userModuleService.getByUsername(customPrincipalDetails.getUsername());
+        user.updateAddress(signupAuthUserDto.getAddress());
+        //전화번호 추가
+    }
+
 
     public UserInfoDto findUserInfo(String username) {
         log.info(username);

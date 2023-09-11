@@ -12,23 +12,30 @@ const OauthRedirect = () => {
     const search = param.search;
     const queryString = search.split('?')[1];
     const params = new URLSearchParams(queryString);
-    const token = params.get('token');
 
-    
-    
+    const token = params.get('token');
+    const isNewUser = params.get("isNewUser");
 
     if (token !== null) {
-      const [bearer, tokenValue] = token.split(' '); 
-      localStorage.setItem("accessToken", bearer + ' ' + tokenValue); 
-      authStore .findUserInfo()
-      .then((res) => {
-        navigate('/');
-      })
-      .catch((res) => {
-        alert('Could not obtain access token');
-      });
+      const [bearer, tokenValue] = token.split(' ');
+      localStorage.setItem("accessToken", bearer + ' ' + tokenValue);
+
+      authStore.findUserInfo()
+        .then((res) => {
+          if (isNewUser) {
+            console.log('isNewUser')
+            navigate('/oauth-signup');
+          } else {
+            navigate('/');
+          }
+        })
+        .catch((res) => {
+          alert('Could not obtain access token');
+        });
+
+      console.log(isNewUser);
     }
-    
+
   }, []);
 
   return <></>;

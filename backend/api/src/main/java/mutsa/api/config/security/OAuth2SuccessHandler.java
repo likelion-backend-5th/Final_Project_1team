@@ -3,7 +3,6 @@ package mutsa.api.config.security;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.user.SignUpUserDto;
@@ -22,12 +21,13 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    public static final String REDIRECT_URL_FORMAT = "http://localhost:3000/oauth2-redirect?token=%s"; //프론트리다이렉트 주소
+    public static final String REDIRECT_URL_FORMAT = "http://localhost:3000/oauth2-redirect?token=%s&&isNewUser=%s"; //프론트리다이렉트 주소
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final UserService userService;
@@ -51,13 +51,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String username = email.split("@")[0];
         String authName = String.format("{%s}%s", provider, username);
         String picture = oAuth2User.getAttribute("picture");
+        boolean isNewUser = false;
 
         log.info("oauthName : {} ", authName);
 
-//        //  이미 해당 이메일로 회원가입한 유저가 있을 경우
+        //이미 해당 이메일로 회원가입한 유저가 있는데 oauth로그인이 아닌경우
         if (userService.existUserByEmail(email) && !userService.isOauthUser(email)) {
-            //  TODO 임시로 넣은 코드
-            //  추후에 react에 상태를 전달하여, react에서 처리하는 방식으로 수정할 것
             log.warn("유저가 이미 해당 이메일로 가입한 이력이 존재합니다.");
             response.setContentType("text/html; charset=utf-8");
             PrintWriter out = response.getWriter();
@@ -68,7 +67,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 처음으로 소셜 로그인한 사용자를 데이터베이스에 등록
         if (!userService.existUserByEmail(email)) {
-            userService.signUpAuth(new SignUpUserDto(
+            isNewUser = true;
+            //전화번호랑 ,도로
+            userService.signUp(new SignUpUserDto(
                     username,
                     passwordEncoder.encode(email + "_" + provider),
                     passwordEncoder.encode(email + "_" + provider),
@@ -103,9 +104,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 목적지 URL 설정
         // 우리 서비스의 Frontend 구성에 따라 유연하게 대처해야 한다.
-        String targetUrl = String.format(
-                REDIRECT_URL_FORMAT, accessToken
-        );
+        String targetUrl = String.format(REDIRECT_URL_FORMAT, accessToken, isNewUser);
 
         log.info("url : {}", targetUrl);
         // 실제 Redirect 응답 생성

@@ -31,6 +31,7 @@ import ChangePasswordForm from '../components/user/ChangePasswordFrom.tsx';
 import ReviewForm from '../components/user/ReviewForm.tsx';
 import OrderForm from '../components/user/OrderForm.tsx';
 import React from 'react';
+import OauthSignUpForm from '../components/auth/OauthSignUpForm.tsx';
 
 const OauthRedirect = React.lazy(
     () => import("../components/auth/OauthRedirect.tsx")
@@ -41,6 +42,7 @@ const UserRouter = () => {
       <Route path="/" element={<MainPage />} />
       <Route path="/login" element={<LoginForm />} />
       <Route path="/signup" element={<SignUpForm />} />
+      <Route path="/oauth-signup" element={<OauthSignUpForm />} />
       <Route path="/signup/success" element={<SignUpSuccessForm />} />
       <Route
         path="/user/profile"
