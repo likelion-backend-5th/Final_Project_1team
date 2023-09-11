@@ -86,7 +86,7 @@ export const AlbumCard = (props: AlbumCardProps) => {
           <Typography
             variant="body2"
             color="text.secondary"
-            sx={{ marginBottom: 1 }}>
+            sx={{ marginTop: 1, marginBottom: 1 }}>
             작성자:{' '}
             {article.username > 10
               ? article.username.slice(0, 10) + '...'
