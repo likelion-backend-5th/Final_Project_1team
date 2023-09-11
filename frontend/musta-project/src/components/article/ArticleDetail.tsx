@@ -243,9 +243,10 @@ export function ArticleDetail() {
         <StyledCard>
           {article.images.length == 0 ? (
             <StyledCardMedia
-              component="img"
-              alt="place holder"
               image="https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com"
+              sx={{
+                aspectRatio: ' 1 / 1', // 이미지의 가로세로 비율을 자동으로 조정합니다.
+              }}
             />
           ) : (
             <Box>
@@ -321,9 +322,9 @@ export function ArticleDetail() {
                 {actions.map((action) =>
                   (action.index === 'seller' &&
                     article.username === authStore.userInfo?.username) ||
-                  (action.index === 'consumer' &&
-                    article.username != authStore.userInfo?.username) ||
-                  action.index === 'all' ? (
+                    (action.index === 'consumer' &&
+                      article.username != authStore.userInfo?.username) ||
+                    action.index === 'all' ? (
                     <SpeedDialAction
                       key={action.name}
                       icon={action.icon}

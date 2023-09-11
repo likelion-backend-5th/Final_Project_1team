@@ -47,7 +47,7 @@ const OrderSellerItem: React.FC<OrderItemProps> = ({order}) => {
 
     return (
         <StyledListItem onClick={handleItemClick}>
-            <UserAvatar alt={order.consumerName} src="/path/to/user-image.jpg"/>
+            <UserAvatar alt={order.consumerName} src={order.consumerProfileImage}/>
             <OrderItemText
                 primary={order.consumerName}
             />

@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   CardActionArea,
   CardContent,
@@ -37,21 +38,30 @@ export const AlbumCard = (props: AlbumCardProps) => {
         navigate(`/article/detail/${props.detail}`, { replace: false });
       }}>
       <CardActionArea>
-        <CardMedia
-          component="img"
-          image={
-            article.images.length == 0
-              ? 'https://via.placeholder.com/1920x1080.png?text=via%20placeholder'
-              : article.images[0].fullPath
-          }
-          alt="place holder image"
+        <Box
           sx={{
-            // Width: '244px',
-            // maxHeight: '140px',
-            width: '244px',
-            height: '137px',
+            width: '244px', // 이미지 컨테이너의 가로 너비를 고정합니다.
+            height: '244px', // 세로 높이를 자동으로 조절하여 비율을 유지합니다.
+            display: 'flex', // Flex 컨테이너로 설정합니다.
+            alignItems: 'center', // 수직 정렬을 가운데로 설정합니다.
+            justifyContent: 'center', // 수평 정렬을 가운데로 설정합니다.
           }}
-        />
+        >
+          <CardMedia
+            component="img"
+            image={
+              article.images.length === 0
+                ? "https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com"
+                : article.images[0].fullPath
+            }
+            sx={{
+              width: '244px', // 이미지 컨테이너의 가로 너비를 고정합니다.
+              height: 'auto', // 세로 높이를 자동으로 조절하여 비율을 유지합니다.
+              objectFit: 'cover', // 이미지를 컨테이너에 맞게 조절합니다.
+            }}
+            alt="place holder image"
+          />
+        </Box>
         <CardContent sx={{ paddingTop: 0 }}>
           <Chip
             label={article.articleStatus}

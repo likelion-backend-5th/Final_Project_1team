@@ -44,7 +44,9 @@ public class OrderRepositoryImpl extends Querydsl4RepositorySupport implements O
                         qOrder.user.username,
                         qOrder.article.user.username,
                         qOrder.createdAt,
-                        qOrder.orderStatus))
+                        qOrder.orderStatus,
+                        qArticle.user.imageUrl,
+                        qOrder.user.imageUrl))
                         .from(qOrder)
                         .leftJoin(qOrder.article, article)
                         .leftJoin(qOrder.user, qOrderUser)
@@ -81,7 +83,9 @@ public class OrderRepositoryImpl extends Querydsl4RepositorySupport implements O
                 qOrder.user.username,
                 qOrder.article.user.username,
                 qOrder.createdAt,
-                qOrder.orderStatus))
+                qOrder.orderStatus,
+                qArticle.user.imageUrl,
+                qOrder.user.imageUrl))
                 .from(qOrder)
                 .leftJoin(qOrder.article, article)
                 .leftJoin(qOrder.user, qOrderUser)

@@ -26,4 +26,13 @@ public class ImageResponseDto {
                 .fullPath(entity.getPath() + "/" + entity.getFileName())
                 .build();
     }
+
+    public static ImageResponseDto to(String fullPath) {
+        return ImageResponseDto.builder()
+                .apiId("1234")
+                .refApiId("1234")
+                .fullPath(fullPath)
+                .build();
+    }
+
 }

@@ -11,9 +11,12 @@ import mutsa.api.dto.image.ImageResponseDto;
 import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.article.ArticleStatus;
+import mutsa.common.domain.models.image.Image;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import static mutsa.common.dto.constants.ImageConstants.DEFAULT_ARTICLE_IMG;
 
 @Builder
 @Getter
@@ -21,6 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ArticleResponseDto {
+    public static final ImageResponseDto DEFAULT_ARTICLE_IMG_RESPONSE = ImageResponseDto.to(DEFAULT_ARTICLE_IMG);
     private String title;
     private String description;
     private String username;
@@ -43,11 +47,20 @@ public class ArticleResponseDto {
                 .articleStatus(entity.getArticleStatus())
                 .createdDate(entity.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
                 .price(entity.getPrice())
-                .images(entity.getImages().stream().map(ImageResponseDto::to).toList())
+                .images(getImages(entity.getImages()))
                 .build();
+    }
+
+    private static List<ImageResponseDto> getImages(List<Image> images) {
+        if (images.size() == 0) {
+            return List.of(DEFAULT_ARTICLE_IMG_RESPONSE);
+        }
+        return images.stream().map(ImageResponseDto::to).toList();
     }
 
     public void addArticleImages(List<ImageResponseDto> images) {
         this.images.addAll(images);
     }
+
+
 }

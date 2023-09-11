@@ -16,6 +16,7 @@ import useStores from '../../store/useStores';
 import NavMenu from './NavMenu';
 import { useAlert } from '../hook/useAlert';
 import { Typography } from '@mui/material';
+import userStore from '../../store/user/userStore';
 
 const pages = [
   ['Home', '/home'],
@@ -150,7 +151,7 @@ const Navigation = () => {
                   sx={{ borderRadius: '5px', outline: 0 }}>
                   <Avatar
                     alt="Remy Sharp"
-                    src="/img/monkey.jpg"
+                    src= {authStore.userInfo?.image_url}
                     sx={{ marginX: '10px' }}
                   />
                   <Typography>
