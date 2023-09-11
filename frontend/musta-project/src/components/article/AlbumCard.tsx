@@ -45,24 +45,25 @@ export const AlbumCard = (props: AlbumCardProps) => {
             display: 'flex', // Flex 컨테이너로 설정합니다.
             alignItems: 'center', // 수직 정렬을 가운데로 설정합니다.
             justifyContent: 'center', // 수평 정렬을 가운데로 설정합니다.
-          }}
-        >
+          }}>
           <CardMedia
             component="img"
             image={
               article.images.length === 0
-                ? "https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com"
+                ? 'https://via.placeholder.com/1920x1080.png?text=via%20placeholder.com'
                 : article.images[0].fullPath
             }
             sx={{
               width: '244px', // 이미지 컨테이너의 가로 너비를 고정합니다.
               height: 'auto', // 세로 높이를 자동으로 조절하여 비율을 유지합니다.
+              maxWidth: '244px',
+              maxHeight: '244px',
               objectFit: 'cover', // 이미지를 컨테이너에 맞게 조절합니다.
             }}
             alt="place holder image"
           />
         </Box>
-        <CardContent sx={{ paddingTop: 0 }}>
+        <CardContent sx={{ marginTop: '10px', paddingTop: 0 }}>
           <Chip
             label={article.articleStatus}
             size="small"
@@ -77,14 +78,19 @@ export const AlbumCard = (props: AlbumCardProps) => {
             }}
           />
           <Typography variant="h6" gutterBottom>
-            {article.title}
+            {article.title > 15
+              ? article.title.slice(0, 15) + '....'
+              : article.title}
           </Typography>
           <Typography variant="h6">{formatPrice(article.price)}</Typography>
           <Typography
             variant="body2"
             color="text.secondary"
             sx={{ marginBottom: 1 }}>
-            작성자: {article.username}
+            작성자:{' '}
+            {article.username > 10
+              ? article.username.slice(0, 10) + '...'
+              : article.username}
           </Typography>
           <Typography noWrap variant="body2" color="text.secondary">
             {article.description.length >= 15
