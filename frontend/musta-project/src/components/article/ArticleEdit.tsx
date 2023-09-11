@@ -29,7 +29,7 @@ import { loadingTime } from '../../util/loadingUtil.ts';
 import { useNavigate } from 'react-router-dom';
 import DropDown from './DropDown.tsx';
 import { Carousel } from 'react-responsive-carousel';
-import { InsertPhoto } from '@mui/icons-material';
+import { HideImage, InsertPhoto } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import { putArticleHandler } from '../../store/auth-action.tsx';
 import { uploadImagesToS3, bucketName, s3Client } from '../../util/s3Client.ts';
@@ -224,6 +224,11 @@ export function ArticleEdit() {
     setDescription(event.target.value);
   };
 
+  const onClickRemoveImages = () => {
+    setImageFiles([]);
+    setImagePreviews([]);
+  };
+
   return (
     <StyledArticleDetail>
       {loading ? (
@@ -380,24 +385,37 @@ export function ArticleEdit() {
               </Carousel>
             </Box>
             <Box display="flex" justifyContent="space-between">
-              <input
-                accept="image/*"
-                id="image-file"
-                type="file"
-                multiple
-                onChange={handleImageChange}
-                style={{ display: 'none' }}
-              />
-              <label htmlFor="image-file">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component="span"
-                  startIcon={<InsertPhoto />}
-                  sx={{ marginTop: '15px' }}>
-                  이미지 첨부
-                </Button>
-              </label>
+              <Box>
+                <input
+                  accept="image/*"
+                  id="image-file"
+                  type="file"
+                  multiple
+                  onChange={handleImageChange}
+                  style={{ display: 'none' }}
+                />
+                <label htmlFor="image-file">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    component="span"
+                    startIcon={<InsertPhoto />}
+                    sx={{ marginTop: '15px' }}>
+                    이미지 첨부
+                  </Button>
+                </label>
+                {imagePreviews.length > 0 ? (
+                  <Button
+                    variant="contained"
+                    color="error"
+                    component="span"
+                    startIcon={<HideImage />}
+                    onClick={onClickRemoveImages}
+                    sx={{ marginTop: '15px', marginX: '10px' }}>
+                    이미지 삭제
+                  </Button>
+                ) : null}
+              </Box>
               <Button
                 variant="contained"
                 color="primary"
