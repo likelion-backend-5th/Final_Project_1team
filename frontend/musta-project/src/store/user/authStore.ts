@@ -11,6 +11,7 @@ type userInfo = {
   zipcode: string;
   city: string;
   address: string;
+  role : string[];
 };
 
 export default class authStore {
@@ -27,6 +28,12 @@ export default class authStore {
       .findUserInfo()
       .then((res: AxiosResponse) => {
         this.userInfo = res.data;
+        console.log(this.userInfo?.role);
+        if (this.userInfo?.role.includes("ROLE_USER")) {
+          console.log("User 역할이 있습니다.");
+        } else {
+          console.log("User 역할이 없습니다.");
+        }
       })
       .catch((error: AxiosResponse) => Promise.reject(error));
   };

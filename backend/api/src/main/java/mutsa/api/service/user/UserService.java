@@ -92,7 +92,6 @@ public class UserService {
 
         UserRole userRole = UserRole.of(newUser, role);
         userRole.addUser(newUser);
-        newUser.getUserRoles().add(userRole);
 
         userRepository.save(newUser);
         memberRepository.save(newMember);
