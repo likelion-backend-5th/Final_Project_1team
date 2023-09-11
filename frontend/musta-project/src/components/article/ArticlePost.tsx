@@ -14,7 +14,7 @@ import {
   InputAdornment,
 } from '@mui/material';
 import axios from 'axios';
-import { InsertPhoto } from '@mui/icons-material';
+import { HideImage, InsertPhoto } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -88,6 +88,11 @@ export function ArticlePost() {
 
     setAlertMsg(str);
     return !str;
+  };
+
+  const onClickRemoveImages = () => {
+    setImageFiles([]);
+    setImagePreviews([]);
   };
 
   const handleSubmit = async () => {
@@ -227,24 +232,37 @@ export function ArticlePost() {
           </Carousel>
         </Box>
         <Box display="flex" justifyContent="space-between">
-          <input
-            accept="image/*"
-            id="image-file"
-            type="file"
-            multiple
-            onChange={handleImageChange}
-            style={{ display: 'none' }}
-          />
-          <label htmlFor="image-file">
-            <Button
-              variant="contained"
-              color="primary"
-              component="span"
-              startIcon={<InsertPhoto />}
-              sx={{ marginTop: '15px' }}>
-              이미지 첨부
-            </Button>
-          </label>
+          <Box>
+            <input
+              accept="image/*"
+              id="image-file"
+              type="file"
+              multiple
+              onChange={handleImageChange}
+              style={{ display: 'none' }}
+            />
+            <label htmlFor="image-file">
+              <Button
+                variant="contained"
+                color="primary"
+                component="span"
+                startIcon={<InsertPhoto />}
+                sx={{ marginTop: '15px', marginEnd: '10px' }}>
+                이미지 첨부
+              </Button>
+            </label>
+            {imagePreviews.length > 0 ? (
+              <Button
+                variant="contained"
+                color="error"
+                component="span"
+                startIcon={<HideImage />}
+                onClick={onClickRemoveImages}
+                sx={{ marginTop: '15px', marginX: '10px' }}>
+                이미지 삭제
+              </Button>
+            ) : null}
+          </Box>
           <Button
             variant="contained"
             color="primary"
