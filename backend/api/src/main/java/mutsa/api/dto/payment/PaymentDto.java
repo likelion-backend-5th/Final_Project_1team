@@ -1,13 +1,12 @@
 package mutsa.api.dto.payment;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import mutsa.common.domain.models.payment.Payment;
 
-@Data
+@Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class PaymentDto {
 
     private String customerApiId;       // 구매자 ApiId

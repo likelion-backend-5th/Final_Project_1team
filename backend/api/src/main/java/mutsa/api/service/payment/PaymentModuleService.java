@@ -39,6 +39,7 @@ public class PaymentModuleService {
     private final TossPaymentConfig tossPaymentConfig;
     private final ArticleRepository articleRepository;
     private final OrderRepository orderRepository;
+    private final RestTemplate restTemplate;
 
     // 결제 요청을 위한 정보 생성 및 반환
     @Transactional
@@ -63,7 +64,6 @@ public class PaymentModuleService {
     // 실제 결제 서버에 요청 전달 및 채택
     @Transactional
     public PaymentSuccessDto requestPaymentAccept(String paymentKey, String orderId, Long amount) {
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = getHeaders();
         Map<String, Object> params = new HashMap<>();
         params.put("orderId", orderId);
@@ -149,5 +149,4 @@ public class PaymentModuleService {
         String redirectUrl = commonConfig.getFrontendUrl() + "/article/" + order.getArticle().getApiId() + "/order/" + orderId;
         return URI.create(redirectUrl);
     }
-
 }
