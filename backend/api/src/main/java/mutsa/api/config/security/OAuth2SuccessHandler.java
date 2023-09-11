@@ -3,6 +3,7 @@ package mutsa.api.config.security;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.dto.user.SignUpUserDto;
@@ -10,10 +11,12 @@ import mutsa.api.service.user.CustomUserDetailsService;
 import mutsa.api.service.user.UserService;
 import mutsa.api.util.CookieUtil;
 import mutsa.api.util.JwtTokenProvider;
+import mutsa.common.domain.models.user.embedded.OAuth2Type;
 import mutsa.common.repository.redis.RefreshTokenRedisRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -29,6 +32,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final UserService userService;
     private final CustomUserDetailsService customUserDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     // 인증 성공시 호출되는 메소드
@@ -49,19 +53,32 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String picture = oAuth2User.getAttribute("picture");
 
         log.info("oauthName : {} ", authName);
+
+//        //  이미 해당 이메일로 회원가입한 유저가 있을 경우
+        if (userService.existUserByEmail(email) && !userService.isOauthUser(email)) {
+            //  TODO 임시로 넣은 코드
+            //  추후에 react에 상태를 전달하여, react에서 처리하는 방식으로 수정할 것
+            log.warn("유저가 이미 해당 이메일로 가입한 이력이 존재합니다.");
+            response.setContentType("text/html; charset=utf-8");
+            PrintWriter out = response.getWriter();
+            out.println("<script>alert('이미 회원가입한 이메일 입니다.'); location.href='http://localhost:3000' </script>");
+            out.flush();
+            return;
+        }
+
         // 처음으로 소셜 로그인한 사용자를 데이터베이스에 등록
-        if (!userService.existUser(username)) {
+        if (!userService.existUserByEmail(email)) {
             userService.signUpAuth(new SignUpUserDto(
                     username,
-                    "",
-                    "",
+                    passwordEncoder.encode(email + "_" + provider),
+                    passwordEncoder.encode(email + "_" + provider),
                     username,
                     email,
                     "",
                     "",
                     "",
                     ""
-            ), authName, picture);
+            ), authName, picture, OAuth2Type.valueOf(provider.toUpperCase()));
         }
 
         // 데이터베이스에서 사용자 회수

@@ -47,9 +47,9 @@ public class SignUpUserDto {
         return user;
     }
 
-    public static User from(SignUpUserDto signUpUserDto, String oauthName, String picture) {
+    public static User from(SignUpUserDto signUpUserDto, String oauthName, String picture, OAuth2Type oAuth2Type) {
         User user = User.of(signUpUserDto.getUsername(), signUpUserDto.getPassword(),
-                signUpUserDto.getEmail(), oauthName, OAuth2Type.GOOGLE, picture, null);
+                signUpUserDto.getEmail(), oauthName, oAuth2Type, picture, null);
         Address address = Address.of(signUpUserDto.getZipcode(), signUpUserDto.getCity(),
                 signUpUserDto.getStreet());
         user.addAddress(address);

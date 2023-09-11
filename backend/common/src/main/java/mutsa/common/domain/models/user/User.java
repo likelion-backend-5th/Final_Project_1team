@@ -55,13 +55,15 @@ public class User extends BaseTimeEntity implements Serializable {
     @Column(nullable = false, length = 30)
     private String oauth2Username;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @JsonIgnore
-    private OAuth2Type oAuth2Type;
+    @Builder.Default
+    private OAuth2Type oAuth2Type = OAuth2Type.NONE;
 
     @Builder.Default
     @Column(nullable = false, length = 2)
-    private Boolean isOAuth2 = true;
+    private Boolean isOAuth2 = false;
 
     @Builder.Default
     @Column(nullable = false, length = 2)
@@ -138,6 +140,7 @@ public class User extends BaseTimeEntity implements Serializable {
                 .oauth2Username(oauth2Username == null ? "" : oauth2Username)
                 .oAuth2Type(oauthType)
                 .imageUrl(StringUtils.hasText(imageUrl) ? imageUrl : "")
+                .isOAuth2(true)
                 .build();
         user.addMember(member);
         return user;

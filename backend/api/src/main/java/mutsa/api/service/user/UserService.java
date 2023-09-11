@@ -16,6 +16,7 @@ import mutsa.api.util.CookieUtil;
 import mutsa.api.util.JwtTokenProvider;
 import mutsa.api.util.JwtTokenProvider.JWTInfo;
 import mutsa.common.domain.models.user.*;
+import mutsa.common.domain.models.user.embedded.OAuth2Type;
 import mutsa.common.dto.user.UserInfoDto;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
@@ -75,7 +76,7 @@ public class UserService {
     }
 
     @Transactional
-    public void signUpAuth(SignUpUserDto signUpUserDto, String oauthName, String picture) {
+    public void signUpAuth(SignUpUserDto signUpUserDto, String oauthName, String picture, OAuth2Type oAuth2Type) {
         //추후에 oauth전용으로 따로 만들어서 관리해야함
         Optional<User> user = userRepository.findByUsername(signUpUserDto.getUsername());
         if (user.isPresent()) {
@@ -83,7 +84,7 @@ public class UserService {
         }
         signUpUserDto.setPassword(bCryptPasswordEncoder.encode(signUpUserDto.getPassword()));
 
-        User newUser = SignUpUserDto.from(signUpUserDto, oauthName, picture);
+        User newUser = SignUpUserDto.from(signUpUserDto, oauthName, picture, oAuth2Type);
         Member newMember = Member.of(signUpUserDto.getNickname());
         newUser.addMember(newMember);
         Role role = roleRepository.findByValue(RoleStatus.ROLE_USER)
@@ -122,7 +123,8 @@ public class UserService {
                     .map(Authority::getName)
                     .collect(Collectors.toList());
 
-            String accessToken = jwtTokenProvider.createAccessToken(request, customUserDetailsService.loadUserByUsername(user.getUsername()));
+            String accessToken = jwtTokenProvider.createAccessToken(request,
+                    customUserDetailsService.loadUserByUsername(user.getUsername()));
 
             log.info("Access Token : {}", accessToken);
             return AccessTokenResponse.builder()
@@ -173,8 +175,10 @@ public class UserService {
     }
 
     @Transactional
-    public LoginResponseDto login(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, LoginRequest loginDto) throws IOException {
-        CustomPrincipalDetails customPrincipalDetails = customUserDetailsService.loadUserByUsername(loginDto.getUsername());
+    public LoginResponseDto login(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+                                  LoginRequest loginDto) throws IOException {
+        CustomPrincipalDetails customPrincipalDetails = customUserDetailsService.loadUserByUsername(
+                loginDto.getUsername());
 
         String accessToken = jwtTokenProvider.createAccessToken(httpServletRequest, customPrincipalDetails);
 
@@ -228,5 +232,14 @@ public class UserService {
 
     public boolean existUser(String username) {
         return userRepository.findByUsername(username).isPresent();
+    }
+
+    public boolean existUserByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    public boolean isOauthUser(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND))
+                .getIsOAuth2();
     }
 }
