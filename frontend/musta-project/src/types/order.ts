@@ -21,6 +21,8 @@ interface OrderResponse {
   articleTitle: string;
   orderStatus: OrderStatus;
   amount: number;
+  sellerProfileImage : string;
+  consumerProfileImage : string;
 }
 
 interface OrderResponseDto {
