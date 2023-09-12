@@ -14,7 +14,11 @@ import userStore from '../../store/user/userStore';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
-import { GoogleLogin, GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+import {
+  GoogleLogin,
+  GoogleOAuthProvider,
+  useGoogleLogin,
+} from '@react-oauth/google';
 import axiosUtils from '../../uitls/axiosUtils';
 import authStore from '../../store/user/authStore';
 import { useNavigate, useNavigation } from 'react-router-dom';
@@ -47,7 +51,19 @@ const LoginForm = (props: any): JSX.Element => {
         }
       })
       .catch((res) => {
-        return openAlert({ state: 'error', message: res.data.message });
+        // return openAlert({ state: 'error', message: res.data.message });
+
+        if (res.response.data.code === 'A001') {
+          let accessToken = '';
+          axiosUtils
+            .post('/auth/token/refresh')
+            .then((refreshRes) => {
+              console.log(refreshRes);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
       });
     await authStore
       .findUserInfo()
@@ -58,8 +74,6 @@ const LoginForm = (props: any): JSX.Element => {
         return openAlert({ state: 'error', message: res.data.message });
       });
   };
-
-
 
   // const googleLogin = useGoogleLogin({
   //   scope: 'email profile',
@@ -151,12 +165,14 @@ const LoginForm = (props: any): JSX.Element => {
           </GoogleOAuthProvider>
 
           <Button
-            style={{ marginRight: "1rem" }}
+            style={{ marginRight: '1rem' }}
             // 클릭 이벤트 수정해야 됨
             onClick={() =>
-              (window.location.href = 'http://localhost:8080/oauth2/authorization/google')
-            }>구글 로그인 ( 백엔드 )</Button>
-
+              (window.location.href =
+                'http://localhost:8080/oauth2/authorization/google')
+            }>
+            구글 로그인 ( 백엔드 )
+          </Button>
         </Grid>
         <Grid container>
           <Grid item xs>

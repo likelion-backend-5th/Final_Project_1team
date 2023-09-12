@@ -57,7 +57,13 @@ public class AuthController {
         }
 
         String refreshToken = userService.refreshToken(request);
-        return userService.validateRefreshTokenAndCreateAccessToken(refreshToken, request);
+        AccessTokenResponse accessTokenResponse = userService.validateRefreshTokenAndCreateAccessToken(refreshToken, request);
+
+        response.setStatus(HttpStatus.OK.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+
+        return accessTokenResponse;
     }
 
 }

@@ -57,7 +57,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 ErrorResponse er = ErrorResponse.of(ErrorCode.ACCESS_TOKEN_EXPIRED);
                 getAccessTokenExpired(response, er);
 
-                return;
+//                return;
             } catch (JWTVerificationException ignored) {
                 log.info("JWTVerificationException: ", ignored);
             }

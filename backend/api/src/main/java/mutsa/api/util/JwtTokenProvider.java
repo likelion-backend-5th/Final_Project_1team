@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.Instant;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +30,14 @@ public class JwtTokenProvider {
     private final JwtConfig jwtConfig;
 
     public String createAccessToken(HttpServletRequest request, CustomPrincipalDetails details) {
-        Date expiresAt = new Date(System.currentTimeMillis() + Integer.parseInt(jwtConfig.getAccessTokenExpire()));
+//        Date expiresAt = new Date(System.currentTimeMillis() + (Integer.parseInt(jwtConfig.getAccessTokenExpire()) * 1000L));
 
         return BEARER + JWT.create()
                 .withSubject(details.getUsername())
                 .withIssuer(request.getRequestURI().toString())
-                .withExpiresAt(expiresAt)
+                .withIssuedAt(Date.from(Instant.now()))
+                .withExpiresAt(Date.from(Instant.now().plusSeconds(Long.parseLong(jwtConfig.getAccessTokenExpire()))))
+//                .withExpiresAt(expiresAt)
                 .withClaim(AUTHORITIES, getAuthorities(details.getAuthorities())) //이게 없으면 에러가 발생한다(CustomAuthorizationFilter)
                 .sign(jwtConfig.getEncodedSecretKey());
     }
@@ -43,7 +46,9 @@ public class JwtTokenProvider {
         return JWT.create()
                 .withSubject(subject)
                 .withIssuer(request.getRequestURI().toString())
-                .withExpiresAt(new Date(System.currentTimeMillis() + Integer.parseInt(jwtConfig.getRefreshTokenExpire())))
+                .withIssuedAt(Date.from(Instant.now()))
+                .withExpiresAt(Date.from(Instant.now().plusSeconds(Long.parseLong(jwtConfig.getRefreshTokenExpire()))))
+//                .withExpiresAt(new Date(System.currentTimeMillis() + Integer.parseInt(jwtConfig.getRefreshTokenExpire()) * 1000L))
                 .sign(jwtConfig.getEncodedSecretKey());
     }
 
@@ -51,7 +56,6 @@ public class JwtTokenProvider {
     /**
      * 1. 토큰이 정상적인지 검증(위조, 만료 여부) 2. Access Token인지 Refresh Token인지 구분
      *
-     * @param algorithm
      * @param token
      * @return
      * @throws JWTVerificationException
@@ -76,6 +80,17 @@ public class JwtTokenProvider {
         return JWTInfo.builder()
                 .username(username)
                 .authorities(authoritiesJWT)
+                .build();
+    }
+
+    public JWTInfo decodeRefreshToken(String refreshToken) {
+        JWTVerifier verifier = JWT.require(jwtConfig.getEncodedSecretKey()).build();
+
+        DecodedJWT decodedJWT = verifier.verify(refreshToken);
+        String username = decodedJWT.getSubject();
+
+        return JWTInfo.builder()
+                .username(username)
                 .build();
     }
 

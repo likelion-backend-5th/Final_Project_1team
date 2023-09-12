@@ -108,7 +108,7 @@ public class UserService {
     ) {
         try {
             // JWT 토큰 검증 실패하면 JWTVerificationException 발생
-            JWTInfo jwtInfo = jwtTokenProvider.decodeToken(refreshToken);
+            JWTInfo jwtInfo = jwtTokenProvider.decodeRefreshToken(refreshToken);
 
             // 저장된 리프레시 토큰 가져오기
             String storedRefresh = refreshTokenRedisRepository.getRefreshToken(jwtInfo.getUsername())
