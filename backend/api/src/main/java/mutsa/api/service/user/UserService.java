@@ -17,6 +17,7 @@ import mutsa.api.util.CookieUtil;
 import mutsa.api.util.JwtTokenProvider;
 import mutsa.api.util.JwtTokenProvider.JWTInfo;
 import mutsa.common.domain.models.user.*;
+import mutsa.common.domain.models.user.embedded.Address;
 import mutsa.common.domain.models.user.embedded.OAuth2Type;
 import mutsa.common.dto.user.UserInfoDto;
 import mutsa.common.exception.BusinessException;
@@ -36,9 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -121,15 +120,11 @@ public class UserService {
 
             User user = fromJwtInfo(jwtInfo);
 
-            List<String> authorities = user.getUserRoles().stream()
-                    .flatMap(userRole -> userRole.getRole().getAuthorities().stream())
-                    .map(Authority::getName)
-                    .collect(Collectors.toList());
-
             String accessToken = jwtTokenProvider.createAccessToken(request,
                     customUserDetailsService.loadUserByUsername(user.getUsername()));
 
             log.info("Access Token : {}", accessToken);
+
             return AccessTokenResponse.builder()
                     .accessToken(accessToken)
                     .build();
@@ -143,7 +138,8 @@ public class UserService {
     @Transactional
     public void signUpAuth(CustomPrincipalDetails customPrincipalDetails, SignUpOauthUserDto signupAuthUserDto) {
         User user = userModuleService.getByUsername(customPrincipalDetails.getUsername());
-        user.updateAddress(signupAuthUserDto.getAddress());
+        Address address = Address.of(signupAuthUserDto.getZipcode(), signupAuthUserDto.getCity(), signupAuthUserDto.getStreet());
+        user.updateAddress(address);
         //전화번호 추가
     }
 

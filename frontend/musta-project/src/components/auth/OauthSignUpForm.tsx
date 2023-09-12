@@ -35,7 +35,7 @@ const OauthSignUpForm = () => {
     data.append('zipcode', userStore.userAddress.zipcode);
     data.append('city', userStore.userAddress.city);
     data.append('street', street);
-    console.log(phone+" "+userStore.userAddress.zipcode+" "+userStore.userAddress.city+" "+street);
+    console.debug(phone+" "+userStore.userAddress.zipcode+" "+userStore.userAddress.city+" "+street);
 
     await userStore
       .handleOAuthSignUp(data)
