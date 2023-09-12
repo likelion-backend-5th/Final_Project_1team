@@ -117,6 +117,14 @@ public class User extends BaseTimeEntity implements Serializable {
         this.address = address;
     }
 
+    public void updateImageUrl(String url) {
+        this.imageUrl = url;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
     public static User of(String username, String encodedPassword, String email,
                           String oauth2Username, String imageUrl, Member member) {
 
