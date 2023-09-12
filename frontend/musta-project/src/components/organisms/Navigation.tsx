@@ -21,7 +21,6 @@ import userStore from '../../store/user/userStore';
 const pages = [
   ['Home', '/home'],
   ['게시글', '/article'],
-  ['신고 목록', '/reports'], // 임시 링크 (어드민 페이지로 갈 예정)
 ];
 
 const settings = [
@@ -46,6 +45,11 @@ const Navigation = () => {
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
+
+  // 현재 사용자의 역할을 확인하고 그에 따른 settings 배열을 생성
+  const settings = authStore.userInfo && authStore.userInfo.role.includes('ROLE_ADMIN')
+      ? [...baseSettings, ['신고 목록', '/reports']]
+      : baseSettings;
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
