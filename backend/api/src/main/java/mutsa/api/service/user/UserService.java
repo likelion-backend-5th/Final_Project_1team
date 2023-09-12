@@ -17,6 +17,7 @@ import mutsa.api.util.CookieUtil;
 import mutsa.api.util.JwtTokenProvider;
 import mutsa.api.util.JwtTokenProvider.JWTInfo;
 import mutsa.common.domain.models.user.*;
+import mutsa.common.domain.models.user.embedded.Address;
 import mutsa.common.domain.models.user.embedded.OAuth2Type;
 import mutsa.common.dto.user.UserInfoDto;
 import mutsa.common.exception.BusinessException;
@@ -30,6 +31,7 @@ import mutsa.common.repository.user.UserRoleRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -147,6 +149,11 @@ public class UserService {
         //전화번호 추가
     }
 
+//    public UserInfoDto findUserInfo(String username) {
+//        UserInfoDto userInfo = userRepository.findUserInfo(username);
+//        System.out.println(userInfo.toString());
+//        return userInfo;
+//    }
 
     public UserInfoDto findUserInfo(String username) {
         log.info("findUserInfo {}", username);
@@ -213,11 +220,49 @@ public class UserService {
         return loginResponseDto;
     }
 
+    public String refreshToken(HttpServletRequest request) {
+        return Arrays.stream(request.getCookies())
+            .filter(jwtTokenProvider::isCookieNameRefreshToken)
+            .map(Cookie::getValue)
+            .findFirst()
+            .orElseThrow(() -> new BusinessException(ErrorCode.REFRESH_TOKEN_NOT_IN_COOKIE));
+    }
+
+    public boolean existUserByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    @Transactional
+    public void updateImageUrl(UserDetails userDetails,String raw) {
+        User user = findUsername(userDetails.getUsername());
+
+        user.updateImageUrl(raw.replace("\\", "").replace("\"", ""));
+    }
+
+    @Transactional
+    public void updateEmail(UserDetails userDetails,String email) {
+        User findUser = findUsername(userDetails.getUsername());
+
+        findUser.updateEmail(email);
+    }
+
+    @Transactional
+    public void updateAddress(UserDetails userDetails, Address address) {
+        User findUser = findUsername(userDetails.getUsername());
+
+        findUser.updateAddress(address);
+    }
+
     private void isSameCurrentPassword(PasswordChangeDto passwordChangeDto, User findUser) {
-        if (findUser.getPassword()
+        if (!findUser.getPassword()
                 .equals(encodedPassword(passwordChangeDto.getPassword()))) {
             throw new BusinessException(ErrorCode.DIFFERENT_PASSWORD);
         }
+    }
+
+    private boolean isOauthUser(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND))
+            .getIsOAuth2();
     }
 
     private String encodedPassword(String password) {
@@ -235,26 +280,5 @@ public class UserService {
     private User findUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    public String refreshToken(HttpServletRequest request) {
-        return Arrays.stream(request.getCookies())
-                .filter(jwtTokenProvider::isCookieNameRefreshToken)
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElseThrow(() -> new BusinessException(ErrorCode.REFRESH_TOKEN_NOT_IN_COOKIE));
-    }
-
-    public boolean existUser(String username) {
-        return userRepository.findByUsername(username).isPresent();
-    }
-
-    public boolean existUserByEmail(String email) {
-        return userRepository.findByEmail(email).isPresent();
-    }
-
-    public boolean isOauthUser(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND))
-                .getIsOAuth2();
     }
 }
