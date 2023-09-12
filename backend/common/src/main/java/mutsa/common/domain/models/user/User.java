@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import mutsa.common.domain.models.BaseTimeEntity;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
@@ -146,4 +147,7 @@ public class User extends BaseTimeEntity implements Serializable {
         return user;
     }
 
+    public void updateAddress(Address address) {
+        this.address = address;
+    }
 }

@@ -29,6 +29,11 @@ type signupform = {
   address?: { zipcode: string; city: string; street?: string };
 };
 
+type authSignupform = {
+  phoneNumber: string;
+  address?: { zipcode: string; city: string; street?: string };
+};
+
 export default class userStore {
   constructor() {
     makeAutoObservable(this);
@@ -95,6 +100,27 @@ export default class userStore {
     }
 
     return await userRepository.signup(signupform);
+  };
+
+
+  handleOAuthSignUp = async (data: FormData) => {
+    const authSignupform: authSignupform = {
+      phoneNumber: data.get('phoneNumber') as string,
+    };
+
+    if (
+      this.userAddress.city != undefined &&
+      this.userAddress.zipcode != undefined
+    ) {
+      authSignupform.address = {
+        city: this.userAddress.city,
+        zipcode: this.userAddress.zipcode,
+        street: this.userAddress.street,
+
+      };
+    }
+        console.log(data)
+    return await userRepository.oauthSignup(authSignupform);
   };
 
   changePassword = async (data: FormData) => {
