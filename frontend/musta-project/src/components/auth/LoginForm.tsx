@@ -31,6 +31,17 @@ const LoginForm = (props: any): JSX.Element => {
   const navigate = useNavigate();
   const { openAlert } = useAlert();
 
+  const requestAccessToken = async () => {
+    axiosUtils
+      .post('/auth/token/refresh')
+      .then((refreshRes) => {
+        return refreshRes.data.accessToken;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const handleEvent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
@@ -55,14 +66,15 @@ const LoginForm = (props: any): JSX.Element => {
 
         if (res.response.data.code === 'A001') {
           let accessToken = '';
-          axiosUtils
-            .post('/auth/token/refresh')
-            .then((refreshRes) => {
-              console.log(refreshRes);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          requestAccessToken().then((token) => {
+            accessToken = token;
+            console.log(accessToken);
+            localStorage.setItem('accessToken', accessToken);
+            userStore.userInfo = {
+              ...userStore.userInfo,
+              accessToken: accessToken,
+            };
+          });
         }
       });
     await authStore
@@ -71,7 +83,8 @@ const LoginForm = (props: any): JSX.Element => {
         navigate('/');
       })
       .catch((res) => {
-        return openAlert({ state: 'error', message: res.data.message });
+        console.log(res);
+        // return openAlert({ state: 'error', message: res.data.message });
       });
   };
 
