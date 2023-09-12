@@ -19,7 +19,6 @@ import { Typography } from '@mui/material';
 import userStore from '../../store/user/userStore';
 
 const pages = [
-  ['Home', '/home'],
   ['게시글', '/article'],
   ['신고 목록', '/reports'], // 임시 링크 (어드민 페이지로 갈 예정)
 ];
