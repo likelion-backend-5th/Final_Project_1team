@@ -51,7 +51,7 @@ const LoginForm = (props: any): JSX.Element => {
     }
     await userStore
       .login(data)
-      .then(async (res) => {
+      .then(async (res: any) => {
         if (200 <= res.status && res.status < 400) {
           localStorage.setItem('accessToken', res.data.accessToken);
           userStore.userInfo = {
@@ -79,14 +79,20 @@ const LoginForm = (props: any): JSX.Element => {
       });
     await authStore
       .findUserInfo()
-      .then((res) => {
+      .then((res: any) => {
         navigate('/');
+        openAlert({
+          state: 'success',
+          message: authStore.userInfo?.username + '님 반갑습니다.',
+        });
       })
-      .catch((res) => {
+      .catch((res: any) => {
         console.log(res);
-        // return openAlert({ state: 'error', message: res.data.message });
+        openAlert({ state: 'error', message: 'error' });
       });
   };
+
+
 
   // const googleLogin = useGoogleLogin({
   //   scope: 'email profile',
