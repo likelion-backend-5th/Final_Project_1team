@@ -178,9 +178,10 @@ export const createReview = (
   articleApiId: string | undefined,
   orderApiId: string | undefined,
   content: string,
-  point: number
+  point: number,
+  images: { s3URL: string; filename: string }[]
 ) => {
-  const reviewRequestData = { content, point };
+  const reviewRequestData = { content, point, images };
 
   const URL = `/article/${articleApiId}/order/${orderApiId}/review`;
 
@@ -229,9 +230,10 @@ export const deleteReview = (reviewApiId: string) => {
 export const updateReview = (
   reviewApiId: string,
   content: string,
-  point: number
+  point: number,
+  images: { s3URL: string; filename: string }[]
 ) => {
-  const updateReviewData = { content, point };
+  const updateReviewData = { content, point, images };
   const URL = `/review/${reviewApiId}`;
 
   return axiosUtils.put(URL, updateReviewData);

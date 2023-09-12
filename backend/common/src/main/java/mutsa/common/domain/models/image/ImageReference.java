@@ -7,5 +7,5 @@
 package mutsa.common.domain.models.image;
 
 public enum ImageReference {
-    ARTICLE
+    ARTICLE, REVIEW
 }

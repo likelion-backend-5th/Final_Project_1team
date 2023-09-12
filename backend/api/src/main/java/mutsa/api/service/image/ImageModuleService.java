@@ -8,7 +8,6 @@ package mutsa.api.service.image;
 
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.image.ImagesRequestDto;
 import mutsa.api.util.SecurityUtil;
@@ -54,6 +53,32 @@ public class ImageModuleService {
         images = imageRepository.saveAll(images);
         return images;
     }
+    @Transactional
+    public List<Image> saveAllReviewImage(List<ImagesRequestDto> imagesRequestDtos, String reviewApiId) {
+        User currentUser = userRepository
+            .findByUsername(SecurityUtil.getCurrentUsername())
+            .orElseThrow(() -> new BusinessException(ErrorCode.SECURITY_CONTEXT_ERROR));
+
+        List<Image> images = new ArrayList<>();
+
+        for (int i = 0; i < imagesRequestDtos.size(); i++) {
+            images.add(
+                Image.builder()
+                    .path(imagesRequestDtos.get(i).getS3URL())
+                    .fileName(imagesRequestDtos.get(i).getFilename())
+                    .user(currentUser)
+                    .imgIdx(i)
+                    .imageReference(ImageReference.REVIEW)
+                    .refApiId(reviewApiId)
+                    .status(Status.ACTIVE)
+                    .build()
+            );
+        }
+
+        images = imageRepository.saveAll(images);
+        return images;
+    }
+
 
     @Transactional
     public void deleteByRefApiId(String refApiId) {
