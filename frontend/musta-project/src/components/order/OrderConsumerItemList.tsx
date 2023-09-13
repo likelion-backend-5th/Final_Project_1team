@@ -154,7 +154,7 @@ const OrderConsumerItemList: React.FC = observer(() => {
 
   const handleSearch = (searchInput: string) => {
     orderStore.setSearchInput(searchInput);
-    console.log('Search input value:' + searchInput);
+    // console.log('Search input value:' + searchInput);
     fetchData(orderStore.currentPage);
   };
 

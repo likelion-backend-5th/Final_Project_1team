@@ -6,13 +6,11 @@ import {
   Button,
   Divider,
   Grid,
-  Icon,
   Link,
   TextField,
   Typography,
   styled
 } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -81,6 +79,7 @@ const LoginForm = (props: any): JSX.Element => {
 
   const GoogleButton = styled(Button)`
   width: 100%;
+  margin-bottom: 10px;
   max-width: 680px;
   height: 50px;
   cursor: pointer;
@@ -89,14 +88,35 @@ const LoginForm = (props: any): JSX.Element => {
   border-radius: 8px;
   border: none;
   line-height: 40px;
-  background: #5b90f0;
-  color: white;
+  background: #FFFFFF;
+  color: black;
   transition: 0.2s linear;
 
   &:hover {
-    background: rgba(91, 144, 240, 0.8); 
+    box-shadow: 0 0 1px
   }
 `;
+
+  const NaverButton = styled(Button)`
+width: 100%;
+margin-bottom: 10px;
+max-width: 680px;
+height: 50px;
+cursor: pointer;
+font-size: 14px;
+font-family: 'Montserrat', sans-serif;
+border-radius: 8px;
+border: none;
+line-height: 40px;
+background: #03C75A;
+color: white;
+transition: 0.2s linear;
+
+&:hover {
+  background : rgba(3, 199, 90, 0.8); 
+}
+`;
+const baseUrl = import.meta.env.VITE_API;
 
   return (
     <Box
@@ -152,12 +172,29 @@ const LoginForm = (props: any): JSX.Element => {
           <GoogleButton
             onClick={() =>
             (window.location.href =
-              'http://localhost:8080/oauth2/authorization/google')
+              `${baseUrl}/oauth2/authorization/google`)
             }
-            startIcon={<GoogleIcon />}
           >
+            <img src="/src/assets/google.png"
+              alt="Google 로그인"
+              style={{ width: '24px', height: '24px' }}
+            />
             구글 로그인
           </GoogleButton>
+
+          <NaverButton
+            onClick={() =>
+            (window.location.href =
+              `${baseUrl}/oauth2/authorization/naver`)
+            }
+          >
+            <img
+              src="/src/assets/naver.png"
+              alt="Naver 로그인"
+              style={{ width: '24px', height: '24px' }}
+            />
+            네이버 로그인
+          </NaverButton>
         </Grid>
 
         <Grid container>
