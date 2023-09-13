@@ -152,30 +152,6 @@ export function ArticlePost() {
   return (
     <StyledArticleDetail>
       <StyledCard>
-        <Box sx={{ marginBottom: '20px' }}>
-          <Collapse in={alertOpen}>
-            <Stack>
-              <Alert
-                sx={{ whiteSpace: 'pre-line', textAlign: 'start' }}
-                severity="error"
-                onClose={() => {
-                  setAlertOpen(false);
-                }}>
-                {alertMsg}
-              </Alert>
-            </Stack>
-          </Collapse>
-        </Box>
-        <Box>
-          <StyledTextField
-            id="article-title"
-            label="게시글 제목"
-            value={title}
-            inputProps={{ maxLength: 100, 'aria-rowcount': 5 }} // Set maximum character length
-            onChange={onChangeTitle}
-            error={errorTitle}
-          />
-        </Box>
         <Box>
           <FormControl sx={{ marginY: '10px' }}>
             <InputLabel htmlFor="article-price">가격</InputLabel>
@@ -193,19 +169,6 @@ export function ArticlePost() {
               maxRows="1"
             />
           </FormControl>
-        </Box>
-        <Box>
-          <StyledTextField
-            id="article-description"
-            label="게시글 내용"
-            fullWidth
-            multiline
-            rows={7}
-            value={description}
-            inputProps={{ maxLength: 255, 'aria-rowcount': 5 }} // Set maximum character length
-            onChange={onChangeDescription}
-            error={errorDescription}
-          />
         </Box>
         <Box>
           <Carousel showArrows={true} infiniteLoop={true} selectedItem={0}>
@@ -231,6 +194,45 @@ export function ArticlePost() {
             ))}
           </Carousel>
         </Box>
+        <Box sx={{ marginBottom: '20px' }}>
+          <Collapse in={alertOpen}>
+            <Stack>
+              <Alert
+                sx={{ whiteSpace: 'pre-line', textAlign: 'start' }}
+                severity="error"
+                onClose={() => {
+                  setAlertOpen(false);
+                }}>
+                {alertMsg}
+              </Alert>
+            </Stack>
+          </Collapse>
+        </Box>
+        <Box>
+          <StyledTextField
+            id="article-title"
+            label="게시글 제목"
+            value={title}
+            inputProps={{ maxLength: 100 }}
+            onChange={onChangeTitle}
+            error={errorTitle}
+            style={{ width: '100%' }} // 여기에서 너비 조절
+          />
+        </Box>
+        <Box>
+          <StyledTextField
+            id="article-description"
+            label="게시글 내용"
+            fullWidth
+            multiline
+            rows={7}
+            value={description}
+            inputProps={{ maxLength: 255, 'aria-rowcount': 5 }} // Set maximum character length
+            onChange={onChangeDescription}
+            error={errorDescription}
+          />
+        </Box>
+
         <Box display="flex" justifyContent="space-between">
           <Box>
             <input
