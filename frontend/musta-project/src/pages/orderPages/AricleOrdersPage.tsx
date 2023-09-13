@@ -121,8 +121,6 @@ const fetchArticleOrderData = (newPage: number) => {
     newPage - 1,
     orderStore.ordersPerPage).then((response: { data: OrderResponseDto; } | null) => {
       if (response != null) {
-        console.log("게시글의 주문목록을 불러옴");
-        console.log(response.data);
         orderStore.setOrderResponseDto(response.data);
       }
       orderStore.setLoading(false);
@@ -134,8 +132,6 @@ const fetchArticleData = () => {
   getArticleHandler(
     orderStore.articleId).then((response: { data: { title: string; }; } | null) => {
       if (response != null) {
-        console.log("게시글의 제목을 불러옴");
-        console.log(response.data);
         orderStore.articleName = response.data.title;
       }
       orderStore.setLoading(false);

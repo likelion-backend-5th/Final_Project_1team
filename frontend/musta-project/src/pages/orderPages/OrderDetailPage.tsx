@@ -41,7 +41,6 @@ const OrderDetailPage: React.FC = () => {
     setLoading(true);
     getOrderHandler(articleApiId, orderApiId).then((response: { data: React.SetStateAction<OrderDetailResponse | null>; } | null) => {
       if (response != null) {
-        console.log("주문상세 정보를 불러옴");
         setOrderDetail(response.data);
       }
     })

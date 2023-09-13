@@ -109,8 +109,6 @@ const fetchData = (newPage: number) => {
     orderStore.ordersPerPage
   ).then((response: { data: OrderFilterResponseDto; } | null) => {
     if (response != null) {
-      console.log("내가 판매한 주문목록을 불러옴");
-      console.log(response.data);
       orderStore.setOrderFilterResponse(response.data);
     }
     orderStore.setLoading(false);
@@ -153,7 +151,6 @@ const OrderSellerItemList: React.FC = observer(() => {
   };
 
   const handleSearch = () => {
-    console.log('Search input value:');
     fetchData(orderStore.currentPage);
   };
 

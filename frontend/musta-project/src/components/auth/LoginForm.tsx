@@ -19,8 +19,6 @@ import {
   GoogleOAuthProvider,
   useGoogleLogin,
 } from '@react-oauth/google';
-import axiosUtils from '../../uitls/axiosUtils';
-import authStore from '../../store/user/authStore';
 import { useNavigate, useNavigation } from 'react-router-dom';
 import { useAlert } from '../hook/useAlert';
 
@@ -30,17 +28,6 @@ const LoginForm = (props: any): JSX.Element => {
   const [password, setPassword] = useState<String>('');
   const navigate = useNavigate();
   const { openAlert } = useAlert();
-
-  const requestAccessToken = async () => {
-    axiosUtils
-      .post('/auth/token/refresh')
-      .then((refreshRes) => {
-        return refreshRes.data.accessToken;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
 
   const handleEvent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -62,20 +49,7 @@ const LoginForm = (props: any): JSX.Element => {
         }
       })
       .catch((res) => {
-        // return openAlert({ state: 'error', message: res.data.message });
-
-        if (res.response.data.code === 'A001') {
-          let accessToken = '';
-          requestAccessToken().then((token) => {
-            accessToken = token;
-            console.log(accessToken);
-            localStorage.setItem('accessToken', accessToken);
-            userStore.userInfo = {
-              ...userStore.userInfo,
-              accessToken: accessToken,
-            };
-          });
-        }
+        return openAlert({ state: 'error', message: res.data.message });
       });
     await authStore
       .findUserInfo()
@@ -187,8 +161,8 @@ const LoginForm = (props: any): JSX.Element => {
             style={{ marginRight: '1rem' }}
             // 클릭 이벤트 수정해야 됨
             onClick={() =>
-              (window.location.href =
-                'http://localhost:8080/oauth2/authorization/google')
+            (window.location.href =
+              'http://localhost:8080/oauth2/authorization/google')
             }>
             구글 로그인 ( 백엔드 )
           </Button>
