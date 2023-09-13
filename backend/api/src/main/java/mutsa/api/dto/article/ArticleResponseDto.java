@@ -45,7 +45,7 @@ public class ArticleResponseDto {
                 .apiId(entity.getApiId())
                 .status(entity.getStatus())
                 .articleStatus(entity.getArticleStatus())
-                .createdDate(entity.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")))
+                .createdDate(entity.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd a hh:mm:ss")))
                 .price(entity.getPrice())
                 .images(getImages(entity.getImages()))
                 .build();
