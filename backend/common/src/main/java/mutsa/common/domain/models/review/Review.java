@@ -3,6 +3,9 @@ package mutsa.common.domain.models.review;
 import static mutsa.common.domain.models.Status.ACTIVE;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
@@ -11,6 +14,7 @@ import java.io.Serializable;
 import java.util.UUID;
 import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.image.Image;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
@@ -20,6 +24,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name = "review")
 @Getter
+@Setter
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -50,6 +55,10 @@ public class Review extends BaseEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Status status = ACTIVE;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Image> images = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -105,6 +114,10 @@ public class Review extends BaseEntity implements Serializable {
         if (!Objects.equals(this.user.getId(), user.getId())) {
             throw new BusinessException(ErrorCode.REVIEW_PERMISSION_DENIED);
         }
+    }
+
+    public void addImages(Collection<Image> imageCollection) {
+        this.images.addAll(imageCollection);
     }
 
     @Override

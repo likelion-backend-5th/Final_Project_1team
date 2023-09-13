@@ -1,11 +1,14 @@
 package mutsa.api.service.review;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.review.ReviewDeleteDto;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.image.Image;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
 import mutsa.common.domain.models.review.Review;
@@ -30,16 +33,15 @@ public class ReviewModuleService {
 
     // 리뷰 생성
     @Transactional
-    public ReviewResponseDto createReview(Article article, Order order, User user, ReviewRequestDto requestDto) {
+    public Review createReview(Article article, Order order, User user, ReviewRequestDto requestDto) {
         // 유저 검증 : Order 작성자와 현재 요청자가 동일인물인지 검증
         if (!Objects.equals(order.getUser().getId(), user.getId())) {
             throw new BusinessException(ErrorCode.REVIEW_PERMISSION_DENIED);
         }
 
         if (Objects.equals(order.getOrderStatus(), OrderStatus.END)) {
-            return ReviewResponseDto.fromEntity(reviewRepository.save(
-                Review.of(user, article, requestDto.getContent(), requestDto.getPoint()))
-            );
+            return reviewRepository.save(
+                Review.of(user, article, requestDto.getContent(), requestDto.getPoint()));
         }
 
         throw new BusinessException(ErrorCode.REVIEW_NOT_ALLOW);
@@ -74,7 +76,7 @@ public class ReviewModuleService {
 
     // 리뷰 수정
     @Transactional
-    public ReviewResponseDto updateReview(User user, String reviewApiId,
+    public Review updateReview(User user, String reviewApiId,
         ReviewRequestDto reviewUpdateDto) {
         Review review = getByApiId(reviewApiId);
         // 유저 검증
@@ -84,7 +86,7 @@ public class ReviewModuleService {
         review.setPoint(reviewUpdateDto.getPoint());
         review.setReviewStatus(ReviewStatus.UPDATED);
 
-        return ReviewResponseDto.fromEntity(reviewRepository.save(review));
+        return reviewRepository.save(review);
     }
 
     // 리뷰 삭제
@@ -96,10 +98,25 @@ public class ReviewModuleService {
 
         reviewRepository.delete(review);
 
+
         ReviewDeleteDto dto = new ReviewDeleteDto();
         dto.setMessage("후기를 삭제했습니다.");
 
         return dto;
+    }
+
+    @Transactional
+    public Review setImages(Review review, Collection<Image> images) {
+        review.addImages(images);
+
+        return reviewRepository.save(review);
+    }
+
+    @Transactional
+    public Review deleteImages(Review review) {
+        review.setImages(new ArrayList<>());
+
+        return reviewRepository.save(review);
     }
 
     public Review getByApiId(String reviewApiId) {

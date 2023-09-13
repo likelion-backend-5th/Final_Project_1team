@@ -5,4 +5,5 @@ export interface Review {
   point: number;
   createdAt: string;
   reviewStatus: string;
+  images: { apiId: string; refApiId: string; fullPath: string }[];
 }

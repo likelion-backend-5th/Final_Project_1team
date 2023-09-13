@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import useStores from '../../store/useStores';
 import { Review } from '../../types/review';
 import { deleteReview, getDetailReview } from '../../store/auth-action';
+import { Carousel } from 'react-responsive-carousel';
 
 const ContentsDiv = styled('div')`
   display: flex;
@@ -28,18 +29,6 @@ const ReviewItem = ({ reviewApiId }: any) => {
   const navigate = useNavigate();
   const authStore = useStores().authStore;
 
-  // useEffect(() => {
-  //   if (localStorage.getItem('accessToken') == null) {
-  //     return;
-  //   }
-  //   try {
-  //     authStore.findUserInfo();
-  //   } catch (error) {
-  //     localStorage.remove('accessToken');
-  //   }
-  //   return () => {};
-  // }, []);
-
   const [detailReview, setDetailReview] = useState<Review>();
 
   useEffect(() => {
@@ -50,6 +39,8 @@ const ReviewItem = ({ reviewApiId }: any) => {
       })
       .catch((error: any) => {
         console.error('Error fetching review:', error);
+        alert('존재하지 않는 리뷰 입니다.');
+        navigate(-1);
       });
   }, [reviewApiId]);
 
@@ -69,6 +60,7 @@ const ReviewItem = ({ reviewApiId }: any) => {
           point: `${detailReview.point}`,
           username: `${detailReview.username}`,
           reviewStatus: `${detailReview.reviewStatus}`,
+          images: `${detailReview.images}`,
         },
       });
     }
@@ -108,13 +100,43 @@ const ReviewItem = ({ reviewApiId }: any) => {
             <br></br>
             <ContentsDiv>
               <div style={{ marginRight: '2%', textAlign: 'center' }}>
-                <img
-                  style={{ maxWidth: '400px' }}
-                  src="/img/favicon.png"
-                  title="예시 이미지"
-                  alt="no Image"></img>
+                {detailReview.images.length == 0 ? (
+                  <img
+                    style={{ maxWidth: '400px' }}
+                    src="/img/favicon.png"
+                    title="예시 이미지"
+                    alt="no Image"></img>
+                ) : (
+                  <Box style={{ maxWidth: '400px', textAlign: 'center' }}>
+                    <Carousel
+                      showArrows={true}
+                      infiniteLoop={true}
+                      selectedItem={0}>
+                      {detailReview.images.map((preview, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            maxWidth: '400px',
+                          }}>
+                          <img
+                            src={preview.fullPath}
+                            alt={`Image ${index}`}
+                            style={{
+                              maxWidth: '100%',
+                              height: '100%',
+                              objectFit: 'contain',
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </Carousel>
+                  </Box>
+                )}
                 <Box display="flex" justifyContent="center" alignItems="center">
-                  <Box flex="1">
+                  <Box flex="1" style={{ marginLeft: '12%' }}>
                     <Rating
                       name="read-only"
                       value={detailReview.point}
@@ -140,14 +162,14 @@ const ReviewItem = ({ reviewApiId }: any) => {
                     color="warning"
                     startIcon={<EditIcon />}
                     onClick={editHandler}>
-                    수정
+                    리뷰 수정
                   </Button>
                   <Button
                     variant="outlined"
                     color="error"
                     startIcon={<DeleteIcon />}
                     onClick={deleteHandler}>
-                    삭제
+                    리뷰 삭제
                   </Button>
                 </>
               )}
