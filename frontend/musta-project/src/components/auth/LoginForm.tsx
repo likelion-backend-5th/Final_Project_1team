@@ -1,25 +1,21 @@
 import { Copyright } from '@mui/icons-material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {
-  Alert,
   Avatar,
   Box,
   Button,
   Grid,
+  Icon,
   Link,
   TextField,
   Typography,
+  styled
 } from '@mui/material';
-import useStores from '../../store/useStores';
-import userStore from '../../store/user/userStore';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import GoogleIcon from '@mui/icons-material/Google';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
-import {
-  GoogleLogin,
-  GoogleOAuthProvider,
-  useGoogleLogin,
-} from '@react-oauth/google';
-import { useNavigate, useNavigation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import useStores from '../../store/useStores';
 import { useAlert } from '../hook/useAlert';
 
 const LoginForm = (props: any): JSX.Element => {
@@ -66,23 +62,6 @@ const LoginForm = (props: any): JSX.Element => {
       });
   };
 
-
-
-  // const googleLogin = useGoogleLogin({
-  //   scope: 'email profile',
-  //   onSuccess: async () => {
-  //     axiosUtils
-  //       .oauth2Login('/login/oauth2/code/google')
-  //       .then((res: any) => {
-  //         console.log(res);
-  //       });
-  //   },
-  //   onError: (res) => {
-  //     console.error(res);
-  //   },
-  //   flow: 'auth-code',
-  // });
-
   useEffect(() => {
     setId('');
     setPassword('');
@@ -99,6 +78,26 @@ const LoginForm = (props: any): JSX.Element => {
   const handlePassword = (e: any) => {
     setPassword(e.target.value);
   };
+
+  const GoogleButton = styled(Button)`
+  width: 100%;
+  max-width: 680px;
+  margin: 20px auto;
+  height: 50px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Montserrat', sans-serif;
+  border-radius: 8px;
+  border: none;
+  line-height: 40px;
+  background: #5b90f0;
+  color: white;
+  transition: 0.2s linear;
+
+  &:hover {
+    box-shadow: 0 0 0 rgba(91, 144, 240, 0);
+  }
+`;
 
   return (
     <Box
@@ -148,24 +147,15 @@ const LoginForm = (props: any): JSX.Element => {
           Sign In
         </Button>
         <Grid item sx={{ mb: 2 }}>
-          {/* <GoogleLogin size="large" ux_mode="popup" onSuccess={googleLogin} /> */}
-          <GoogleOAuthProvider clientId="446534610656-14r63n2kho9aggjkp8ebi1rgods392uj.apps.googleusercontent.com">
-            <GoogleLogin
-              onSuccess={(res) => {
-                console.log(res);
-              }}
-            />
-          </GoogleOAuthProvider>
-
-          <Button
-            style={{ marginRight: '1rem' }}
-            // 클릭 이벤트 수정해야 됨
+          <GoogleButton
             onClick={() =>
             (window.location.href =
               'http://localhost:8080/oauth2/authorization/google')
-            }>
-            구글 로그인 ( 백엔드 )
-          </Button>
+            }
+            startIcon={<GoogleIcon />}
+          >
+            구글 로그인
+          </GoogleButton>
         </Grid>
         <Grid container>
           <Grid item xs>

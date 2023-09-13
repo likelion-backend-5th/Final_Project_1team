@@ -15,7 +15,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import useStores from '../../store/useStores';
 import NavMenu from './NavMenu';
 import { useAlert } from '../hook/useAlert';
-import { Typography } from '@mui/material';
+import { Typography, styled } from '@mui/material';
 import userStore from '../../store/user/userStore';
 
 const pages = [
@@ -68,6 +68,11 @@ const Navigation = () => {
     navigate('/');
   };
 
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+
   useEffect(() => {
     if (localStorage.getItem('accessToken') == null) {
       return;
@@ -86,6 +91,7 @@ const Navigation = () => {
     }
     return () => {};
   }, []);
+
 
   return (
     <AppBar position="static" color="inherit" elevation={0}>
@@ -137,11 +143,7 @@ const Navigation = () => {
             ))}
           </Box>
           {(authStore.userInfo === undefined && (
-            <Box>
-              <Link to={'/login'} style={{ textDecoration: 'none' }}>
-                login
-              </Link>
-            </Box>
+              <Button variant='contained' color='primary' size='medium' onClick={handleLogin} >로그인</Button>
           )) || (
             <Box>
               <Tooltip title="">

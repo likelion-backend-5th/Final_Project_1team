@@ -12,9 +12,9 @@ import OrderStatusBadge from '../../components/order/OrderStatusBadge';
 import OrderActionButton from '../../components/order/OrderActionButton';
 
 const StyledTypography = styled(Typography)({
-  fontWeight: 700,
+  fontWeight: 500,
   marginTop: '10px',
-  color: 'darkblue',
+  fondWeight: 'bold'
 });
 
 const StyledTableCell = styled(TableCell)({
@@ -101,7 +101,7 @@ const OrderDetailPage: React.FC = () => {
           </Grid>
           <Grid item>
             <StyledTypography variant="h4" gutterBottom>
-              {orderDetailResponse.articleTitle}
+              주문 정보
             </StyledTypography>
           </Grid>
         </Grid>

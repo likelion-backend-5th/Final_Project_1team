@@ -45,6 +45,7 @@ import ReviewListForm from '../review/ReviewListForm.tsx';
 import { formatPrice } from '../../util/formatPrice.ts';
 import { Carousel } from 'react-responsive-carousel';
 import axiosUtils from '../../uitls/axiosUtils.ts';
+import DeleteIcon from "@mui/icons-material/Delete";
 
 // const baseUrl = 'http://localhost:8080/api/articles/';
 const baseUrl = import.meta.env.VITE_API + '/api/articles/';
@@ -185,7 +186,7 @@ export function ArticleDetail() {
       name: '채팅하기',
       index: 'consumer',
       onClick: () => {
-        console.log('onclick 채팅하기');
+        // console.log('onclick 채팅하기');
         createChatroom(getArticleApiId()).then(
           (response: { data: Chatroom }) => {
             const chatroom: Chatroom = response.data;
@@ -199,7 +200,7 @@ export function ArticleDetail() {
       name: '신고하기',
       index: 'consumer',
       onClick: () => {
-        console.log('onClick 신고하기');
+        // console.log('onClick 신고하기');
         handleReportClick();
       },
     },
@@ -208,7 +209,7 @@ export function ArticleDetail() {
       name: '공유하기',
       index: 'all',
       onClick: () => {
-        console.log('onclick 공유하기');
+        // console.log('onclick 공유하기');
       },
     },
     {
@@ -227,6 +228,24 @@ export function ArticleDetail() {
         handleOrderClick();
       },
     },
+    // {
+    //   icon: <DeleteIcon color="primary" />,
+    //   name: '게시글 삭제',
+    //   index: 'seller',
+    //   onClock: () => {
+    //     console.log('게시글 삭제')
+    //     axiosUtils.delete(baseUrl + getArticleApiId()).then((res) => {
+    //       if (res.status == 200) {
+    //         navigate(`/article`, {
+    //           replace: false,
+    //         });
+    //         return;
+    //       }
+    //     }).catch((err) => {
+    //       console.log(err);
+    //     })
+    //   },
+    // }
   ];
 
   useEffect(() => {
@@ -234,6 +253,8 @@ export function ArticleDetail() {
   }, [url]);
 
   const authStore = useStores().authStore;
+
+  const descriptionWithLineBreaks = article.description.replace(/\n/g, '<br>');
 
   return (
     <StyledArticleDetail>
@@ -334,7 +355,7 @@ export function ArticleDetail() {
                 )}
               </StyledSpeedDial>
             </Box>
-            <Typography paragraph>{article.description}</Typography>
+            <Typography paragraph dangerouslySetInnerHTML={{ __html: descriptionWithLineBreaks }} />
             <Box>
               <Dialog
                 open={moveToEditPage}
