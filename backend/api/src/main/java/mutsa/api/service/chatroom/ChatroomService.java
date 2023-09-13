@@ -53,9 +53,12 @@ public class ChatroomService {
                 // 존재하는 채팅방과 연결되어 있는 게시글이 다른 게시글 일때
                 // 게시글 업데이트
                 chatroom.setArticleApiId(dto.getArticleApiId());
-                return ChatRoomDetailDto.fromEntity(chatroom, seller.getUsername(), article.getTitle(), article.getDescription(), seller.getUsername());
+                return ChatRoomDetailDto.fromEntity(chatroom, seller.getUsername(),
+                    article.getApiId(), article.getTitle(), article.getDescription(),
+                    seller.getUsername());
             }
-            return ChatRoomDetailDto.fromEntity(chatroom, seller.getUsername(), article.getTitle(), article.getDescription(), seller.getUsername());
+            return ChatRoomDetailDto.fromEntity(chatroom, seller.getUsername(), article.getApiId(),
+                article.getTitle(), article.getDescription(), seller.getUsername());
         }
         if (seller.getId().equals(suggester.getId())) {
             throw new BusinessException(ErrorCode.INVALID_ROOM_REQUEST);
@@ -69,7 +72,8 @@ public class ChatroomService {
         chatroomUserRepository.save(ChatroomUser.of(suggester, chatroom));
         chatroomUserRepository.save(ChatroomUser.of(seller, chatroom));
 
-        return ChatRoomDetailDto.fromEntity(chatroom, seller.getUsername(), article.getTitle(), article.getDescription(), seller.getUsername());
+        return ChatRoomDetailDto.fromEntity(chatroom, seller.getUsername(), article.getApiId(),
+            article.getTitle(), article.getDescription(), seller.getUsername());
     }
 
     /**
@@ -119,7 +123,7 @@ public class ChatroomService {
         if (foundCurrentUser && foundOtherUser) { //본인과 다른사람이 있어야 한다.
             Article article = articleModuleService.getByApiId(chatroom.getArticleApiId());
             String seller = article.getUser().getUsername();
-            return ChatRoomDetailDto.fromEntity(chatroom, otherName, article.getTitle(), article.getDescription(), seller);
+            return ChatRoomDetailDto.fromEntity(chatroom, otherName, article.getApiId(), article.getTitle(), article.getDescription(), seller);
         }
 
         throw new BusinessException(ErrorCode.CHATROOM_PERMISSION_DENIED);

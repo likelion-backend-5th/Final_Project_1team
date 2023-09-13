@@ -12,6 +12,7 @@ public class ChatRoomDetailDto {
 
     private String chatroomApiId;
     private String roomName;
+    private String articleApiId;
     private String articleTitle;
     private String articleDescription;
     private String articleUsername;
@@ -19,6 +20,7 @@ public class ChatRoomDetailDto {
     public static ChatRoomDetailDto fromEntity(
             Chatroom chatroom,
             String roomName,
+            String articleApiId,
             String articleTitle,
             String articleDescription,
             String articleUsername
@@ -26,6 +28,7 @@ public class ChatRoomDetailDto {
         ChatRoomDetailDto dto = new ChatRoomDetailDto();
         dto.chatroomApiId = chatroom.getApiId();
         dto.roomName = roomName;
+        dto.articleApiId = articleApiId;
         dto.articleTitle = articleTitle;
         dto.articleDescription = articleDescription;
         dto.articleUsername = articleUsername;

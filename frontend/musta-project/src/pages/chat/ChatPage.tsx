@@ -4,6 +4,24 @@ import './ChatPage.css';
 import { ChatMessage, ChatroomDetail } from '../../types/chat';
 import { getEachChatroomHandler } from '../../store/auth-action';
 import * as Stomp from '@stomp/stompjs';
+import {
+  Avatar,
+  Box,
+  Button,
+  Paper,
+  ThemeProvider,
+  Typography,
+  createTheme,
+} from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+
+const customTheme = createTheme({
+  palette: {
+    secondary: {
+      main: '#99FF99',
+    },
+  },
+});
 
 const ChatPage: React.FC = () => {
   const stompClient = useRef<Stomp.Client | null>(null);
@@ -169,66 +187,152 @@ const ChatPage: React.FC = () => {
     }
   };
 
+  // 게시글 정보 보기에서 제목을 눌렀을 때 해당 게시글 페이지로 이동
+  const goArticlePage = () => {
+    navigate(`/article/detail/${chatRoom?.articleApiId}`);
+  };
+
   return (
-    <div className="chat-page-container">
-      <div className="chat-header">
-        <div>{chatRoom?.roomName}님과의 채팅</div>
-      </div>
-      <button onClick={() => showArticlePopup()} className="btn btn-primary">
-        게시글 정보 보기
-      </button>
-      {isArticlePopupVisible && (
-        <div className="article-popup">
-          <h2>게시글 정보</h2>
-          <p>제목: {chatRoom?.articleTitle}</p>
-          <p>내용: {chatRoom?.articleDescription}</p>
-          <p>작성자: {chatRoom?.articleUsername}</p>
-          {/* 다른 article 정보 표시 */}
-          <button onClick={hideArticlePopup}>닫기</button>
+    <ThemeProvider theme={customTheme}>
+      <div className="chat-page-container">
+        <div className="chat-header">
+          <div>{chatRoom?.roomName}님과의 채팅</div>
         </div>
-      )}
-      <div className="chat-messages-container" ref={messageContainerRef}>
-        {messages.map((msg, index) =>
-          msg.from === chatRoom?.roomName ? (
-            <div
-              key={index}
-              className={`chat-bubble mine`}
-              style={{
-                alignSelf: 'flex-start',
-              }}>
-              <div className="chat-message-writer">{msg.from}</div>
-              <div className="chat-bubble-message">{msg.message}</div>
-              <div className="chat-bubble-message">{msg.date}</div>
-            </div>
-          ) : (
-            <div
-              key={index}
-              className={`chat-bubble mine`}
-              style={{
-                alignSelf: 'flex-end',
-              }}>
-              <div className="chat-message-writer">나</div>
-              <div className="chat-bubble-message">{msg.message}</div>
-              <div className="chat-bubble-message">{msg.date}</div>
-            </div>
-          )
+        <button onClick={() => showArticlePopup()} className="btn btn-primary">
+          게시글 정보 보기
+        </button>
+        {isArticlePopupVisible && (
+          <div className="article-popup">
+            <h2>게시글 정보</h2>
+            <p>제목: {chatRoom?.articleTitle}</p>
+            <p>내용: {chatRoom?.articleDescription}</p>
+            <p>작성자: {chatRoom?.articleUsername}</p>
+            <button
+              onClick={goArticlePage}
+              className="btn btn-primary"
+              style={{ margin: '0.5rem' }}>
+              해당 게시글 보기
+            </button>
+            <button onClick={hideArticlePopup} className="btn btn-secondary">
+              닫기
+            </button>
+          </div>
         )}
+        <div className="chat-messages-container" ref={messageContainerRef}>
+          {messages.map((msg, index) =>
+            msg.from === chatRoom?.roomName ? (
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  mb: 2,
+                }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <Avatar sx={{ bgcolor: '#808080' }}>
+                    {msg.from.slice(0, 3)}
+                  </Avatar>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      ml: 1,
+                      mr: 0,
+                      backgroundColor: '#808080',
+                      borderRadius: '20px 20px 20px 5px',
+                    }}>
+                    <Typography variant="body1" style={{ color: 'white' }}>
+                      {msg.message}
+                    </Typography>
+                    <Typography variant="caption" style={{ color: 'white' }}>
+                      {msg.date}
+                    </Typography>
+                  </Paper>
+                </Box>
+              </Box>
+            ) : (
+              // <div
+              //   key={index}
+              //   className={`chat-bubble mine`}
+              //   style={{
+              //     alignSelf: 'flex-start',
+              //   }}>
+              //   <div className="chat-message-writer">{msg.from}</div>
+              //   <div className="chat-bubble-message">{msg.message}</div>
+              //   <div className="chat-bubble-message">{msg.date}</div>
+              // </div>
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  mb: 2,
+                }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row-reverse',
+                    alignItems: 'center',
+                  }}>
+                  <Avatar
+                    sx={{ bgcolor: '#B3CFF6' }}
+                    style={{ color: 'black' }}>
+                    나
+                  </Avatar>
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      ml: 0,
+                      mr: 1,
+                      backgroundColor: '#B3CFF6',
+                      borderRadius: '20px 20px 5px 20px',
+                    }}>
+                    <Typography variant="body1">{msg.message}</Typography>
+                    <Typography variant="caption" style={{ color: 'black' }}>
+                      {msg.date}
+                    </Typography>
+                  </Paper>
+                </Box>
+              </Box>
+              // <div
+              //   key={index}
+              //   className={`chat-bubble mine`}
+              //   style={{
+              //     alignSelf: 'flex-end',
+              //   }}>
+              //   <div className="chat-message-writer">나</div>
+              //   <div className="chat-bubble-message">{msg.message}</div>
+              //   <div className="chat-bubble-message">{msg.date}</div>
+              // </div>
+            )
+          )}
+        </div>
+        <div className="chat-input-container">
+          <input
+            type="text"
+            placeholder="Type your message"
+            value={message}
+            onChange={handleMessageChange}
+            onKeyPress={handleEnterKeyPress}
+            style={{ color: 'black' }}
+          />
+          <Button onClick={handleSendMessage} startIcon={<SendIcon />}>
+            전송
+          </Button>
+        </div>
+        <button
+          onClick={handleOutChatRoom}
+          className="btn btn-outline-secondary">
+          채팅방 나가기
+        </button>
       </div>
-      <div className="chat-input-container">
-        <input
-          type="text"
-          placeholder="Type your message"
-          value={message}
-          onChange={handleMessageChange}
-          onKeyPress={handleEnterKeyPress}
-          style={{ color: 'black' }}
-        />
-        <button onClick={handleSendMessage}>Send</button>
-      </div>
-      <button onClick={handleOutChatRoom} className="btn btn-outline-secondary">
-        채팅방 나가기
-      </button>
-    </div>
+    </ThemeProvider>
   );
 };
 
