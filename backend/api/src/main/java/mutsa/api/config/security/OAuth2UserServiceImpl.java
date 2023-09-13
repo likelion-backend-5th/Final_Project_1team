@@ -31,9 +31,22 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             attributes.put("id", oAuth2User.getAttribute("id"));
             Map<String, Object> googleAttri = oAuth2User.getAttributes();
             attributes.put("email", (String) googleAttri.get("email"));
-            nameAttribute = "email";
             String profilePictureUrl = (String) googleAttri.get("picture");
             attributes.put("picture", profilePictureUrl);
+            nameAttribute = "email";
+        }
+
+        // Naver 로직
+        if (registrationId.equals("naver")) {
+            attributes.put("provider", "naver");
+
+            // 받은 사용자 데이터를 정리한다.
+            Map<String, Object> responseMap = oAuth2User.getAttribute("response");
+            attributes.put("id", responseMap.get("id"));
+            attributes.put("email", responseMap.get("email"));
+            attributes.put("nickname", responseMap.get("nickname"));
+            attributes.put("picture", responseMap.get("profile_image"));
+            nameAttribute = "email";
         }
 
         log.info(attributes.toString());

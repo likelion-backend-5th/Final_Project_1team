@@ -1,11 +1,11 @@
 import React from 'react';
-import {Avatar, Grid, ListItem, ListItemText, Typography} from '@mui/material';
-import {styled} from '@mui/system';
-import {useNavigate} from 'react-router-dom';
+import { Avatar, Grid, ListItem, ListItemText, Typography } from '@mui/material';
+import { styled } from '@mui/system';
+import { useNavigate } from 'react-router-dom';
 import OrderStatusIcon from './OrderStatusIcon';
 
 interface OrderItemProps {
-    order: OrderResponse;
+  order: OrderResponse;
 }
 
 const StyledListItem = styled(ListItem)`
@@ -38,30 +38,30 @@ const UserInfoWrapper = styled(Grid)`
   align-items: flex-end;
 `;
 
-const OrderSellerItem: React.FC<OrderItemProps> = ({order}) => {
-    const navigate = useNavigate();
+const OrderSellerItem: React.FC<OrderItemProps> = ({ order }) => {
+  const navigate = useNavigate();
 
-    const handleItemClick = () => {
-        navigate(`/article/${order.articleApiId}/order/${order.orderApiId}`);
-    };
+  const handleItemClick = () => {
+    navigate(`/article/${order.articleApiId}/order/${order.orderApiId}`);
+  };
 
-    return (
-        <StyledListItem onClick={handleItemClick}>
-            <UserAvatar alt={order.consumerName} src={order.consumerProfileImage}/>
-            <OrderItemText
-                primary={order.consumerName}
-            />
-            <UserInfoWrapper>
-                <Typography variant="body2" color="textSecondary">
-                    {order.orderStatus}
-                </Typography>
-                <Typography variant="caption" color="textSecondary">
-                    {order.date}
-                </Typography>
-            </UserInfoWrapper>
-            <OrderStatusIcon orderStatus={order.orderStatus}/>
-        </StyledListItem>
-    );
+  return (
+    <StyledListItem onClick={handleItemClick}>
+      <UserAvatar alt={order.sellerName} src={order.consumerProfileImage} />
+      <OrderItemText
+        primary={order.consumerName}
+      />
+      <UserInfoWrapper>
+        <Typography variant="body2" color="textSecondary">
+          {order.orderStatus}
+        </Typography>
+        <Typography variant="caption" color="textSecondary">
+          {order.date}
+        </Typography>
+      </UserInfoWrapper>
+      <OrderStatusIcon orderStatus={order.orderStatus} />
+    </StyledListItem>
+  );
 };
 
 export default OrderSellerItem;

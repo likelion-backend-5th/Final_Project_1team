@@ -12,6 +12,7 @@ import mutsa.api.util.CookieUtil;
 import mutsa.api.util.JwtTokenProvider;
 import mutsa.common.domain.models.user.embedded.OAuth2Type;
 import mutsa.common.repository.redis.RefreshTokenRedisRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -27,12 +28,14 @@ import java.io.PrintWriter;
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    public static final String REDIRECT_URL_FORMAT = "http://localhost:3000/oauth2-redirect?token=%s&&isNewUser=%s"; //프론트리다이렉트 주소
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final UserService userService;
     private final CustomUserDetailsService customUserDetailsService;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${frontendUrl}")
+    private String frontendUrl;
 
     @Override
     // 인증 성공시 호출되는 메소드
@@ -104,7 +107,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 목적지 URL 설정
         // 우리 서비스의 Frontend 구성에 따라 유연하게 대처해야 한다.
-        String targetUrl = String.format(REDIRECT_URL_FORMAT, accessToken, isNewUser);
+        String targetUrl = String.format("%s/oauth2-redirect?token=%s&&isNewUser=%s", frontendUrl,accessToken, isNewUser);
 
         log.info("url : {}", targetUrl);
         // 실제 Redirect 응답 생성

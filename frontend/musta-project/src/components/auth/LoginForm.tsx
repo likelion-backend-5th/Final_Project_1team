@@ -4,14 +4,13 @@ import {
   Avatar,
   Box,
   Button,
+  Divider,
   Grid,
-  Icon,
   Link,
   TextField,
   Typography,
   styled
 } from '@mui/material';
-import GoogleIcon from '@mui/icons-material/Google';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -57,7 +56,6 @@ const LoginForm = (props: any): JSX.Element => {
         });
       })
       .catch((res: any) => {
-        console.log(res);
         openAlert({ state: 'error', message: 'error' });
       });
   };
@@ -81,8 +79,8 @@ const LoginForm = (props: any): JSX.Element => {
 
   const GoogleButton = styled(Button)`
   width: 100%;
+  margin-bottom: 10px;
   max-width: 680px;
-  margin: 20px auto;
   height: 50px;
   cursor: pointer;
   font-size: 14px;
@@ -90,14 +88,35 @@ const LoginForm = (props: any): JSX.Element => {
   border-radius: 8px;
   border: none;
   line-height: 40px;
-  background: #5b90f0;
-  color: white;
+  background: #FFFFFF;
+  color: black;
   transition: 0.2s linear;
 
   &:hover {
-    box-shadow: 0 0 0 rgba(91, 144, 240, 0);
+    box-shadow: 0 0 1px
   }
 `;
+
+  const NaverButton = styled(Button)`
+width: 100%;
+margin-bottom: 10px;
+max-width: 680px;
+height: 50px;
+cursor: pointer;
+font-size: 14px;
+font-family: 'Montserrat', sans-serif;
+border-radius: 8px;
+border: none;
+line-height: 40px;
+background: #03C75A;
+color: white;
+transition: 0.2s linear;
+
+&:hover {
+  background : rgba(3, 199, 90, 0.8); 
+}
+`;
+const baseUrl = import.meta.env.VITE_API;
 
   return (
     <Box
@@ -146,17 +165,38 @@ const LoginForm = (props: any): JSX.Element => {
           sx={{ mt: 3, mb: 2 }}>
           Sign In
         </Button>
-        <Grid item sx={{ mb: 2 }}>
+
+        <Divider variant="middle" />
+
+        <Grid item sx={{ mt: 2, mb: 2 }}>
           <GoogleButton
             onClick={() =>
             (window.location.href =
-              'http://localhost:8080/oauth2/authorization/google')
+              `${baseUrl}/oauth2/authorization/google`)
             }
-            startIcon={<GoogleIcon />}
           >
+            <img src="/src/assets/google.png"
+              alt="Google 로그인"
+              style={{ width: '24px', height: '24px' }}
+            />
             구글 로그인
           </GoogleButton>
+
+          <NaverButton
+            onClick={() =>
+            (window.location.href =
+              `${baseUrl}/oauth2/authorization/naver`)
+            }
+          >
+            <img
+              src="/src/assets/naver.png"
+              alt="Naver 로그인"
+              style={{ width: '24px', height: '24px' }}
+            />
+            네이버 로그인
+          </NaverButton>
         </Grid>
+
         <Grid container>
           <Grid item xs>
             <Link href="/find/id" variant="body2">

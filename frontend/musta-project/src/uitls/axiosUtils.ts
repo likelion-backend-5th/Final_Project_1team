@@ -20,14 +20,6 @@ export default class axiosUtils {
     return axiosInstance.request({
       method: 'post',
       url: '/api' + url,
-      // params: data,
-      // paramsSerializer: (param) => {
-      //   const params = new URLSearchParams();
-      //   for (const key in param) {
-      //     params.append(key, param[key]);
-      //   }
-      //   return params.toString();
-      // },
       data: data,
     });
   };

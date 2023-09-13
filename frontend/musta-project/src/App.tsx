@@ -1,14 +1,12 @@
-import Footer from './components/organisms/Footer';
-import './App.css';
-import { styled } from 'styled-components';
 import { Provider } from 'mobx-react';
-import useStores from './store/useStores';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import { useEffect } from 'react';
+import { styled } from 'styled-components';
+import './App.css';
+import CustomAlert from './components/base/CustomAlert';
+import Footer from './components/organisms/Footer';
 import Navigation from './components/organisms/Navigation';
 import UserRouter from './router/UserRouter';
-import CustomAlert from './components/base/CustomAlert';
-import { useEffect } from 'react';
-import { removeRefershToken } from './uitls/cookies';
+import useStores from './store/useStores';
 
 const StyledMain = styled.main`
   display: block;
