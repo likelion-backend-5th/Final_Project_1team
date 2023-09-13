@@ -62,7 +62,6 @@ const ReviewCreateItem = () => {
     try {
       uploadImagesToS3(imageFiles, 'review').then((result) => {
         if (result) {
-          console.log(result);
           createReview(
             articleApiId,
             orderApiId,
@@ -71,9 +70,7 @@ const ReviewCreateItem = () => {
             result
           )
             .then((response: any) => {
-              console.log('리뷰 저장 완료:', response.data);
-              // 저장 후 어떤 동작을 할지 구현
-              navigate(`/review/${response.data.apiId}`); // 저장 후 리뷰 페이지로 이동 예시
+              navigate(`/review/${response.data.apiId}`); // 저장 후 리뷰 페이지로 이동
             })
             .catch((error: any) => {
               console.error('Error saving review: ', error);

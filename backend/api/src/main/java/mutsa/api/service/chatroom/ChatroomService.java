@@ -66,7 +66,7 @@ public class ChatroomService {
 
         //채팅방 생성
         Chatroom chatroom = chatroomRepository.save(Chatroom.of(dto.getArticleApiId()));
-        log.info("chatService line 67: " + chatroom.getArticleApiId());
+        log.info("chatService: Success on CreateChatRoom " + chatroom.getArticleApiId());
 
         //유저들과 연결(매핑 테이블 생성)
         chatroomUserRepository.save(ChatroomUser.of(suggester, chatroom));

@@ -67,7 +67,6 @@ const ReviewItem = ({ reviewApiId }: any) => {
   };
 
   const handleReportClick = () => {
-    console.log('버튼이 클릭되었습니다.');
     const type = 'review';
     const id = getReviewApiId();
     navigate(`/report/${type}/${id}`);
@@ -77,7 +76,6 @@ const ReviewItem = ({ reviewApiId }: any) => {
     if (detailReview) {
       deleteReview(reviewApiId)
         .then(() => {
-          console.log('리뷰가 삭제되었습니다.');
           alert('리뷰가 성공적으로 삭제되었습니다.');
           navigate(-1);
         })

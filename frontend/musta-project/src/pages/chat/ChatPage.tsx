@@ -47,7 +47,6 @@ const ChatPage: React.FC = () => {
       },
       onConnect: async () => {
         subscribe();
-        console.log('success');
       },
     });
 
@@ -63,23 +62,19 @@ const ChatPage: React.FC = () => {
       (response: { data: ChatroomDetail } | null) => {
         if (response != null) {
           setChatRoom(response.data);
-          console.log(response.data);
         }
       }
     );
   };
   const subscribe = () => {
     if (!stompClient) {
-      console.log('Stomp client is not available');
       return;
     }
 
     if (!stompClient.current?.connected) {
-      console.log('Stomp client is not connected');
       return;
     }
 
-    console.log(`Subscribing to: /sub/chat/room/${roomId}`);
     stompClient.current?.subscribe(
       `/sub/chat/room/${roomId}`,
       (body) => {
@@ -92,7 +87,7 @@ const ChatPage: React.FC = () => {
           parsedBodies.reverse().forEach((parsedBody) => {
             const { from, date, message, chatroomApiId } = parsedBody;
 
-            // 새로운 메시지를 배열의 뒷쪽에 추가합니다.
+            // 새로운 메시지를 배열의 뒷쪽에 추가
             newMessages.push({
               from: from,
               date: date,
@@ -101,7 +96,7 @@ const ChatPage: React.FC = () => {
             });
           });
 
-          // 이전 메시지와 새로운 메시지를 합쳐서 업데이트합니다.
+          // 이전 메시지와 새로운 메시지를 합쳐서 업데이트
           setMessages((prevMessages) => [...prevMessages, ...newMessages]);
         } else {
           const { from, date, message, chatroomApiId } = parsedBodies;
@@ -124,7 +119,6 @@ const ChatPage: React.FC = () => {
   };
 
   const disconnect = () => {
-    console.log('Disconnecting');
     stompClient.current?.deactivate();
   };
 
@@ -256,16 +250,6 @@ const ChatPage: React.FC = () => {
                 </Box>
               </Box>
             ) : (
-              // <div
-              //   key={index}
-              //   className={`chat-bubble mine`}
-              //   style={{
-              //     alignSelf: 'flex-start',
-              //   }}>
-              //   <div className="chat-message-writer">{msg.from}</div>
-              //   <div className="chat-bubble-message">{msg.message}</div>
-              //   <div className="chat-bubble-message">{msg.date}</div>
-              // </div>
               <Box
                 key={index}
                 sx={{
@@ -300,16 +284,6 @@ const ChatPage: React.FC = () => {
                   </Paper>
                 </Box>
               </Box>
-              // <div
-              //   key={index}
-              //   className={`chat-bubble mine`}
-              //   style={{
-              //     alignSelf: 'flex-end',
-              //   }}>
-              //   <div className="chat-message-writer">나</div>
-              //   <div className="chat-bubble-message">{msg.message}</div>
-              //   <div className="chat-bubble-message">{msg.date}</div>
-              // </div>
             )
           )}
         </div>

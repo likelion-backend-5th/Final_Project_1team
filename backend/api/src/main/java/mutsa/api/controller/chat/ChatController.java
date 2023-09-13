@@ -33,7 +33,6 @@ public class ChatController {
             ChatRequestDto chatRequestDto,
             SimpMessageHeaderAccessor accessor
     ) {
-        log.info("채팅이 들어왔다!!!! " + chatRequestDto);
         // WebSocket 세션에서 사용자 정보 가져오기
         String username = (String)accessor.getSessionAttributes().get("username");
 
@@ -49,7 +48,7 @@ public class ChatController {
     public List<ChatResponseDto> sendGreet(
             @DestinationVariable("roomApiId") String roomApiId
     ) {
-        log.info("new subscription to {}", roomApiId);
+        log.info("chatController: new subscription to {}", roomApiId);
         chatroomService.getByApiId(roomApiId); //방이 존재하는지 확인하는 기능(제거 가능)
         List<ChatResponseDto> messages = chatService.getLastMessages(roomApiId);
         return messages;

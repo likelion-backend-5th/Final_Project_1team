@@ -50,7 +50,6 @@ public class ChatService {
         //반환 정보
         ChatResponseDto chatResponseDto = ChatResponseDto.fromEntity(chatRedis, chatroom.getApiId());
         String json = gson.toJson(chatResponseDto);
-        log.info("채팅 정보 : {}", json);
 
         redisTemplate.convertAndSend(channelTopic.getTopic(), json);
     }
