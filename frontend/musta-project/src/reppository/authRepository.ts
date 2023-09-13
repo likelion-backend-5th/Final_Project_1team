@@ -5,6 +5,10 @@ class authRepository {
   findUserInfo = async () => {
     return axiosUtils.get(this.url + '/info');
   };
+
+  requestAccessToken = async () => {
+    return axiosUtils.post('/auth/token/refresh');
+  };
 }
 
 export default new authRepository();

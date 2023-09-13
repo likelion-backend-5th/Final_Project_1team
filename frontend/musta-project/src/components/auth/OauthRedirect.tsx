@@ -23,7 +23,6 @@ const OauthRedirect = () => {
       authStore.findUserInfo()
         .then((res) => {
           if (isNewUser==='true') {
-            console.log('isNewUser')
             navigate('/oauth-signup');
           } else {
             navigate('/');
@@ -32,10 +31,7 @@ const OauthRedirect = () => {
         .catch((res) => {
           alert('Could not obtain access token');
         });
-
-      console.log(isNewUser);
     }
-
   }, []);
 
   return <></>;

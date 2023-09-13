@@ -29,14 +29,21 @@ export default class authStore {
       .findUserInfo()
       .then((res: AxiosResponse) => {
         this.userInfo = res.data;
-        console.log(this.userInfo?.role);
-        if (this.userInfo?.role.includes('ROLE_USER')) {
-          console.log('User 역할이 있습니다.');
-        } else {
-          console.log('User 역할이 없습니다.');
-        }
+        console.debug(this.userInfo?.role);
       })
-      .catch((error: AxiosResponse) => Promise.reject(error));
+      .catch((res) => {
+        if (res.data.code === 'A001') {
+          authRepository
+            .requestAccessToken()
+            .then((refreshRes) => {
+              localStorage.setItem('accessToken', refreshRes.data.accessToken);
+              this.findUserInfo();
+            })
+            .catch((err: any) => {
+              console.debug(err);
+            });
+        }
+      });
   };
 
   logout = async () => {

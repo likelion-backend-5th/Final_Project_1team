@@ -26,12 +26,16 @@ type signupform = {
   nickname: string;
   email: string;
   phoneNumber: string;
-  address?: { zipcode: string; city: string; street?: string };
+  zipcode: string;
+  city: string;
+  street?: string;
 };
 
 type authSignupform = {
   phoneNumber: string;
-  address?: { zipcode: string; city: string; street?: string };
+  zipcode: string;
+  city: string;
+  street?: string;
 };
 
 export default class userStore {
@@ -46,6 +50,9 @@ export default class userStore {
   userAddress = { zipcode: '', city: '', street: '' };
 
   userRepository = userRepository;
+  getUserInfo = async () => {
+    this.userInfo;
+  };
 
   login = async (data: FormData) => {
     const username: string | undefined = data.get('id')?.toString();
@@ -69,18 +76,10 @@ export default class userStore {
       email: data.get('email') as string,
       nickname: data.get('nickname') as string,
       phoneNumber: data.get('phoneNumber') as string,
+      city: data.get('city')as string,
+      zipcode: data.get('zipcode') as string,
+      street: data.get('street') as string,
     };
-
-    if (
-      this.userAddress.city != undefined &&
-      this.userAddress.zipcode != undefined
-    ) {
-      signupform.address = {
-        city: this.userAddress.city,
-        zipcode: this.userAddress.zipcode,
-        street: this.userAddress.street,
-      };
-    }
 
     return await userRepository.signup(signupform);
   };
@@ -88,19 +87,10 @@ export default class userStore {
   handleOAuthSignUp = async (data: FormData) => {
     const authSignupform: authSignupform = {
       phoneNumber: data.get('phoneNumber') as string,
+      city: data.get('city')as string,
+      zipcode: data.get('zipcode') as string,
+      street: data.get('street') as string,
     };
-
-    if (
-      this.userAddress.city != undefined &&
-      this.userAddress.zipcode != undefined
-    ) {
-      authSignupform.address = {
-        city: this.userAddress.city,
-        zipcode: this.userAddress.zipcode,
-        street: this.userAddress.street,
-      };
-    }
-    console.log(data);
     return await userRepository.oauthSignup(authSignupform);
   };
 

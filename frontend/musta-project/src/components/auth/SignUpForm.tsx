@@ -40,7 +40,8 @@ const SignUpForm = () => {
   const handleEvent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
-
+    data.append('zipcode', userStore.userAddress.zipcode);
+    data.append('city', userStore.userAddress.city);
     await userStore
       .handleSignup(data)
       .then(() => {

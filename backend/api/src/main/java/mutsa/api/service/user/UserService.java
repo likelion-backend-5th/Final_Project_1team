@@ -38,9 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -110,7 +108,7 @@ public class UserService {
     ) {
         try {
             // JWT 토큰 검증 실패하면 JWTVerificationException 발생
-            JWTInfo jwtInfo = jwtTokenProvider.decodeToken(refreshToken);
+            JWTInfo jwtInfo = jwtTokenProvider.decodeRefreshToken(refreshToken);
 
             // 저장된 리프레시 토큰 가져오기
             String storedRefresh = refreshTokenRedisRepository.getRefreshToken(jwtInfo.getUsername())
@@ -123,15 +121,11 @@ public class UserService {
 
             User user = fromJwtInfo(jwtInfo);
 
-            List<String> authorities = user.getUserRoles().stream()
-                    .flatMap(userRole -> userRole.getRole().getAuthorities().stream())
-                    .map(Authority::getName)
-                    .collect(Collectors.toList());
-
             String accessToken = jwtTokenProvider.createAccessToken(request,
                     customUserDetailsService.loadUserByUsername(user.getUsername()));
 
             log.info("Access Token : {}", accessToken);
+
             return AccessTokenResponse.builder()
                     .accessToken(accessToken)
                     .build();
@@ -145,7 +139,8 @@ public class UserService {
     @Transactional
     public void signUpAuth(CustomPrincipalDetails customPrincipalDetails, SignUpOauthUserDto signupAuthUserDto) {
         User user = userModuleService.getByUsername(customPrincipalDetails.getUsername());
-        user.updateAddress(signupAuthUserDto.getAddress());
+        Address address = Address.of(signupAuthUserDto.getZipcode(), signupAuthUserDto.getCity(), signupAuthUserDto.getStreet());
+        user.updateAddress(address);
         //전화번호 추가
     }
 
@@ -260,7 +255,7 @@ public class UserService {
         }
     }
 
-    private boolean isOauthUser(String email) {
+    public boolean isOauthUser(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND))
             .getIsOAuth2();
     }

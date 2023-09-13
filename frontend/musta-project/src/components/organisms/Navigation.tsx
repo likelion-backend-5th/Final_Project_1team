@@ -19,11 +19,10 @@ import { Typography } from '@mui/material';
 import userStore from '../../store/user/userStore';
 
 const pages = [
-  ['Home', '/home'],
   ['게시글', '/article'],
 ];
 
-const settings = [
+const baseSettings = [
   ['Profile', '/user/profile'],
   ['내가 주문한 목록', '/my/order/consume'],
   ['내가 판매한 목록', '/my/order/sell'],

@@ -78,16 +78,6 @@ const UserRouter = () => {
       />
 
       <Route
-        path="/hello"
-        element={<HelloPage />}
-        errorElement={<Error404Page />}
-      />
-      <Route
-        path="/home"
-        element={<HomePage />}
-        errorElement={<Error404Page />}
-      />
-      <Route
         path="/article/:articleId/order"
         element={<ArticleOrderPage />}
         errorElement={<Error404Page />}

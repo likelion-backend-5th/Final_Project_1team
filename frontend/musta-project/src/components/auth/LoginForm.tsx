@@ -19,8 +19,6 @@ import {
   GoogleOAuthProvider,
   useGoogleLogin,
 } from '@react-oauth/google';
-import axiosUtils from '../../uitls/axiosUtils';
-import authStore from '../../store/user/authStore';
 import { useNavigate, useNavigation } from 'react-router-dom';
 import { useAlert } from '../hook/useAlert';
 
@@ -50,8 +48,8 @@ const LoginForm = (props: any): JSX.Element => {
           };
         }
       })
-      .catch((res: any) => {
-        openAlert({ state: 'error', message: 'error' });
+      .catch((res) => {
+        return openAlert({ state: 'error', message: res.data.message });
       });
     await authStore
       .findUserInfo()
@@ -67,6 +65,8 @@ const LoginForm = (props: any): JSX.Element => {
         openAlert({ state: 'error', message: 'error' });
       });
   };
+
+
 
   // const googleLogin = useGoogleLogin({
   //   scope: 'email profile',
@@ -161,8 +161,8 @@ const LoginForm = (props: any): JSX.Element => {
             style={{ marginRight: '1rem' }}
             // 클릭 이벤트 수정해야 됨
             onClick={() =>
-              (window.location.href =
-                'http://localhost:8080/oauth2/authorization/google')
+            (window.location.href =
+              'http://localhost:8080/oauth2/authorization/google')
             }>
             구글 로그인 ( 백엔드 )
           </Button>
