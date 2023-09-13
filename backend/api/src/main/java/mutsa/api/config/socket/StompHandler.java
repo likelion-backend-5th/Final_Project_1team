@@ -1,11 +1,9 @@
 package mutsa.api.config.socket;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mutsa.api.config.jwt.JwtConfig;
 import mutsa.api.util.JwtTokenProvider;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -26,11 +24,8 @@ public class StompHandler implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        log.info("들어온 소켓의 헤더 : {}", message.getHeaders());
-        log.info("들어온 소켓의 바디 : {}", message.getPayload());
         byte[] payloadBytes = (byte[]) message.getPayload();
         String payloadString = new String(payloadBytes, StandardCharsets.UTF_8);
-        log.info("들어온 소켓의 바디(string으로 변환시): {}", payloadString);
 
 //        아직 헤더에 토큰 검증은 진행하지 않습니다.
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);

@@ -154,7 +154,6 @@ export const putArticleHandler = (
 };
 
 export const getChatroomHandler = () => {
-  console.log('hello!');
   const url = '/chat/room';
   return axiosUtils.get(url);
 };

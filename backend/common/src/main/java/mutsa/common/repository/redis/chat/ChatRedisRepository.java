@@ -30,7 +30,7 @@ public class ChatRedisRepository {
     public Set<String> getMessages(String roomId, int offset, int size) {
         String roomNameKey = String.format(ROOM_KEY, roomId);
         Set<String> messages = chatRedisTemplate.opsForZSet().reverseRange(roomNameKey, offset, offset + size);
-        log.info(String.format("Received messages by roomId:%s, offset:%s, size:%s ", roomId, offset, size));
+        log.info(String.format("chatRedisRepository: received messages by roomId:%s, offset:%s, size:%s ", roomId, offset, size));
         return messages;
     }
 

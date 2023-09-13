@@ -76,8 +76,7 @@ const ReviewEditItem = ({ review }: any) => {
             result
           )
             .then((response: any) => {
-              console.log('리뷰 수정 완료:', response.data);
-              navigate(`/review/${response.data.apiId}`); // 수정 후 리뷰 페이지로 이동 예시
+              navigate(`/review/${response.data.apiId}`); // 수정 후 리뷰 페이지로 이동
             })
             .catch((error: any) => {
               console.error('Error updating review:', error);
