@@ -3,7 +3,7 @@ import {
   Button,
   Card,
   CardContent,
-  CardMedia,
+  CardMedia, Chip,
   Collapse,
   FormControl,
   FormControlLabel,
@@ -17,31 +17,32 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
 import {
   ArticleStatus,
   checkArticleInputValidation,
 } from '../../types/article.ts';
 import axios from 'axios';
-import { styled } from '@mui/material/styles';
-import { loadingTime } from '../../util/loadingUtil.ts';
-import { useNavigate } from 'react-router-dom';
+import {styled} from '@mui/material/styles';
+import {loadingTime} from '../../util/loadingUtil.ts';
+import {useNavigate} from 'react-router-dom';
 import DropDown from './DropDown.tsx';
-import { Carousel } from 'react-responsive-carousel';
-import { HideImage, InsertPhoto } from '@mui/icons-material';
+import {Carousel} from 'react-responsive-carousel';
+import {CalendarMonth, HideImage, InsertPhoto} from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
-import { putArticleHandler } from '../../store/auth-action.tsx';
-import { uploadImagesToS3, bucketName, s3Client } from '../../util/s3Client.ts';
+import {putArticleHandler} from '../../store/auth-action.tsx';
+import {uploadImagesToS3, bucketName, s3Client} from '../../util/s3Client.ts';
 import axiosUtils from '../../uitls/axiosUtils.ts';
 import userStore from '../../store/user/userStore.ts';
 import useStore from '../../store/useStores.ts';
 import useStores from '../../store/useStores.ts';
-import { priceValidation, textValidation } from '../../util/validationUtil.ts';
-import { formatPrice } from '../../util/formatPrice.ts';
+import {priceValidation, textValidation} from '../../util/validationUtil.ts';
+import {formatPrice} from '../../util/formatPrice.ts';
+import DeleteIcon from "@mui/icons-material/Delete";
 
 // const baseUrl = 'http://localhost:8080/api/articles/';
-const baseUrl = import.meta.env.VITE_API + '/api/articles/';
+const baseUrl = '/articles/';
 
 function getArticleApiId() {
   const pathnames = location.pathname.split('/');
@@ -95,7 +96,7 @@ export function ArticleEdit() {
   const [alertMsg, setAlertMsg] = useState<string>();
   const [openLabel, setOpenLabel] = useState<string>();
   const navigate = useNavigate();
-  const { userStore, authStore } = useStores();
+  const {userStore, authStore} = useStores();
   const [errorTitle, setErrorTitle] = useState<boolean>(false);
   const [errorPrice, setErrorPrice] = useState<boolean>(false);
   const [errorDescription, setErrorDescription] = useState<boolean>(false);
@@ -122,6 +123,17 @@ export function ArticleEdit() {
     setAlertMsg(str);
     return !str;
   };
+
+  const handleDelete = async() => {
+    axiosUtils.delete(baseUrl + getArticleApiId()).then((res) => {
+      if (res.status === 200) {
+        navigate('/article');
+        return;
+      }
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
 
   const handleSubmit = async () => {
     if (!validation()) {
@@ -234,7 +246,7 @@ export function ArticleEdit() {
   return (
     <StyledArticleDetail>
       {loading ? (
-        <Skeleton variant="rounded" width={888.875} height={639.172} />
+        <Skeleton variant="rounded" width={888.875} height={639.172}/>
       ) : (
         <StyledCard>
           {oldImageFiles.length == 0 ? (
@@ -271,11 +283,11 @@ export function ArticleEdit() {
             </Box>
           )}
           <StyledCardContent>
-            <Box sx={{ marginBottom: '20px' }}>
+            <Box sx={{marginBottom: '20px'}}>
               <Collapse in={alertOpen}>
                 <Stack>
                   <Alert
-                    sx={{ whiteSpace: 'pre-line', textAlign: 'start' }}
+                    sx={{whiteSpace: 'pre-line', textAlign: 'start'}}
                     severity="error"
                     onClose={() => {
                       setAlertOpen(false);
@@ -286,24 +298,43 @@ export function ArticleEdit() {
               </Collapse>
             </Box>
             <Box
+              display='flex'
+              justifyContent='space-between'
+              flexDirection='column'
+              sx={{
+                marginBottom: '16px', // Add some spacing
+              }}>
+              <Box>
+                <Chip icon={<CalendarMonth/>} sx={{fontSize: '1rem'}} label={createdDate} color={'info'}/>
+              </Box>
+              <Box>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={articleStatus === 'LIVE'}
+                      onChange={(event, checked) => {
+                        if (checked) {
+                          setArticleStatus('LIVE');
+                          setOpenLabel('공개');
+                        } else {
+                          setArticleStatus('EXPIRED');
+                          setOpenLabel('비공개');
+                        }
+                      }}
+                    />
+                  }
+                  label={openLabel}
+                />
+              </Box>
+            </Box>
+            <Box
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 alignContent: 'center',
               }}>
-              <TextField
-                id="article-title"
-                defaultValue={title}
-                size="medium"
-                label="제목"
-                inputProps={{ maxLength: 100, 'aria-rowcount': 5 }} // Set maximum character length
-                onChange={onChangeTitle}
-                error={errorTitle}
-                maxRows="1"
-                sx={{ marginY: '10px' }}
-              />
-              <FormControl sx={{ marginY: '10px' }}>
+              <FormControl sx={{marginY: '10px'}}>
                 <InputLabel htmlFor="article-price">가격</InputLabel>
                 <OutlinedInput
                   id="article-price"
@@ -319,33 +350,17 @@ export function ArticleEdit() {
                   maxRows="1"
                 />
               </FormControl>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center', // Center content horizontally
-                marginBottom: '16px', // Add some spacing
-              }}>
-              <Typography variant="body2">{createdDate}</Typography>
-            </Box>
-            <Box>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={articleStatus === 'LIVE'}
-                    onChange={(event, checked) => {
-                      if (checked) {
-                        setArticleStatus('LIVE');
-                        setOpenLabel('공개');
-                      } else {
-                        setArticleStatus('EXPIRED');
-                        setOpenLabel('비공개');
-                      }
-                    }}
-                  />
-                }
-                label={openLabel}
+              <TextField
+                id="article-title"
+                defaultValue={title}
+                size="medium"
+                label="제목"
+                inputProps={{maxLength: 100, 'aria-rowcount': 5}} // Set maximum character length
+                onChange={onChangeTitle}
+                error={errorTitle}
+                maxRows="1"
+                sx={{marginY: '10px'}}
+                fullWidth
               />
             </Box>
             <Box display="flex" justifyContent="center" marginTop="10px">
@@ -353,14 +368,14 @@ export function ArticleEdit() {
                 id="article-description"
                 defaultValue={description}
                 size="medium"
-                inputProps={{ maxLength: 255, 'aria-rowcount': 5 }} // Set maximum character length
+                inputProps={{maxLength: 255, 'aria-rowcount': 5}} // Set maximum character length
                 multiline
                 rows={5}
                 label="내용"
                 fullWidth={true}
                 error={errorDescription}
                 onChange={onChangeDescription}
-                sx={{ marginBottom: '10px' }}
+                sx={{marginBottom: '10px'}}
               />
             </Box>
             <Box>
@@ -395,15 +410,15 @@ export function ArticleEdit() {
                   type="file"
                   multiple
                   onChange={handleImageChange}
-                  style={{ display: 'none' }}
+                  style={{display: 'none'}}
                 />
                 <label htmlFor="image-file">
                   <Button
                     variant="contained"
                     color="primary"
                     component="span"
-                    startIcon={<InsertPhoto />}
-                    sx={{ marginTop: '15px' }}>
+                    startIcon={<InsertPhoto/>}
+                    sx={{marginTop: '15px'}}>
                     이미지 첨부
                   </Button>
                 </label>
@@ -412,21 +427,31 @@ export function ArticleEdit() {
                     variant="contained"
                     color="error"
                     component="span"
-                    startIcon={<HideImage />}
+                    startIcon={<HideImage/>}
                     onClick={onClickRemoveImages}
-                    sx={{ marginTop: '15px', marginX: '10px' }}>
+                    sx={{marginTop: '15px', marginX: '10px'}}>
                     이미지 삭제
                   </Button>
                 ) : null}
               </Box>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit}
-                startIcon={<EditIcon />}
-                sx={{ marginTop: '15px' }}>
-                게시글 작성
-              </Button>
+              <Box>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleDelete}
+                  startIcon={<DeleteIcon/>}
+                  sx={{marginTop: '15px'}}>
+                  게시글 삭제
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit}
+                  startIcon={<EditIcon/>}
+                  sx={{marginTop: '15px', marginX: '15px'}}>
+                  게시글 작성
+                </Button>
+              </Box>
             </Box>
           </StyledCardContent>
         </StyledCard>
