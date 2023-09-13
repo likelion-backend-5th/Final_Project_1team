@@ -150,7 +150,9 @@ const OrderSellerItemList: React.FC = observer(() => {
     fetchData(orderStore.currentPage);
   };
 
-  const handleSearch = () => {
+  const handleSearch = (searchInput: string) => {
+    orderStore.setSearchInput(searchInput);
+    // console.log('Search input value:' + searchInput);
     fetchData(orderStore.currentPage);
   };
 

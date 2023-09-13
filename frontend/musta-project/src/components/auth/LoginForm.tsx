@@ -4,6 +4,7 @@ import {
   Avatar,
   Box,
   Button,
+  Divider,
   Grid,
   Icon,
   Link,
@@ -57,7 +58,6 @@ const LoginForm = (props: any): JSX.Element => {
         });
       })
       .catch((res: any) => {
-        console.log(res);
         openAlert({ state: 'error', message: 'error' });
       });
   };
@@ -82,7 +82,6 @@ const LoginForm = (props: any): JSX.Element => {
   const GoogleButton = styled(Button)`
   width: 100%;
   max-width: 680px;
-  margin: 20px auto;
   height: 50px;
   cursor: pointer;
   font-size: 14px;
@@ -95,7 +94,7 @@ const LoginForm = (props: any): JSX.Element => {
   transition: 0.2s linear;
 
   &:hover {
-    box-shadow: 0 0 0 rgba(91, 144, 240, 0);
+    background: rgba(91, 144, 240, 0.8); 
   }
 `;
 
@@ -146,7 +145,10 @@ const LoginForm = (props: any): JSX.Element => {
           sx={{ mt: 3, mb: 2 }}>
           Sign In
         </Button>
-        <Grid item sx={{ mb: 2 }}>
+
+        <Divider variant="middle" />
+
+        <Grid item sx={{ mt: 2, mb: 2 }}>
           <GoogleButton
             onClick={() =>
             (window.location.href =
@@ -157,6 +159,7 @@ const LoginForm = (props: any): JSX.Element => {
             구글 로그인
           </GoogleButton>
         </Grid>
+
         <Grid container>
           <Grid item xs>
             <Link href="/find/id" variant="body2">
