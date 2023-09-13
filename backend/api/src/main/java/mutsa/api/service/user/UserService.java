@@ -255,7 +255,7 @@ public class UserService {
         }
     }
 
-    private boolean isOauthUser(String email) {
+    public boolean isOauthUser(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND))
             .getIsOAuth2();
     }

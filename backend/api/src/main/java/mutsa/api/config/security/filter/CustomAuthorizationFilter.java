@@ -54,10 +54,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 log.info(jwtInfo.toString());
             } catch (TokenExpiredException e) {
                 log.info("TokenExpiredException: ", e);
-                ErrorResponse er = ErrorResponse.of(ErrorCode.ACCESS_TOKEN_EXPIRED);
-                getAccessTokenExpired(response, er);
-
-//                return;
+                if (!request.getRequestURL().toString().contains("/api/auth/token/refresh")) {
+                    getAccessTokenExpired(response, ErrorResponse.of(ErrorCode.ACCESS_TOKEN_EXPIRED));
+                }
             } catch (JWTVerificationException ignored) {
                 log.info("JWTVerificationException: ", ignored);
             }

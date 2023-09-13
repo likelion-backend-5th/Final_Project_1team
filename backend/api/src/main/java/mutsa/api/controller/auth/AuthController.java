@@ -48,9 +48,8 @@ public class AuthController {
      * @return
      */
     @PostMapping("/auth/token/refresh")
-    public AccessTokenResponse reIssuerAccessToken(
-            HttpServletRequest request,
-            HttpServletResponse response
+    public ResponseEntity<AccessTokenResponse> reIssuerAccessToken(
+            HttpServletRequest request
     ) {
         if (request.getCookies() == null) {
             throw new BusinessException(ErrorCode.REFRESH_TOKEN_NOT_IN_COOKIE);
@@ -58,12 +57,8 @@ public class AuthController {
 
         String refreshToken = userService.refreshToken(request);
         AccessTokenResponse accessTokenResponse = userService.validateRefreshTokenAndCreateAccessToken(refreshToken, request);
-
-        response.setStatus(HttpStatus.OK.value());
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf-8");
-
-        return accessTokenResponse;
+        log.info("{}",accessTokenResponse.getAccessToken());
+        return ResponseEntity.ok(accessTokenResponse);
     }
 
 }
