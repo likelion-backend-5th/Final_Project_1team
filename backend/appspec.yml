@@ -1,0 +1,23 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /home/ubuntu/app/backend
+    overwrite: yes
+
+permissions:
+  - object: /
+    pattern: "**"
+    owner: ubuntu
+    group: ubuntu
+
+hooks:
+  # AfterInstall:
+  #   - location: stop_backend.sh
+  #     timeout: 60
+  #     runas: ubuntu
+  ApplicationStart:
+    - location: start_backend.sh
+      timeout: 60
+      runas: ubuntu

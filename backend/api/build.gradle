@@ -3,8 +3,6 @@ plugins {
     id 'org.springframework.boot' version '3.1.2'
     id 'io.spring.dependency-management' version '1.1.2'
     id 'org.hibernate.orm' version '6.2.6.Final'
-    id "org.asciidoctor.jvm.convert" version "3.3.2"
-    id 'jacoco'
 }
 
 group = 'mutsa'
@@ -21,7 +19,6 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-    asciidoctorExt
 }
 
 repositories {
@@ -84,10 +81,6 @@ dependencies {
     //test-embedded-redis
     testImplementation 'it.ozimov:embedded-redis:0.7.3'
 
-    //restdocs
-    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-
     //socket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     // gson
@@ -112,41 +105,3 @@ hibernate {
         enableAssociationManagement = true
     }
 }
-
-ext {
-    snippetsDir = file('build/generated-snippets')
-}
-
-asciidoctor { // asciidoctor 작업 구성
-    inputs.dir snippetsDir
-    configurations 'asciidoctorExt'
-    dependsOn test
-}
-
-// static/docs 폴더 비우기
-asciidoctor.doFirst {
-    delete file('src/main/resources/static/docs')
-}
-
-// asccidoctor 작업 이후 생성된 HTML 파일을 static/docs 로 copy
-task copyDocument(type: Copy) {
-    dependsOn asciidoctor
-    from file("build/docs/asciidoc")
-    into file("src/main/resources/static/docs")
-}
-
-// build 의 의존작업 명시
-build {
-    dependsOn copyDocument
-}
-
-
-test {
-    outputs.dir snippetsDir
-    finalizedBy jacocoTestReport // 테스트 종료후 항상 리포트 생성
-}
-
-jacocoTestReport {
-    dependsOn test // 리포트 생성을 위해서는 test가 먼저 완료되어야 함
-}
-

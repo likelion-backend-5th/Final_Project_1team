@@ -6,14 +6,14 @@
 
 package mutsa.api.dto.image;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import mutsa.common.domain.models.image.Image;
 
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ImageResponseDto {
     private String apiId;
     private String refApiId;

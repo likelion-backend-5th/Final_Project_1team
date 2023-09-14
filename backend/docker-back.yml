@@ -1,0 +1,21 @@
+version: "3"
+services:
+  my-spring-app:
+    image: openjdk:17-jdk
+    container_name: my-spring-app
+    volumes:
+      - ./api/build/libs/api-0.0.1-SNAPSHOT.jar:/app.jar #  JAR 파일을 컨테이너 내부로 복사
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - "0.0.0.0:8080:8080" # Spring Boot 애플리케이션 포트 (호스트:컨테이너)
+    # depends_on:
+    #   - redis  # Redis 서비스가 시작되어야 함
+    command: ["java", "-jar", "/app.jar"] # Spring Boot JAR 파일을 실행하는 명령 추가
+
+
+  # redis:
+  #   image: redis
+  #   container_name: redis
+  #   ports:
+  #     - 6379:6379  # Redis 포트 (호스트:컨테이너)

@@ -18,8 +18,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
+@ActiveProfiles("test")
 @Transactional
 class ChatroomUserRepositoryTest {
     @Autowired

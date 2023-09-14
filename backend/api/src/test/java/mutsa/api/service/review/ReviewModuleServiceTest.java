@@ -96,7 +96,7 @@ public class ReviewModuleServiceTest {
         reviewRequestDto.setPoint(5);
 
         // when
-        ReviewResponseDto responseDto = reviewModuleService.createReview(article, order, reviewer1, reviewRequestDto);
+        ReviewResponseDto responseDto = ReviewResponseDto.fromEntity(reviewModuleService.createReview(article, order, reviewer1, reviewRequestDto));
 
         // then
         log.info(article.getReviews().toString());
@@ -166,7 +166,7 @@ public class ReviewModuleServiceTest {
         updateDto.setPoint(3);
 
         // when
-        ReviewResponseDto responseDto = reviewModuleService.updateReview(reviewer1, review.getApiId(), updateDto);
+        ReviewResponseDto responseDto = ReviewResponseDto.fromEntity(reviewModuleService.updateReview(reviewer1, review.getApiId(), updateDto));
 
         // then
         assertThat(updateDto.getContent()).isEqualTo(responseDto.getContent());

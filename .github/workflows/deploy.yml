@@ -6,7 +6,7 @@ name: Backend Deploy
 on:
   # Triggers the workflow on push or pull request events but only for the "develop" branch
   push:
-    branches: ["main"]
+    branches: [ "main" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -44,24 +44,57 @@ jobs:
           distribution: "zulu"
           java-version: "17"
 
-      # (3) Gradle 세팅
+      # (3) S3 application-prod.yml 세팅
+      - name: Download application-prod.yml
+        uses: keithweaver/aws-s3-github-action@v1.0.0 # Verifies the recursive flag
+        with:
+          command: cp
+          source: ${{ secrets.S3_PROD_YML }}
+          destination: ./backend/api/src/main/resources
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+
+      # (4) S3 application-test.yml 세팅
+#      - name: Download application-test.yml
+#        uses: keithweaver/aws-s3-github-action@v1.0.0 # Verifies the recursive flag
+#        with:
+#          command: cp
+#          source: ${{ secrets.S3_TEST_YML }}
+#          destination: ./backend/api/src/main/resources
+#          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY }}
+#          aws_secret_access_key: ${{ secrets.AWS_SECRET_KEY }}
+#          aws_region: ${{ secrets.AWS_REGION }}
+
+      # (5) 현재 위치 파악하는 cmd
+      - name: cmd
+        run: |
+          pwd
+          ls -la
+          # cd ./backend/api/src/main/resources
+          echo "ls ./backend/api/src/main/resources"
+          ls -la ./backend/api/src/main/resources
+          sudo chmod +x ./backend/api/src/main/resources/application-prod.yml
+          ls -la ./backend/api/src/main/resources
+
+      # (6) Gradle 세팅
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build -x test
           build-root-directory: backend
 
-      # # (4) Grant execute permission to gradlew
+      # # (6) Grant execute permission to gradlew
       # - name: Grant execute permission to gradlew
       #   run: chmod +x ./backend/gradlew
 
-      # # (5) Gradle 빌드
+      # # (7) Gradle 빌드
       # - name: Execute Gradle build
       #   run: |
       #     cd backend
-      #     ./gradlew clean build -x test
+      #     ./gradlew test -i
 
-      # (6) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
+      # (7) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -69,7 +102,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # (7) 빌드 결과물을 S3 버킷에 업로드
+      # (8) 빌드 결과물을 S3 버킷에 업로드
       - name: Upload to AWS S3
         run: |
           aws deploy push \
@@ -78,7 +111,7 @@ jobs:
             --s3-location s3://$S3_BUCKET_NAME/build/backend/app.zip \
             --source ./backend
 
-      # (8) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+      # (9) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
       - name: Deploy to AWS EC2 from S3
         run: |
           aws deploy create-deployment \

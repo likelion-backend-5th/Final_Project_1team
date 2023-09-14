@@ -6,6 +6,7 @@ import mutsa.api.ApiApplication;
 import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
+import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
@@ -15,10 +16,8 @@ import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
 import mutsa.common.repository.review.ReviewRepository;
 import mutsa.common.repository.user.UserRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -30,6 +29,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
 @ActiveProfiles("test")
@@ -55,22 +56,33 @@ public class ReviewServiceTest {
     private User reviewer1, reviewer2, reviewer3, reviewer4;
     private Article article;
     private Order order;
+    private static MockedStatic<SecurityUtil> securityUtilMockedStatic;
+
+    @BeforeAll
+    public static void beforeAll() {
+        securityUtilMockedStatic = mockStatic(SecurityUtil.class);
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        securityUtilMockedStatic.close();
+    }
 
     @BeforeEach
     public void init() {
-        reviewer1 = User.of("user1", "password", "email1@", "oauthName1", null, null);
+        reviewer1 = User.of("user1", "password", "email1@", "oauthName1", "", null);
         reviewer1 = userRepository.save(reviewer1);
 
-        reviewer2 = User.of("user2", "password", "email2@", "oauthName2", null, null);
+        reviewer2 = User.of("user2", "password", "email2@", "oauthName2", "", null);
         reviewer2 = userRepository.save(reviewer2);
 
-        reviewer3 = User.of("user3", "password", "email3@", "oauthName3", null, null);
+        reviewer3 = User.of("user3", "password", "email3@", "oauthName3", "", null);
         reviewer3 = userRepository.save(reviewer3);
 
-        reviewer4 = User.of("user4", "password", "email4@", "oauthName4", null, null);
+        reviewer4 = User.of("user4", "password", "email4@", "oauthName4", "", null);
         reviewer4 = userRepository.save(reviewer4);
 
-        User seller = User.of("seller", "password", "sellerEmail@", "sellerOauthName", null, null);
+        User seller = User.of("seller", "password", "sellerEmail@", "sellerOauthName", "", null);
         seller = userRepository.save(seller);
 
         article = Article.builder()
@@ -170,6 +182,7 @@ public class ReviewServiceTest {
         entityManager.clear();
 
         // when
+        when(SecurityUtil.getCurrentUsername()).thenReturn(reviewer1.getUsername());
         reviewService.deleteReview(review.getApiId(), reviewer1.getUsername());
         entityManager.flush();
         entityManager.clear();
