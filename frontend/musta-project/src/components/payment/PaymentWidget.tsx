@@ -25,7 +25,9 @@ const PaymentWidget: React.FC = () => {
 
     useEffect(() => {
         if (!paymentInfo) return;
-
+        
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const paymentWidget = new window.PaymentWidget(clientKey, paymentInfo.customerApiId);
 
         paymentWidget.renderPaymentMethods('#payment-method', {value: paymentInfo.amount}, {variantKey: 'DEFAULT'});

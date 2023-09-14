@@ -9,6 +9,18 @@
   /*}*/
 }
 
+
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('./fonts/Pretendard-Medium.otf') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+body {
+  font-family: 'Pretendard-Regular',source-code-pro, Menlo, Monaco, Consolas, monospace;
+}
+
+
 .logo {
   height: 6em;
   padding: 1.5em;

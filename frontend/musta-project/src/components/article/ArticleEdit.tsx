@@ -1,3 +1,6 @@
+import { CalendarMonth, HideImage, InsertPhoto } from '@mui/icons-material';
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Alert,
   Button,
@@ -9,37 +12,27 @@ import {
   FormControlLabel,
   InputAdornment,
   InputLabel,
-  InputLabel,
   OutlinedInput,
   Skeleton,
   Stack,
   Switch,
-  TextField,
-  Typography,
+  TextField
 } from '@mui/material';
-import {useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
+import { Carousel } from 'react-responsive-carousel';
+import { useNavigate } from 'react-router-dom';
+import { putArticleHandler } from '../../store/auth-action.tsx';
+import useStores from '../../store/useStores.ts';
 import {
   ArticleStatus,
   checkArticleInputValidation,
 } from '../../types/article.ts';
-import axios from 'axios';
-import {styled} from '@mui/material/styles';
-import {loadingTime} from '../../util/loadingUtil.ts';
-import {useNavigate} from 'react-router-dom';
-import DropDown from './DropDown.tsx';
-import {Carousel} from 'react-responsive-carousel';
-import {CalendarMonth, HideImage, InsertPhoto} from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit';
-import {putArticleHandler} from '../../store/auth-action.tsx';
-import {uploadImagesToS3, bucketName, s3Client} from '../../util/s3Client.ts';
 import axiosUtils from '../../uitls/axiosUtils.ts';
-import userStore from '../../store/user/userStore.ts';
-import useStore from '../../store/useStores.ts';
-import useStores from '../../store/useStores.ts';
-import {priceValidation, textValidation} from '../../util/validationUtil.ts';
-import {formatPrice} from '../../util/formatPrice.ts';
-import DeleteIcon from "@mui/icons-material/Delete";
+import { loadingTime } from '../../util/loadingUtil.ts';
+import { uploadImagesToS3 } from '../../util/s3Client.ts';
+import { priceValidation, textValidation } from '../../util/validationUtil.ts';
 
 // const baseUrl = 'http://localhost:8080/api/articles/';
 const baseUrl = '/articles/';
@@ -110,10 +103,11 @@ export function ArticleEdit() {
       newImageFiles = newImageFiles.slice(0, 5);
     }
 
-    setImageFiles(newImageFiles.slice(0, 5));
+    setImageFiles((newImageFiles as (Blob | MediaSource)[]).slice(0, 5));
     const newImagePreviews = newImageFiles.map((file) =>
-      URL.createObjectURL(file)
+      URL.createObjectURL(file as Blob) // 타입 단언을 사용하여 'Blob' 타입으로 변환
     );
+    
     setImagePreviews(newImagePreviews);
   };
 
@@ -223,12 +217,14 @@ export function ArticleEdit() {
   };
 
   const onChangePrice = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value.replace();
-
-    !priceValidation(event.target.value)
+    const inputValue = event.target.value;
+    const priceValue = parseFloat(inputValue); // 문자열을 숫자로 변환
+  
+    !priceValidation(priceValue)
       ? setErrorPrice(true)
       : setErrorPrice(false);
-    setPrice(event.target.value);
+  
+    setPrice(priceValue);
   };
 
   const onChangeDescription = (event: React.ChangeEvent<HTMLInputElement>) => {
