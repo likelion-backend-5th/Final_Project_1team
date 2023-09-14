@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { forwardRef, useEffect, useState } from 'react';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import useStore from '../../store/useStores';
-import alertStore from '../../store/component/AlertStore';
+import alertStore from '../../store/component/alertStore.ts';
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(
   function Alert(props, ref) {

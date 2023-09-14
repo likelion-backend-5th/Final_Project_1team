@@ -78,7 +78,7 @@ export const AlbumCard = (props: AlbumCardProps) => {
             }}
           />
           <Typography variant="h6" gutterBottom>
-            {article.title > 15
+            {article.title.length > 15
               ? article.title.slice(0, 15) + '....'
               : article.title}
           </Typography>
@@ -88,7 +88,7 @@ export const AlbumCard = (props: AlbumCardProps) => {
             color="text.secondary"
             sx={{ marginTop: 1, marginBottom: 1 }}>
             작성자:{' '}
-            {article.username > 10
+            {article.username.length > 10
               ? article.username.slice(0, 10) + '...'
               : article.username}
           </Typography>

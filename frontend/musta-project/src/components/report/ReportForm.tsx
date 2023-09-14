@@ -33,8 +33,7 @@ const ReportForm: React.FC<ReportFormProps> = ({content, setContent, handleSubmi
                 placeholder="신고 내용을 입력하세요"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                mb={3}
-            />
+                ></TextField>
             <Box display="flex" justifyContent="flex-end">
                 <Button variant="contained" color="primary" onClick={handleSubmit}>
                     신고하기

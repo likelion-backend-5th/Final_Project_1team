@@ -1,34 +1,30 @@
-import { useState } from 'react';
-import {
-  Box,
-  Card,
-  TextField,
-  Button,
-  styled,
-  Stack,
-  Alert,
-  Collapse,
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
-} from '@mui/material';
-import axios from 'axios';
 import { HideImage, InsertPhoto } from '@mui/icons-material';
 import EditIcon from '@mui/icons-material/Edit';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  Collapse,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  Stack,
+  TextField,
+  styled,
+} from '@mui/material';
+import { useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import {
-  getArticleOrderHandler,
-  postArticleHandler,
-} from '../../store/auth-action.tsx';
 import { useNavigate } from 'react-router-dom';
-import { uploadImagesToS3 } from '../../util/s3Client.ts';
 import {
-  ArticleInputError,
-  articleInputError,
-  checkArticleInputValidation,
+  postArticleHandler
+} from '../../store/auth-action.tsx';
+import {
+  checkArticleInputValidation
 } from '../../types/article.ts';
+import { uploadImagesToS3 } from '../../util/s3Client.ts';
 import { priceValidation, textValidation } from '../../util/validationUtil.ts';
 
 const StyledArticleDetail = styled('div')({
@@ -76,9 +72,9 @@ export function ArticlePost() {
       newImageFiles = newImageFiles.slice(0, 5);
     }
 
-    setImageFiles(newImageFiles.slice(0, 5));
+    setImageFiles((newImageFiles as (Blob | MediaSource)[]).slice(0, 5));
     const newImagePreviews = newImageFiles.map((file) =>
-      URL.createObjectURL(file)
+      URL.createObjectURL(file as Blob) // 타입 단언을 사용하여 'Blob' 타입으로 변환
     );
     setImagePreviews(newImagePreviews);
   };
@@ -134,13 +130,11 @@ export function ArticlePost() {
   };
 
   const onChangePrice = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value.replace();
-
-    !priceValidation(event.target.value)
-      ? setErrorPrice(true)
-      : setErrorPrice(false);
-    setPrice(event.target.value);
-  };
+    !priceValidation(Number(event.target.value))
+        ? setErrorPrice(true)
+        : setErrorPrice(false);
+    setPrice(Number(event.target.value));
+};
 
   const onChangeDescription = (event: React.ChangeEvent<HTMLInputElement>) => {
     !textValidation(event.target.value)
