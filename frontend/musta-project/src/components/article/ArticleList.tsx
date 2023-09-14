@@ -16,7 +16,6 @@ import { loadingTime } from '../../util/loadingUtil.ts';
 import { getUrlSearchParams, setQuery } from '../../util/urlUtil.ts';
 
 const PAGE_SIZE: number = 12; // 4x3 열을 위해 12로 변경
-// const baseURL = `http://localhost:8080/api/articles`;
 const baseURL = import.meta.env.VITE_API + 'api/articles';
 
 export const ArticleList = forwardRef((props, ref) => {

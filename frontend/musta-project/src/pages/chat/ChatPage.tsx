@@ -23,6 +23,12 @@ const customTheme = createTheme({
   },
 });
 
+const getApiServerUrl = () => {
+  const ary = import.meta.env.VITE_API.split('/');
+  console.log(ary[ary.length - 2]);
+  return ary[ary.length-2];
+}
+
 const ChatPage: React.FC = () => {
   const stompClient = useRef<Stomp.Client | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -41,7 +47,7 @@ const ChatPage: React.FC = () => {
 
     // STOMP 클라이언트 초기화및 설정
     stompClient.current = new Stomp.Client({
-      brokerURL: 'ws://localhost:8080/ws',
+      brokerURL: `ws://${getApiServerUrl()}/ws`,
       connectHeaders: {
         Authorization: authorizationToken,
       },

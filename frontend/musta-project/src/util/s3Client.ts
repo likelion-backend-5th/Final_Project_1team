@@ -18,6 +18,12 @@ const s3Client = new S3Client({
   },
 });
 
+function uuidv4() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+}
+
 const uploadImagesToS3 = async (imageFiles: any, imageType: S3ImageType) => {
   const now = new Date(Date.now());
   const keyList: string[] = [];
@@ -35,7 +41,7 @@ const uploadImagesToS3 = async (imageFiles: any, imageType: S3ImageType) => {
       }/${now.getDate()}/${now.toLocaleTimeString(
         'en-us',
         timeFormatOption
-      )}_${self.crypto.randomUUID()}.${imageFiles[i].name.split('.')[1]}`;
+      )}_${uuidv4()}.${imageFiles[i].name.split('.')[1]}`;
       keyList.push(import.meta.env.VITE_S3 + `/${objectKey}`);
       const params = {
         Bucket: bucketName,

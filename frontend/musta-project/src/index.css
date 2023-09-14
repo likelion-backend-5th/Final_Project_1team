@@ -1,11 +1,19 @@
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Pretendard-Regular', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /*font-family: 'Pretendard-Regular',source-code-pro, Menlo, Monaco, Consolas, monospace;*/
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(0, 0, 0);
-  background-color: #ffffff;
+  background-color: #f5f5f7;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -26,6 +34,7 @@ a:hover {
 body {
   margin: 0;
   padding: 0;
+  /*font-family: 'Pretendard-Regular',source-code-pro, Menlo, Monaco, Consolas, monospace;*/
   /* display: flex; */
   /* place-items: center; */
   /* min-width: 320px; */

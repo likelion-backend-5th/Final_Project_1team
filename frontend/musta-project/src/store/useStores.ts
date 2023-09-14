@@ -1,7 +1,9 @@
 import { createContext, useContext } from 'react';
 import userStore from './user/userStore';
 import authStore from './user/authStore';
-import alertStore from './component/AlertStore';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import alertStore from './component/alertStore.ts';
 
 class rootStore {
   constructor() {

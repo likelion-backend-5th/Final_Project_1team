@@ -172,7 +172,7 @@ const baseUrl = import.meta.env.VITE_API;
           <GoogleButton
             onClick={() =>
             (window.location.href =
-              `${baseUrl}/oauth2/authorization/google`)
+              `${baseUrl}oauth2/authorization/google`)
             }
           >
             <img src="/src/assets/google.png"
@@ -185,7 +185,7 @@ const baseUrl = import.meta.env.VITE_API;
           <NaverButton
             onClick={() =>
             (window.location.href =
-              `${baseUrl}/oauth2/authorization/naver`)
+              `${baseUrl}oauth2/authorization/naver`)
             }
           >
             <img

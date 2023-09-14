@@ -18,7 +18,7 @@ const ReportDetail: React.FC = () => {
 
   const fetchReportDetail = async () => {
     const response = await fetch(
-      `http://localhost:8080/api/reports/${reportApiId}`
+      `${import.meta.env.VITE_API}api/reports/${reportApiId}`
     );
     if (response.ok) {
       const data = await response.json();
@@ -35,7 +35,7 @@ const ReportDetail: React.FC = () => {
 
   const updateReportStatus = async (newStatus: string) => {
     const response = await fetch(
-      `http://localhost:8080/api/reports/${reportApiId}`,
+      `${import.meta.env.VITE_API}api/reports/${reportApiId}`,
       {
         method: 'PUT',
         headers: {
@@ -55,7 +55,7 @@ const ReportDetail: React.FC = () => {
 
   const deleteReport = async () => {
     const response = await fetch(
-      `http://localhost:8080/api/reports/${reportApiId}`,
+      `${import.meta.env.VITE_API}api/reports/${reportApiId}`,
       {
         method: 'DELETE',
       }
