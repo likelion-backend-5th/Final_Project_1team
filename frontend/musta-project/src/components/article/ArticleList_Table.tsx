@@ -45,7 +45,7 @@ const columns: GridColDef[] = [
 ];
 
 const PAGE_SIZE: number = 10;
-const baseURL = 'http://localhost:8080/api/articles';
+const baseURL = `${import.meta.env.VITE_API}api/articles`;
 
 const ArticleList = () => {
   const [articleArrayList, setArticleArrayList] = useState<Article[]>([]);
