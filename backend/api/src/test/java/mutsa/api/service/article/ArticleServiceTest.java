@@ -6,12 +6,13 @@
 
 package mutsa.api.service.article;
 
+import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.config.security.CustomPrincipalDetails;
 import mutsa.api.dto.article.ArticleCreateRequestDto;
 import mutsa.api.dto.article.ArticleFilterDto;
 import mutsa.api.dto.article.ArticleResponseDto;
 import mutsa.api.dto.article.ArticleUpdateRequestDto;
-import mutsa.api.service.article.ArticleService;
 import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.article.ArticleStatus;
@@ -27,13 +28,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ActiveProfiles("test")
 @Transactional
@@ -57,6 +58,7 @@ public class ArticleServiceTest {
             Article article = Article.builder()
                     .title("article-" + (i + 1))
                     .description("desc-" + (i + 1))
+                    .price((long) (i * 1000))
                     .user(user)
                     .build();
             articles.add(article);
@@ -80,14 +82,14 @@ public class ArticleServiceTest {
 
         requestDto.setTitle("Article1");
         requestDto.setDescription("Article1 Desc");
-        requestDto.setUsername(user.getUsername());
+        requestDto.setPrice(10000L);
 
         ArticleResponseDto responseDto = articleService.save(requestDto);
 
         assert responseDto != null;
         Assertions.assertEquals(requestDto.getTitle(), responseDto.getTitle());
         Assertions.assertEquals(requestDto.getDescription(), responseDto.getDescription());
-        Assertions.assertEquals(requestDto.getUsername(), responseDto.getUsername());
+        Assertions.assertEquals(requestDto.getPrice(), responseDto.getPrice());
     }
 
     @Test
@@ -96,8 +98,10 @@ public class ArticleServiceTest {
         ArticleUpdateRequestDto updateDto = new ArticleUpdateRequestDto(
                 "[Updated]Pre Article 1",
                 "[Updated]Pre Article 1 desc",
-                user.getUsername(),
-                articles.get(0).getApiId()
+                articles.get(0).getApiId(),
+                ArticleStatus.EXPIRED,
+                null,
+                119000L
         );
 
         ArticleResponseDto responseDto = articleService.update(updateDto);
@@ -105,7 +109,6 @@ public class ArticleServiceTest {
         assert responseDto != null;
         Assertions.assertEquals(updateDto.getTitle(), responseDto.getTitle());
         Assertions.assertEquals(updateDto.getDescription(), responseDto.getDescription());
-        Assertions.assertEquals(updateDto.getUsername(), responseDto.getUsername());
     }
 
     @Test

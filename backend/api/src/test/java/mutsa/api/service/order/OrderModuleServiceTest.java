@@ -4,17 +4,22 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.dto.order.OrderDetailResponseDto;
-import mutsa.api.dto.order.OrderResponseDto;
-import mutsa.api.dto.order.OrderStatueRequestDto;
+import mutsa.api.dto.order.OrderStatusRequestDto;
+import mutsa.common.domain.filter.order.OrderFilter;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
+import mutsa.common.domain.models.payment.PayType;
+import mutsa.common.domain.models.payment.Payment;
 import mutsa.common.domain.models.user.User;
+import mutsa.common.dto.order.OrderResponseDto;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
+import mutsa.common.repository.payment.PaymentRepository;
 import mutsa.common.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,13 +28,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = ApiApplication.class)
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
 @ActiveProfiles("test")
 @Transactional
 @Slf4j
@@ -44,9 +53,11 @@ class OrderModuleServiceTest {
     private ArticleRepository articleRepository;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     private User seller, consumer, other;
-    private Article article;
+    private Article article, article2;
 
     @BeforeEach
     public void init() {
@@ -61,9 +72,18 @@ class OrderModuleServiceTest {
                 .title("Pre Article 1")
                 .description("Pre Article 1 desc")
                 .user(seller)
+                .price(129000L)
                 .build();
 
         article = articleRepository.save(article);
+
+        article2 = Article.builder()
+                .title("Pre Article 2")
+                .description("Pre Article 2 desc")
+                .user(seller)
+                .build();
+
+        article2 = articleRepository.save(article2);
     }
 
     @Test
@@ -71,13 +91,15 @@ class OrderModuleServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
+        Payment payment = Payment.of(PayType.CARD, article, savedOrder);
+        paymentRepository.save(payment);
 
         //when
         OrderDetailResponseDto detailOrder = orderModuleService.findDetailOrder(article, seller, savedOrder.getApiId());
 
         //then
         assertThat(detailOrder.getArticleApiId()).isEqualTo(savedOrder.getArticle().getApiId());
-        assertThat(detailOrder.getUsername()).isEqualTo(savedOrder.getUser().getUsername());
+        assertThat(detailOrder.getConsumerName()).isEqualTo(savedOrder.getUser().getUsername());
     }
 
     @Test
@@ -86,6 +108,8 @@ class OrderModuleServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
+        Payment payment = Payment.of(PayType.CARD, article, savedOrder);
+        paymentRepository.save(payment);
 
         //when, then
         Assertions.assertThatThrownBy(() -> orderModuleService.findDetailOrder(article, other, savedOrder.getApiId()))
@@ -101,7 +125,8 @@ class OrderModuleServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when
-        Page<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, seller, 0, 20);
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Page<OrderResponseDto> allOrder = orderModuleService.findAllOrder(article, seller, null, pageable);
 
         //then
         log.info(allOrder.toString());
@@ -115,13 +140,79 @@ class OrderModuleServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when, then
-        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, consumer, 0, 20))
+        PageRequest pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, consumer, null, pageable))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.ARTICLE_PERMISSION_DENIED.getMessage());
 
-        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, other, 0, 20))
+        Assertions.assertThatThrownBy(() -> orderModuleService.findAllOrder(article, other, null, pageable))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.ARTICLE_PERMISSION_DENIED.getMessage());
+    }
+
+    @Test
+    void findByFilterBySeller() {
+        //given
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
+
+        String[] sortingProperties = {"id"};
+        Sort.Direction direction = Sort.Direction.fromString("asc");
+        PageRequest pageable = PageRequest.of(0, 10, direction, sortingProperties);
+        OrderFilter orderFilter = OrderFilter.of("SELLER", OrderStatus.PROGRESS.name(), "");
+
+        //when
+        Page<OrderResponseDto> allOrder = orderModuleService.getOrderByFilter(seller, orderFilter, pageable);
+
+        //then
+        log.info(allOrder.toString());
+        assertThat(allOrder.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    void findByFilterBySeller2() {
+        //given
+        List<Order> dummy = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            dummy.add(Order.of(article, consumer));
+            dummy.add(Order.of(article2, consumer));
+        }
+        orderRepository.saveAll(dummy);
+
+
+        String[] sortingProperties = {"id"};
+        Sort.Direction direction = Sort.Direction.fromString("asc");
+        PageRequest pageable = PageRequest.of(0, 10, direction, sortingProperties);
+        OrderFilter orderFilter = OrderFilter.of("SELLER", OrderStatus.PROGRESS.name(), "Article");
+
+        //when
+        Page<OrderResponseDto> allOrder = orderModuleService.getOrderByFilter(seller, orderFilter, pageable);
+
+        //then
+        log.info(allOrder.getContent().toString());
+        assertThat(allOrder.getTotalElements()).isEqualTo(20);
+    }
+
+    @Test
+    void findByFilterByConsumer() {
+        //given
+        List<Order> dummy = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            dummy.add(Order.of(article, consumer));
+        }
+        dummy.add(Order.of(article, seller));
+        orderRepository.saveAll(dummy);
+
+        String[] sortingProperties = {"id"};
+        Sort.Direction direction = Sort.Direction.fromString("asc");
+        PageRequest pageable = PageRequest.of(0, 10, direction, sortingProperties);
+        OrderFilter orderFilter = OrderFilter.of("CONSUMER", OrderStatus.PROGRESS.name(), "");
+
+        //when
+        Page<OrderResponseDto> allOrder = orderModuleService.getOrderByFilter(consumer, orderFilter, pageable);
+
+        //then
+        assertThat(allOrder.getTotalElements()).isEqualTo(20);
     }
 
     @Test
@@ -132,7 +223,7 @@ class OrderModuleServiceTest {
         OrderDetailResponseDto orderDetailResponseDto = orderModuleService.saveOrder(article, consumer);
 
         //then
-        assertThat(orderDetailResponseDto.getUsername()).isEqualTo(consumer.getUsername());
+        assertThat(orderDetailResponseDto.getConsumerName()).isEqualTo(consumer.getUsername());
     }
 
     @Test
@@ -140,11 +231,13 @@ class OrderModuleServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
+        Payment payment = Payment.of(PayType.CARD, article, savedOrder);
+        paymentRepository.save(payment);
         entityManager.flush();
         entityManager.clear();
 
         //when
-        orderModuleService.updateOrderStatus(article, consumer, new OrderStatueRequestDto("END"), savedOrder.getApiId());
+        orderModuleService.updateOrderStatus(article, consumer, new OrderStatusRequestDto("END"), savedOrder.getApiId());
         entityManager.flush();
         entityManager.clear();
 

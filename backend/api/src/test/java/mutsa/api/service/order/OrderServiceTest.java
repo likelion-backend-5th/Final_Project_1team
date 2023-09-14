@@ -3,29 +3,37 @@ package mutsa.api.service.order;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
+import mutsa.api.dto.CustomPage;
 import mutsa.api.dto.order.OrderDetailResponseDto;
-import mutsa.api.dto.order.OrderResponseDto;
-import mutsa.api.dto.order.OrderStatueRequestDto;
+import mutsa.api.dto.order.OrderFilterDto;
+import mutsa.api.dto.order.OrderStatusRequestDto;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.order.OrderStatus;
+import mutsa.common.domain.models.payment.PayType;
+import mutsa.common.domain.models.payment.Payment;
 import mutsa.common.domain.models.user.User;
+import mutsa.common.dto.order.OrderResponseDto;
 import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
+import mutsa.common.repository.payment.PaymentRepository;
 import mutsa.common.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
 @ActiveProfiles("test")
 @Transactional
 @Slf4j
@@ -40,9 +48,12 @@ class OrderServiceTest {
     private ArticleRepository articleRepository;
     @Autowired
     private EntityManager entityManager;
-
+    @Autowired
+    private PaymentRepository paymentRepository;
+    @Autowired
+    private RedisTemplate<String, User> userRedisTemplate;
     private User seller, consumer;
-    private Article article;
+    private Article article, article2;
 
     @BeforeEach
     public void init() {
@@ -55,9 +66,25 @@ class OrderServiceTest {
                 .title("Pre Article 1")
                 .description("Pre Article 1 desc")
                 .user(seller)
+                .price(12900L)
                 .build();
 
         article = articleRepository.save(article);
+
+        article2 = Article.builder()
+                .title("Pre Article 2")
+                .description("Pre Article 2 desc")
+                .user(seller)
+                .build();
+
+        article2 = articleRepository.save(article2);
+
+    }
+
+    @AfterEach
+    public void tearDown() {
+        // Redis 데이터 삭제
+        userRedisTemplate.getConnectionFactory().getConnection().flushAll();
     }
 
     @Test
@@ -65,13 +92,17 @@ class OrderServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
+        Payment payment = Payment.of(PayType.CARD, article, savedOrder);
+        payment.setOrder(savedOrder);
+        paymentRepository.save(payment);
 
         //when
-        OrderDetailResponseDto detailOrder = orderService.findDetailOrder(article.getApiId(), savedOrder.getApiId(), seller.getUsername());
+        OrderDetailResponseDto detailOrder = orderService.findDetailOrder(article.getApiId(), savedOrder.getApiId(), consumer.getUsername());
 
         //then
         assertThat(detailOrder.getArticleApiId()).isEqualTo(savedOrder.getArticle().getApiId());
-        assertThat(detailOrder.getUsername()).isEqualTo(savedOrder.getUser().getUsername());
+        assertThat(detailOrder.getConsumerName()).isEqualTo(savedOrder.getUser().getUsername());
+        assertThat(detailOrder.getAmount()).isEqualTo(payment.getAmount());
     }
 
     @Test
@@ -81,11 +112,11 @@ class OrderServiceTest {
         Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
 
         //when
-        Page<OrderResponseDto> allOrder = orderService.findAllOrder(article.getApiId(), 0, 20, seller.getUsername());
+        CustomPage<OrderResponseDto> allOrder = orderService.findAllOrder(article.getApiId(), "asc", null, 0, 20, seller.getUsername());
 
         //then
         log.info(allOrder.toString());
-        assertThat(allOrder.getTotalElements()).isEqualTo(2);
+        assertThat(allOrder.getPageable().getTotalElements()).isEqualTo(2);
 
     }
 
@@ -97,7 +128,52 @@ class OrderServiceTest {
         OrderDetailResponseDto orderDetailResponseDto = orderService.saveOrder(article.getApiId(), seller.getUsername());
 
         //then
-        assertThat(orderDetailResponseDto.getUsername()).isEqualTo(seller.getUsername());
+        assertThat(orderDetailResponseDto.getConsumerName()).isEqualTo(seller.getUsername());
+    }
+
+    @Test
+    void findByFilterBySeller() {
+        //given
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
+
+        //when
+        OrderFilterDto filterDto = new OrderFilterDto(OrderStatus.PROGRESS.name(), "", "asc", "SELLER", 0, 10);
+        CustomPage<OrderResponseDto> allOrder = orderService.getOrderPage(filterDto, seller.getUsername()).getOrderResponseDtos();
+
+        //then
+        log.info(allOrder.toString());
+        assertThat(allOrder.getPageable().getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    void findByFilterBySeller2() {
+        //given
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder3 = orderRepository.save(Order.of(article2, consumer));
+
+        //when
+        OrderFilterDto filterDto = new OrderFilterDto(OrderStatus.PROGRESS.name(), "Pre Article 2", "asc", "SELLER", 0, 10);
+        CustomPage<OrderResponseDto> orderResponseDtos = orderService.getOrderPage(filterDto, seller.getUsername()).getOrderResponseDtos();
+
+        //then
+        assertThat(orderResponseDtos.getPageable().getTotalElements()).isEqualTo(1);
+    }
+
+
+    @Test
+    void findByFilterByConsumer() {
+        //given
+        Order savedOrder1 = orderRepository.save(Order.of(article, consumer));
+        Order savedOrder2 = orderRepository.save(Order.of(article, seller));
+
+        //when
+        OrderFilterDto filterDto = new OrderFilterDto(OrderStatus.PROGRESS.name(), "", "asc", "CONSUMER", 0, 10);
+        CustomPage<OrderResponseDto> orderResponseDtos = orderService.getOrderPage(filterDto, consumer.getUsername()).getOrderResponseDtos();
+
+        //then
+        assertThat(orderResponseDtos.getPageable().getTotalPages()).isEqualTo(1);
     }
 
     @Test
@@ -105,11 +181,13 @@ class OrderServiceTest {
         //given
         Order order = Order.of(article, consumer);
         Order savedOrder = orderRepository.save(order);
+        Payment payment = Payment.of(PayType.CARD, article, order);
+        paymentRepository.save(payment);
         entityManager.flush();
         entityManager.clear();
 
         //when
-        orderService.updateOrderStatus(article.getApiId(), savedOrder.getApiId(), new OrderStatueRequestDto("END"), consumer.getUsername());
+        orderService.updateOrderStatus(article.getApiId(), savedOrder.getApiId(), new OrderStatusRequestDto("END"), consumer.getUsername());
         entityManager.flush();
         entityManager.clear();
 

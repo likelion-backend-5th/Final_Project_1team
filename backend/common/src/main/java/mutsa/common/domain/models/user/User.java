@@ -1,7 +1,10 @@
 package mutsa.common.domain.models.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import mutsa.common.domain.models.BaseTimeEntity;
 import mutsa.common.domain.models.article.Article;
 import mutsa.common.domain.models.order.Order;
@@ -22,6 +25,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "user")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User extends BaseTimeEntity implements Serializable {
 
     @Id
@@ -54,12 +58,13 @@ public class User extends BaseTimeEntity implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @JsonIgnore
     @Builder.Default
-    private final OAuth2Type oAuth2Type = OAuth2Type.GOOGLE;
+    private OAuth2Type oAuth2Type = OAuth2Type.NONE;
 
     @Builder.Default
     @Column(nullable = false, length = 2)
-    private Boolean isOAuth2 = true;
+    private Boolean isOAuth2 = false;
 
     @Builder.Default
     @Column(nullable = false, length = 2)
@@ -67,21 +72,26 @@ public class User extends BaseTimeEntity implements Serializable {
 
     /* mapping table  */
     @OneToOne(mappedBy = "user", fetch = LAZY)
+    @JsonIgnore
     private Member member;
 
     @Singular
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
+    @JsonIgnore
     private final Set<UserRole> userRoles = new HashSet<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Article> articles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = LAZY)
+    @JsonIgnore
     @Builder.Default
     private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<Order> orders = new ArrayList<>();
 
     public void updatePassword(String encodePassword) {
@@ -107,6 +117,14 @@ public class User extends BaseTimeEntity implements Serializable {
         this.address = address;
     }
 
+    public void updateImageUrl(String url) {
+        this.imageUrl = url;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
     public static User of(String username, String encodedPassword, String email,
                           String oauth2Username, String imageUrl, Member member) {
 
@@ -114,11 +132,30 @@ public class User extends BaseTimeEntity implements Serializable {
                 .username(username)
                 .password(encodedPassword)
                 .email(email)
-                .oauth2Username(oauth2Username == null ? "" : username)
+                .oauth2Username(oauth2Username == null ? "" : oauth2Username)
                 .imageUrl(StringUtils.hasText(imageUrl) ? imageUrl : "")
                 .build();
         user.addMember(member);
         return user;
     }
 
+    public static User of(String username, String encodedPassword, String email,
+                          String oauth2Username, OAuth2Type oauthType, String imageUrl, Member member) {
+
+        User user = User.builder()
+                .username(username)
+                .password(encodedPassword)
+                .email(email)
+                .oauth2Username(oauth2Username == null ? "" : oauth2Username)
+                .oAuth2Type(oauthType)
+                .imageUrl(StringUtils.hasText(imageUrl) ? imageUrl : "")
+                .isOAuth2(true)
+                .build();
+        user.addMember(member);
+        return user;
+    }
+
+    public void updateAddress(Address address) {
+        this.address = address;
+    }
 }

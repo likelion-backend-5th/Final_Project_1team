@@ -4,19 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 import mutsa.common.domain.models.BaseEntity;
 import mutsa.common.domain.models.Status;
+import mutsa.common.domain.models.image.Image;
 import mutsa.common.domain.models.order.Order;
 import mutsa.common.domain.models.review.Review;
 import mutsa.common.domain.models.user.User;
-import mutsa.common.exception.BusinessException;
-import mutsa.common.exception.ErrorCode;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Builder
@@ -44,6 +39,10 @@ public class Article extends BaseEntity implements Serializable {
 
     private String thumbnail;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Long price = 0L;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -53,6 +52,10 @@ public class Article extends BaseEntity implements Serializable {
     @Column(nullable = false)
     @Builder.Default
     private ArticleStatus articleStatus = ArticleStatus.LIVE;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Image> images = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "article")
     @Builder.Default
@@ -74,8 +77,11 @@ public class Article extends BaseEntity implements Serializable {
         this.orders.add(order);
     }
 
-    public void validUser(User user) {
-        if (!Objects.equals(this.user.getId(), user.getId()))
-            throw new BusinessException(ErrorCode.ARTICLE_PERMISSION_DENIED);
+    public void addImage(Image image) {this.images.add(image);}
+
+    public void addImages(Collection<Image> imageCollections) {this.images.addAll(imageCollections);}
+
+    public boolean validUser(User user) {
+        return Objects.equals(this.user.getId(), user.getId());
     }
 }

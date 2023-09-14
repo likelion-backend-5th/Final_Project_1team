@@ -1,12 +1,12 @@
 package mutsa.api.controller.auth;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
+import mutsa.api.ApiApplication;
+import mutsa.api.config.TestBootstrapConfig;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.dto.auth.LoginRequest;
-import mutsa.api.util.JwtUtil;
+import mutsa.api.util.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -17,7 +17,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class, TestBootstrapConfig.class})
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @ActiveProfiles("test")
@@ -34,11 +37,11 @@ class AuthControllerTest {
         String body = new ObjectMapper().writeValueAsString(loginRequest);
 
         mockMvc.perform(post("/api/auth/login", body)
-                .cookie(new Cookie(JwtUtil.REFRESH_TOKEN, "value"))
-                .contentType("application/json")
-                .content(body)
-            )
-            .andDo(print())
-            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+                        .cookie(new Cookie(JwtTokenProvider.REFRESH_TOKEN, "value"))
+                        .contentType("application/json")
+                        .content(body)
+                )
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
     }
 }

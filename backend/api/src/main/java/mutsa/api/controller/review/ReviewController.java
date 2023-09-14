@@ -59,11 +59,13 @@ public class ReviewController {
     public ResponseEntity<Page<ReviewResponseDto>> getAllReview(
         @PathVariable("articleApiId") String articleApiId,
         @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
-        @RequestParam(value = "limit", defaultValue = "20") Integer pageSize
+        @RequestParam(value = "limit", defaultValue = "5") Integer pageSize,
+        @RequestParam(value = "sort", defaultValue = "descByDate") String sortType
+
     ) {
         return ResponseEntity
             .ok()
-            .body(reviewService.findAllReview(articleApiId, pageNum, pageSize));
+            .body(reviewService.findAllReview(articleApiId, pageNum, pageSize, sortType));
     }
 
     // 후기 수정

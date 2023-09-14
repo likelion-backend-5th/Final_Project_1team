@@ -7,7 +7,12 @@
 package mutsa.api.dto.article;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import mutsa.api.dto.image.ImagesRequestDto;
+import mutsa.common.domain.models.article.ArticleStatus;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,7 +25,9 @@ public class ArticleUpdateRequestDto {
     @NotBlank
     private String description;
     @NotBlank
-    private String username;
-    @NotBlank
     private String apiId;
+    @NotNull
+    private ArticleStatus articleStatus;
+    private List<ImagesRequestDto> images;
+    private Long price;
 }

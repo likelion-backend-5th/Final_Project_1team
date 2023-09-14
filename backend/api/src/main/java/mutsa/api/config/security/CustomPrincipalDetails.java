@@ -1,6 +1,7 @@
 package mutsa.api.config.security;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import mutsa.common.domain.models.user.Role;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.domain.models.user.UserRole;
@@ -15,6 +16,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 @Getter
 public class CustomPrincipalDetails implements UserDetails, OAuth2User, Serializable {
     private String apiId;
@@ -88,6 +90,7 @@ public class CustomPrincipalDetails implements UserDetails, OAuth2User, Serializ
     }
 
     public static CustomPrincipalDetails of(User user, Map<String, Object> attributes) {
+        log.info("CustomPrincipalDetails 생성 ");
         return CustomPrincipalDetails.builder()
                 .apiId(user.getApiId())
                 .username(user.getUsername())

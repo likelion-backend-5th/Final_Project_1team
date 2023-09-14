@@ -1,10 +1,9 @@
 package mutsa.api.service.review;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import jakarta.persistence.EntityManager;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
 import mutsa.common.domain.models.article.Article;
@@ -16,15 +15,24 @@ import mutsa.common.repository.article.ArticleRepository;
 import mutsa.common.repository.order.OrderRepository;
 import mutsa.common.repository.review.ReviewRepository;
 import mutsa.common.repository.user.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
+import java.util.Objects;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
+@ActiveProfiles("test")
 @Transactional
 @Slf4j
 public class ReviewServiceTest {
@@ -41,6 +49,8 @@ public class ReviewServiceTest {
     private OrderRepository orderRepository;
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private RedisTemplate<String, User> userRedisTemplate;
 
     private User reviewer1, reviewer2, reviewer3, reviewer4;
     private Article article;
@@ -64,15 +74,21 @@ public class ReviewServiceTest {
         seller = userRepository.save(seller);
 
         article = Article.builder()
-            .title("Pre Article 1")
-            .description("Pre Article 1 desc")
-            .user(seller)
-            .build();
+                .title("Pre Article 1")
+                .description("Pre Article 1 desc")
+                .user(seller)
+                .build();
         article = articleRepository.save(article);
 
         order = Order.of(article, reviewer1);
         order.setOrderStatus(OrderStatus.END);
         order = orderRepository.save(order);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        // Redis 데이터 삭제
+        Objects.requireNonNull(userRedisTemplate.getConnectionFactory()).getConnection().flushAll();
     }
 
     @DisplayName("후기 생성 서비스 테스트")
@@ -85,8 +101,8 @@ public class ReviewServiceTest {
 
         // when
         ReviewResponseDto responseDto
-            = reviewService.createReview(article.getApiId(), order.getApiId(),
-            reviewer1.getUsername(), requestDto);
+                = reviewService.createReview(article.getApiId(), order.getApiId(),
+                reviewer1.getUsername(), requestDto);
 
         // then
         assertThat(responseDto.getUsername()).isEqualTo(reviewer1.getUsername());
@@ -118,7 +134,7 @@ public class ReviewServiceTest {
         reviewRepository.save(Review.of(reviewer4, article, "content4", 4));
 
         // when
-        Page<ReviewResponseDto> allReviews = reviewService.findAllReview(article.getApiId(), 1, 20);
+        Page<ReviewResponseDto> allReviews = reviewService.findAllReview(article.getApiId(), 1, 20, "descByDate");
 
         // then
         log.info(allReviews.getContent().toString());
@@ -138,7 +154,7 @@ public class ReviewServiceTest {
 
         // when
         ReviewResponseDto responseDto = reviewService.updateReview(review.getApiId(),
-            reviewer1.getUsername(), updateDto);
+                reviewer1.getUsername(), updateDto);
 
         // then
         assertThat(updateDto.getContent()).isEqualTo(responseDto.getContent());

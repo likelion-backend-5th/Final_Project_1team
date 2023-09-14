@@ -2,9 +2,11 @@ package mutsa.common.domain.models.order;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import mutsa.common.domain.models.BaseEntity;
 import mutsa.common.domain.models.Status;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.payment.Payment;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.exception.ErrorCode;
@@ -26,6 +28,7 @@ import static mutsa.common.domain.models.Status.ACTIVE;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SQLDelete(sql = "UPDATE `order` SET status = 'DELETED' WHERE order_id = ?")
 @Where(clause = "status = 'ACTIVE' ")
+@Slf4j
 public class Order extends BaseEntity implements Serializable {
 
     @Id
@@ -34,7 +37,6 @@ public class Order extends BaseEntity implements Serializable {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Builder.Default
     private final String apiId = UUID.randomUUID().toString();
 
     @Enumerated(EnumType.STRING)
@@ -52,6 +54,9 @@ public class Order extends BaseEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Status status = ACTIVE;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Payment payment;
 
     public static Order of(Article article, User user) {
         Order order = Order.builder()
@@ -90,12 +95,30 @@ public class Order extends BaseEntity implements Serializable {
     }
 
     public void validSellerOrConsumerId(User user) {
-        if (!Objects.equals(this.user.getId(), user.getId()) && !Objects.equals(this.article.getUser().getId(), user.getId())) {
+        Long userId = user.getId();
+        log.info("{} {}, {} {}",this.user.getId(), userId,this.article.getUser().getId(), userId);
+        if (!Objects.equals(this.user.getId(), userId) && !Objects.equals(this.article.getUser().getId(), userId)) {
             throw new BusinessException(ErrorCode.ORDER_PERMISSION_DENIED);
         }
     }
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", apiId='" + apiId + '\'' +
+                ", orderStatus=" + orderStatus +
+                ", article=" + article.getApiId() +
+                ", user=" + user.getApiId() +
+                ", status=" + status +
+                '}';
     }
 }

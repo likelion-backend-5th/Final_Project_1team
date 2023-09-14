@@ -1,14 +1,10 @@
 package mutsa.api.dto.user;
 
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.domain.models.user.embedded.Address;
+import mutsa.common.domain.models.user.embedded.OAuth2Type;
 
 @Getter
 @Setter
@@ -28,6 +24,9 @@ public class SignUpUserDto {
     private String checkPassword;
 
     @NotEmpty
+    private String nickname;
+
+    @NotEmpty
 //    @Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@\" + \"[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$")
     private String email;
 
@@ -38,11 +37,21 @@ public class SignUpUserDto {
     private String zipcode;
     private String city;
 
+
     public static User from(SignUpUserDto signUpUserDto) {
         User user = User.of(signUpUserDto.getUsername(), signUpUserDto.getPassword(),
-            signUpUserDto.getEmail(), null, null, null);
+                signUpUserDto.getEmail(), null, null, null);
         Address address = Address.of(signUpUserDto.getZipcode(), signUpUserDto.getCity(),
-            signUpUserDto.getStreet());
+                signUpUserDto.getStreet());
+        user.addAddress(address);
+        return user;
+    }
+
+    public static User from(SignUpUserDto signUpUserDto, String oauthName, String picture, OAuth2Type oAuth2Type) {
+        User user = User.of(signUpUserDto.getUsername(), signUpUserDto.getPassword(),
+                signUpUserDto.getEmail(), oauthName, oAuth2Type, picture, null);
+        Address address = Address.of(signUpUserDto.getZipcode(), signUpUserDto.getCity(),
+                signUpUserDto.getStreet());
         user.addAddress(address);
         return user;
     }

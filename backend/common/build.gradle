@@ -49,9 +49,13 @@ dependencies {
     //kafka
     implementation 'org.springframework.kafka:spring-kafka'
 
-    //swagger 3.0
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+    //socket - gson
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    //java8 LocalDateTime 직렬화 오류 해결을 위해 추가
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 }
 
 tasks.bootJar { enabled = false}

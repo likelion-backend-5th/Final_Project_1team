@@ -1,0 +1,104 @@
+= Order 임시 문서(토큰 인증부분이 없이 진행)
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+
+== 주문 생성
+
+=== Request
+
+include::{snippets}/api/order/주문 생성/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/api/order/주문 생성/http-response.adoc[]
+
+==== test
+
+include::{snippets}//api/order/주문 생성/curl-request.adoc[]
+
+== 주문 단건 조회
+
+=== Request
+
+include::{snippets}/api/order/주문 단일건 조회/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/api/order/주문 단일건 조회/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/order/주문 단일건 조회/curl-request.adoc[]
+
+== 주문 게시글별 조회, 페이징 조회
+
+=== Request
+
+include::{snippets}/api/order/주문 게시글별 조회/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/api/order/주문 게시글별 조회/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/order/주문 게시글별 조회/curl-request.adoc[]
+
+== 주문 판매자 조회
+
+=== Request
+
+include::{snippets}/api/order/판매자의 필터 조회/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/api/order/판매자의 필터 조회/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/order/판매자의 필터 조회/curl-request.adoc[]
+
+== 주문 구매자 조회
+
+=== Request
+
+include::{snippets}/api/order/구매자의 필터 조회/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/api/order/구매자의 필터 조회/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/order/구매자의 필터 조회/curl-request.adoc[]
+
+== 주문 상태 업데이트
+
+=== Request
+
+include::{snippets}/api/order/주문 싱태 수정/http-request.adoc[]
+=== Response
+
+include::{snippets}/api/order/주문 싱태 수정/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/order/주문 싱태 수정/curl-request.adoc[]
+
+
+== 주문 삭제
+
+=== Request
+
+include::{snippets}/api/order/주문 삭제/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/api/order/주문 삭제/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/order/주문 삭제/curl-request.adoc[]

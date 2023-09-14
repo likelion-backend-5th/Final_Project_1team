@@ -1,0 +1,48 @@
+= Chatroom 임시 문서(토큰 인증부분이 없이 진행)
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+
+== 채팅방 생성
+
+=== Request
+
+include::{snippets}/api/chatroom/채팅방 생성/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/api/chatroom/채팅방 생성/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/chatroom/채팅방 생성/curl-request.adoc[]
+
+== 나의 채팅방 조회
+
+=== Request
+
+include::{snippets}/api/chatroom/나의 모든 채팅방 조회/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/api/chatroom/나의 모든 채팅방 조회/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/chatroom/나의 모든 채팅방 조회/curl-request.adoc[]
+
+== 단일 채팅방 조회
+
+=== Request
+
+include::{snippets}/api/chatroom/한개의 채팅방 조회/http-request.adoc[]
+
+=== Response
+
+include::{snippets}/api/chatroom/한개의 채팅방 조회/http-response.adoc[]
+
+==== test
+
+include::{snippets}/api/chatroom/한개의 채팅방 조회/curl-request.adoc[]

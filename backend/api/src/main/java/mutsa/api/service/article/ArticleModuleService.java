@@ -6,6 +6,7 @@
 
 package mutsa.api.service.article;
 
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import mutsa.api.dto.article.ArticleCreateRequestDto;
 import mutsa.api.dto.article.ArticleUpdateRequestDto;
@@ -13,6 +14,7 @@ import mutsa.api.util.ArticleUtil;
 import mutsa.api.util.SecurityUtil;
 import mutsa.common.domain.filter.article.ArticleFilter;
 import mutsa.common.domain.models.article.Article;
+import mutsa.common.domain.models.image.Image;
 import mutsa.common.domain.models.user.User;
 import mutsa.common.exception.BusinessException;
 import mutsa.common.repository.article.ArticleRepository;
@@ -26,7 +28,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import static mutsa.common.exception.ErrorCode.ARTICLE_NOT_FOUND;
-import static mutsa.common.exception.ErrorCode.USER_NOT_FOUND;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,10 @@ public class ArticleModuleService {
     public Article save(ArticleCreateRequestDto requestDto) {
         articleUtil.isValidUser();
 
-        return articleRepository.save(dtoToEntity(requestDto));
+        Article entity = dtoToEntity(requestDto);
+        entity.setUser(articleUtil.getUserFromSecurityContext());
+
+        return articleRepository.save(entity);
     }
 
     @Transactional
@@ -52,8 +56,17 @@ public class ArticleModuleService {
 
         article.setTitle(updateDto.getTitle());
         article.setDescription(updateDto.getDescription());
+        article.setArticleStatus(updateDto.getArticleStatus());
+        article.setPrice(updateDto.getPrice() < 0 ? 0 : updateDto.getPrice());
 
         return article;
+    }
+
+    @Transactional
+    public Article setImages(Article article, Collection<Image> imageCollection) {
+        article.addImages(imageCollection);
+
+        return articleRepository.save(article);
     }
 
     @Transactional
@@ -61,28 +74,15 @@ public class ArticleModuleService {
         return articleRepository.save(dtoToEntity(requestDto));
     }
 
-    @Transactional
-    public Article updateTest(ArticleUpdateRequestDto updateDto) {
-        Article article = articleRepository.getByApiId(updateDto.getApiId())
-                .orElseThrow(() -> new BusinessException(ARTICLE_NOT_FOUND));
-
-        article.setTitle(updateDto.getTitle());
-        article.setDescription(updateDto.getDescription());
-
-        return article;
-    }
-
     public Article dtoToEntity(ArticleCreateRequestDto requestDto) {
         return Article.builder()
                 .title(requestDto.getTitle())
                 .description(requestDto.getDescription())
-                .user(userRepository.findByUsername(requestDto.getUsername())
-                              .orElseThrow(() -> new BusinessException(USER_NOT_FOUND))
-                )
+                .price(requestDto.getPrice() < 0 ? 0 : requestDto.getPrice())
                 .build();
     }
 
-    public Article updateToEntity(ArticleUpdateRequestDto updateDto) {
+    public Article updateDtoToEntity(ArticleUpdateRequestDto updateDto) {
         return articleRepository.getByApiId(updateDto.getApiId())
                 .orElseThrow(() -> new BusinessException(ARTICLE_NOT_FOUND));
     }
@@ -111,7 +111,7 @@ public class ArticleModuleService {
 
     /**
      * 유저 호출에 의한 삭제를 할 경우 이 메소드를 실행할 것!
-     * 현재 호출 한 유저가 게시글 작성자인지, 아니면 어드민 권한을 가지고 있는지 확인 후 삭제 기능 수행
+     * 현재 로그인한 유저의 게시글인지 조회한 이후에, 삭제 수행
      *
      * @param apiId 해당 게시글의 apiId(uuid)
      */
@@ -129,7 +129,7 @@ public class ArticleModuleService {
             String orderProperties,
             ArticleFilter articleFilter
     ) {
-        Pageable pageable = PageRequest.of(Math.max(0, pageNum - 1), size, direction, orderProperties);
+        Pageable pageable = PageRequest.of(Math.max(0, pageNum), size, direction, orderProperties);
 
         return articleRepository.getPageByUsername(
                 username,
@@ -140,43 +140,14 @@ public class ArticleModuleService {
 
     @Transactional(readOnly = true)
     public Page<Article> getPage(int pageNum, int size, Sort.Direction direction, String orderProperties, ArticleFilter articleFilter) {
-        Pageable pageable = PageRequest.of(Math.max(0, pageNum - 1), size, direction, orderProperties);
+        Pageable pageable = PageRequest.of(Math.max(0, pageNum), size, direction, orderProperties);
 
         return articleRepository.getPage(articleFilter, pageable);
     }
 
-    /**
-     * 테스트용 더미 게시글 생성 메소드
-     * @param count
-     * 게시글 생성 수, 최소 1이상 이어야 동작
-     * @return
-     */
     @Transactional
-    public List<Article> saveDummyArticles(Integer count) {
-        String username = SecurityUtil.getCurrentUsername();
-
-        if (username == null || username.isBlank() || username.equals("anonymousUser")) {
-            User testUser = userRepository.findByUsername("testuser").orElse(null);
-
-            if (testUser == null) {
-                testUser = User.of("testuser", passwordEncoder.encode("test"), "test@gmail.com", null, null, null);
-                testUser = userRepository.save(testUser);
-            }
-            username = testUser.getUsername();
-        }
-
-        ArticleCreateRequestDto requestDto;
-        List<Article> articles = new ArrayList<>();
-
-        for (Integer i = 0; i < count; i++) {
-            requestDto = new ArticleCreateRequestDto();
-            requestDto.setTitle("Article-" + (i+1));
-            requestDto.setDescription("Random Content-" + (i + 1));
-            requestDto.setUsername(username);
-
-            articles.add(save(requestDto));
-        }
-
-        return articles;
+    public Article deleteImages(Article article) {
+        article.setImages(new ArrayList<>());
+        return articleRepository.save(article);
     }
 }

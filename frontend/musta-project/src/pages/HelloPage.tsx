@@ -1,5 +1,3 @@
 export default () => {
-  return (
-    <h3>hello</h3>
-  );
+  return <h3>hello</h3>;
 };

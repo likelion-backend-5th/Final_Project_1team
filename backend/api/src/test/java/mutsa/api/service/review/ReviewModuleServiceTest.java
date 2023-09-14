@@ -1,12 +1,9 @@
 package mutsa.api.service.review;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import jakarta.persistence.EntityManager;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import mutsa.api.ApiApplication;
+import mutsa.api.config.TestRedisConfiguration;
 import mutsa.api.dto.review.ReviewRequestDto;
 import mutsa.api.dto.review.ReviewResponseDto;
 import mutsa.common.domain.models.article.Article;
@@ -25,9 +22,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest(classes = ApiApplication.class)
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@SpringBootTest(classes = {ApiApplication.class, TestRedisConfiguration.class})
+@ActiveProfiles("test")
 @Transactional
 @Slf4j
 public class ReviewModuleServiceTest {
@@ -61,10 +65,10 @@ public class ReviewModuleServiceTest {
         seller = userRepository.save(seller);
 
         article = Article.builder()
-            .title("Pre Article 1")
-            .description("Pre Article 1 desc")
-            .user(seller)
-            .build();
+                .title("Pre Article 1")
+                .description("Pre Article 1 desc")
+                .user(seller)
+                .build();
         article = articleRepository.save(article);
 
         order = Order.of(article, reviewer1);
@@ -112,7 +116,7 @@ public class ReviewModuleServiceTest {
         // when
         // then
         assertThrows(BusinessException.class,
-            () -> reviewModuleService.createReview(article, order, reviewer2, reviewRequestDto));
+                () -> reviewModuleService.createReview(article, order, reviewer2, reviewRequestDto));
     }
 
     @DisplayName("후기 단일 조회 모듈 서비스 테스트")
@@ -141,7 +145,7 @@ public class ReviewModuleServiceTest {
         reviewRepository.save(Review.of(reviewer2, article, "content2", 2));
 
         // when
-        Page<ReviewResponseDto> allReviews = reviewModuleService.findAllReview(article, 1, 20);
+        Page<ReviewResponseDto> allReviews = reviewModuleService.findAllReview(article, 1, 20, "descByDate");
 
         // then
         log.info(allReviews.getContent().toString());
@@ -182,7 +186,7 @@ public class ReviewModuleServiceTest {
         // when
         // then
         assertThrows(BusinessException.class,
-            () -> reviewModuleService.updateReview(reviewer2, review.getApiId(), updateDto));
+                () -> reviewModuleService.updateReview(reviewer2, review.getApiId(), updateDto));
     }
 
     @DisplayName("후기 삭제 모듈 서비스 테스트")
@@ -209,7 +213,7 @@ public class ReviewModuleServiceTest {
         // when
         // then
         assertThrows(BusinessException.class,
-            () -> reviewModuleService.deleteReview(reviewer2, review.getApiId()));
+                () -> reviewModuleService.deleteReview(reviewer2, review.getApiId()));
     }
 
     @Test
