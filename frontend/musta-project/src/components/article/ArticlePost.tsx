@@ -153,24 +153,6 @@ export function ArticlePost() {
     <StyledArticleDetail>
       <StyledCard>
         <Box>
-          <FormControl sx={{ marginY: '10px' }}>
-            <InputLabel htmlFor="article-price">가격</InputLabel>
-            <OutlinedInput
-              id="article-price"
-              defaultValue={price}
-              size="medium"
-              onChange={onChangePrice}
-              label="가격"
-              startAdornment={
-                <InputAdornment position="start">￦</InputAdornment>
-              }
-              value={price}
-              error={errorPrice}
-              maxRows="1"
-            />
-          </FormControl>
-        </Box>
-        <Box>
           <Carousel showArrows={true} infiniteLoop={true} selectedItem={0}>
             {imagePreviews.map((preview, index) => (
               <div
@@ -207,6 +189,24 @@ export function ArticlePost() {
               </Alert>
             </Stack>
           </Collapse>
+        </Box>
+        <Box>
+          <FormControl sx={{ marginY: '10px' }}>
+            <InputLabel htmlFor="article-price">가격</InputLabel>
+            <OutlinedInput
+              id="article-price"
+              defaultValue={price}
+              size="medium"
+              onChange={onChangePrice}
+              label="가격"
+              startAdornment={
+                <InputAdornment position="start">￦</InputAdornment>
+              }
+              value={price}
+              error={errorPrice}
+              maxRows="1"
+            />
+          </FormControl>
         </Box>
         <Box>
           <StyledTextField
