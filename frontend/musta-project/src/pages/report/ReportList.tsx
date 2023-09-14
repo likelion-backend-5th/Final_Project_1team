@@ -30,9 +30,9 @@ const StyledListItem = styled(ListItem)({
 const ReportList: React.FC = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
-
+  
   useEffect(() => {
-    let url = 'http://localhost:8080/api/reports';
+    let url = `${import.meta.env.VITE_API}api/reports`;
     if (filterStatus !== 'ALL') {
       url += `?status=${filterStatus}`;
     }

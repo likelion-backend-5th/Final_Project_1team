@@ -34,7 +34,6 @@ import { loadingTime } from '../../util/loadingUtil.ts';
 import { uploadImagesToS3 } from '../../util/s3Client.ts';
 import { priceValidation, textValidation } from '../../util/validationUtil.ts';
 
-// const baseUrl = 'http://localhost:8080/api/articles/';
 const baseUrl = '/articles/';
 
 function getArticleApiId() {

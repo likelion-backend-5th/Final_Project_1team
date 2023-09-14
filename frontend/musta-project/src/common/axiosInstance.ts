@@ -4,7 +4,7 @@ const AUTH_TOKEN = `Bearer `;
 
 const baseUrl = import.meta.env.VITE_API;
 
-console.log(baseUrl);
+console.debug(baseUrl);
 
 const axiosInstance = axios.create({ baseURL: baseUrl });
 axios.defaults.paramsSerializer = (params: Record<string, any>) => {
